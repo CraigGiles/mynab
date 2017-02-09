@@ -22,6 +22,7 @@ object Dependencies {
     "org.http4s" %% "http4s-argonaut"     % "0.15.3a")
 
   lazy val backend = core ++ Seq(
+      "org.javamoney" % "moneta" % "1.1",
       mysqlConnectorJava)
 
   // Libraries
