@@ -1,25 +1,28 @@
 package com.gilesc.mynab
 
 import java.time.LocalDate
+import com.gilesc.mynab.Account._
+import com.gilesc.mynab.Transaction._
 
-import org.scalatest.{Matchers, WordSpecLike}
+trait MockTransactionCreation {
+  import com.gilesc.mynab.Account._
+  import com.gilesc.mynab.Transaction._
 
-abstract class TestCase extends WordSpecLike with Matchers
+  def t(amnt: Double): Transaction = {
+    Transaction(LocalDate.now(),
+      Payee("Me"),
+      Category.apply(MajorCategory("loans"), MinorCategory("student loan")),
+      Memo(""),
+      Amount(BigDecimal(amnt)),
+      Cleared.apply("false"))
+  }
+}
 
-class TransactionSpec extends TestCase {
+class TransactionSpec extends TestCase with MockTransactionCreation {
   "Transactions" should {
     "be summable" in {
-      import com.gilesc.mynab.Account._
-      import com.gilesc.mynab.Transaction._
 
-      val ts = List(
-        Transaction(LocalDate.now(), Payee("Me"), Category.apply(MajorCategory("loans"), MinorCategory("student loan")), Memo(""), Amount(BigDecimal(0.0)), Cleared.apply("false")),
-        Transaction(LocalDate.now(), Payee("Me"), Category.apply(MajorCategory("loans"), MinorCategory("student loan")), Memo(""), Amount(BigDecimal(1.0)), Cleared.apply("false")),
-        Transaction(LocalDate.now(), Payee("Me"), Category.apply(MajorCategory("loans"), MinorCategory("student loan")), Memo(""), Amount(BigDecimal(2.0)), Cleared.apply("false")),
-        Transaction(LocalDate.now(), Payee("Me"), Category.apply(MajorCategory("loans"), MinorCategory("student loan")), Memo(""), Amount(BigDecimal(3.0)), Cleared.apply("false")),
-        Transaction(LocalDate.now(), Payee("Me"), Category.apply(MajorCategory("loans"), MinorCategory("student loan")), Memo(""), Amount(BigDecimal(4.0)), Cleared.apply("false")),
-        Transaction(LocalDate.now(), Payee("Me"), Category.apply(MajorCategory("loans"), MinorCategory("student loan")), Memo(""), Amount(BigDecimal(5.0)), Cleared.apply("false"))
-      )
+      val ts = List(t(0.0), t(1.0), t(2.0), t(3.0), t(4.0), t(5.0))
 
       sumTransactions(List.empty[Transaction]) should be(BigDecimal.apply(0.0))
       sumTransactions(ts) should be(BigDecimal(15.0))
