@@ -6,6 +6,8 @@ Accounts will have:
 * An account type
 * A list of transactions
 
+* Should be able to add a new transaction
+
 ## Transactions
 Transactions will have:
 * A date

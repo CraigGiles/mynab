@@ -1,13 +1,11 @@
 package com.gilesc.mynab
 
 import java.time.LocalDate
-import com.gilesc.mynab.Account._
-import com.gilesc.mynab.Transaction._
+
+import com.gilesc.mynab.transaction._
+import com.gilesc.mynab.transaction.Transaction._
 
 trait MockTransactionCreation {
-  import com.gilesc.mynab.Account._
-  import com.gilesc.mynab.Transaction._
-
   def t(amnt: Double): Transaction = {
     Transaction(LocalDate.now(),
       Payee("Me"),

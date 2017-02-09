@@ -1,7 +1,7 @@
 package com.gilesc.mynab
+package account
 
 class AccountSpec extends TestCase with MockTransactionCreation {
-  import AccountDomain._
   import Account._
 
   "An account" should {
