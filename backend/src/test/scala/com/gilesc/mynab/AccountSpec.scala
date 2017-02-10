@@ -1,6 +1,8 @@
 package com.gilesc.mynab
 package account
 
+import com.gilesc.mynab.transaction.Cleared
+
 class AccountSpec extends TestCase with MockTransactionCreation {
   import Account._
 
@@ -19,6 +21,15 @@ class AccountSpec extends TestCase with MockTransactionCreation {
       val expected = List(t(2.0), t(0.0))
 
       removeTransaction(t1, state) should be(expected)
+    }
+
+    "have the ability to mark transactions as 'cleared'" in {
+      val t1 = t(1.0)
+      val state = List(t(2.0), t1)
+      val expected = List(t(2.0), t1.copy(cleared = Cleared(true)))
+
+      toggleCleared(t1, List(t1)) should be(List(t1.copy(cleared = Cleared(true))))
+      toggleCleared(t1, state) should be(expected)
     }
   }
 }

@@ -24,7 +24,7 @@ case class Memo(value: String) extends AnyVal
 case class Amount(value: BigDecimal) extends AnyVal {
   def +(other: BigDecimal): Amount = Amount(value + other)
 }
-case class Cleared(value: String) extends AnyVal
+case class Cleared(value: Boolean) extends AnyVal
 
 case class Transaction(date: Date, payee: Payee, category: Category,
   memo: Memo, amount: Amount, cleared: Cleared)

@@ -1,12 +1,12 @@
 package com.gilesc.mynab
 package account
 
-import com.gilesc.mynab.transaction.Transaction
-import com.gilesc.mynab.transaction.Transaction._
+import com.gilesc.mynab.transaction.{Cleared, Transaction}
 
 trait AccountModule {
   def prependTransaction: (Transaction, List[Transaction]) => List[Transaction]
   def removeTransaction: (Transaction, List[Transaction]) => List[Transaction]
+  def toggleCleared: (Transaction, List[Transaction]) => List[Transaction]
 }
 
 object Account extends AccountModule {
@@ -14,6 +14,10 @@ object Account extends AccountModule {
     (t, s) => t :: s
   val removeTransaction: (Transaction, List[Transaction]) => List[Transaction] =
     (t, s) => s.filterNot(tr => tr == t)
+  val toggleCleared: (Transaction, List[Transaction]) => List[Transaction] =
+    (t, s) => s.map { tr =>
+      if (tr == t) t.copy(cleared = Cleared(!tr.cleared.value)) else tr
+    }
 }
 
 // Account Domain Objects

@@ -12,7 +12,7 @@ trait MockTransactionCreation {
       Category.apply(MajorCategory("loans"), MinorCategory("student loan")),
       Memo(""),
       Amount(BigDecimal(amnt)),
-      Cleared.apply("false"))
+      Cleared(false))
   }
 }
 
