@@ -6,11 +6,14 @@ import com.gilesc.mynab.transaction.Transaction._
 
 trait AccountModule {
   def prependTransaction: (Transaction, List[Transaction]) => List[Transaction]
+  def removeTransaction: (Transaction, List[Transaction]) => List[Transaction]
 }
 
 object Account extends AccountModule {
   val prependTransaction: (Transaction, List[Transaction]) => List[Transaction] =
     (t, s) => t :: s
+  val removeTransaction: (Transaction, List[Transaction]) => List[Transaction] =
+    (t, s) => s.filterNot(tr => tr == t)
 }
 
 // Account Domain Objects
