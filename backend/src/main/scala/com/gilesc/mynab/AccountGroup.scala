@@ -7,7 +7,7 @@ trait AccountGroupModule { self: Prepending =>
   type AccountState = List[Account]
 }
 
-object AccountGroup extends AccountGroupModule with Prepending {
+object AccountGroup extends AccountGroupModule with Prepending with Removing {
 }
 
 // Account List Domain Objects
