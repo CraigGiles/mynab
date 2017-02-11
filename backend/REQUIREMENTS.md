@@ -7,6 +7,8 @@ Accounts will have:
 * A list of transactions
 
 * Should be able to add a new transaction
+* Should be able to remove specific transactions
+* Should be able to toggle the 'cleared' flag
 
 ## Transactions
 Transactions will have:

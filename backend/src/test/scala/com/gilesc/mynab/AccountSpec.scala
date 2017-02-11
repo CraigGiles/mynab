@@ -28,8 +28,8 @@ class AccountSpec extends TestCase with MockTransactionCreation {
       val state = List(t(2.0), t1)
       val expected = List(t(2.0), t1.copy(cleared = Cleared(true)))
 
-      toggleCleared(t1, List(t1)) should be(List(t1.copy(cleared = Cleared(true))))
-      toggleCleared(t1, state) should be(expected)
+      toggleCleared(List(t1), List(t1)) should be(List(t1.copy(cleared = Cleared(true))))
+      toggleCleared(List(t1), state) should be(expected)
     }
   }
 }
