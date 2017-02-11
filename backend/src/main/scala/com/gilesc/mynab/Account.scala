@@ -16,13 +16,12 @@ object Account extends AccountModule {
     (t, s) => t :: s
   val removeTransaction: (Transaction, TransactionState) => TransactionState =
     (t, s) => s.filterNot(tr => tr == t)
-  val toggleCleared: (List[Transaction], TransactionState) => TransactionState = {
+  val toggleCleared: (List[Transaction], TransactionState) => TransactionState =
     (t, s) => s.flatMap { tr =>
       t.map { ti =>
         if (tr == ti) ti.copy(cleared = Cleared(!tr.cleared.value)) else tr
       }
     }
-  }
 }
 
 // Account Domain Objects
