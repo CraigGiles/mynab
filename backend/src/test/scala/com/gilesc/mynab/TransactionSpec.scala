@@ -25,11 +25,12 @@ class TransactionSpec extends TestCase with MockTransactionCreation {
 
       sumTransactions(List.empty[Transaction]) should be(BigDecimal.apply(0.0))
       sumTransactions(ts) should be(BigDecimal(15.0))
-   }
+    }
 
-   "have withdrawls sum correctly" in {
+    "have withdrawls sum correctly" in {
       val ts = List(t(10.0,0.0), t(2.0, 0.0), t(0.0,2.0),
         t(0.0,3.0), t(0.0,4.0), t(0.0,5.0))
+
       sumTransactions(ts) should be(BigDecimal(2.0))
     }
 
