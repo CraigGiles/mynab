@@ -19,14 +19,18 @@ trait MockTransactionCreation {
 
 class TransactionSpec extends TestCase with MockTransactionCreation {
   "Transactions" should {
-    "be summable" in {
-
-      val ts = List(t(0.0,0.0), t(0.0,1.0), t(0.0,2.0), t(0.0,3.0), t(0.0,4.0), t(0.0,5.0))
-      val ts2 = List(t(10.0,0.0), t(0.0,1.0), t(0.0,2.0), t(0.0,3.0), t(0.0,4.0), t(0.0,5.0))
+    "have deposits sum correctly" in {
+      val ts = List(t(0.0,0.0), t(0.0,1.0), t(0.0,2.0),
+        t(0.0,3.0), t(0.0,4.0), t(0.0,5.0))
 
       sumTransactions(List.empty[Transaction]) should be(BigDecimal.apply(0.0))
       sumTransactions(ts) should be(BigDecimal(15.0))
-      sumTransactions(ts2) should be(BigDecimal(5.0))
+   }
+
+   "have withdrawls sum correctly" in {
+      val ts = List(t(10.0,0.0), t(2.0, 0.0), t(0.0,2.0),
+        t(0.0,3.0), t(0.0,4.0), t(0.0,5.0))
+      sumTransactions(ts) should be(BigDecimal(2.0))
 
    }
   }
