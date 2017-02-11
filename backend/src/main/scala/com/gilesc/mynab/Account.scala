@@ -31,6 +31,7 @@ final case object Retirement extends AccountType
 
 trait Account {
   def accountType: AccountType
+  def transactions: List[Transaction]
 }
 
 case class BankingAccount(name: AccountName, transactions: List[Transaction])

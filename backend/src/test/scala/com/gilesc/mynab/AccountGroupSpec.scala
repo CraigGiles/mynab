@@ -35,5 +35,16 @@ class AccountGroupSpec extends TestCase with MockTransactionCreation with MockAc
       state2 should be(List.empty[Account])
       remove(b, state0) should be(List(l))
     }
+
+    "sum the total transaction list from all its accounts" in {
+      val b = banking("chase", List(t(0.0, 1000.0)))
+      val l = loan("nelnet", List(t(5000.0, 0.0)))
+      val i = banking("chase-savings", List(t(0.0, 14000)))
+      val al = List(b, l)
+      val al2 = List(b, l, i)
+
+      sumAllAccounts(al) should be(BigDecimal(-4000.0))
+      sumAllAccounts(al2) should be(BigDecimal(10000.0))
+    }
   }
 }
