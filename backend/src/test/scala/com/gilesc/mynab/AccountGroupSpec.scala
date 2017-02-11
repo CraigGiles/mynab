@@ -1,9 +1,7 @@
 package com.gilesc.mynab
 package account
 
-import com.gilesc.mynab.account._
 import com.gilesc.mynab.transaction._
-import com.gilesc.mynab.transaction.Cleared
 
 trait MockAccountCreation {
   def banking(name: String, transactions: List[Transaction]): BankingAccount =
