@@ -9,7 +9,9 @@ trait TransactionModule {
 
 object Transaction {
   val sumTransactions: List[Transaction] => BigDecimal =
-    _.foldRight(BigDecimal(0.0))((t, s) => t.amount.value + s)
+    _.foldRight(BigDecimal(0.0)) { (t, sum) =>
+      (t.deposit.value + sum) - t.withdrawal.value
+    }
 }
 
 // Transaction Domain Objects
@@ -27,4 +29,4 @@ case class Amount(value: BigDecimal) extends AnyVal {
 case class Cleared(value: Boolean) extends AnyVal
 
 case class Transaction(date: Date, payee: Payee, category: Category,
-  memo: Memo, amount: Amount, cleared: Cleared)
+  memo: Memo, withdrawal: Amount, deposit: Amount, cleared: Cleared)
