@@ -5,18 +5,6 @@ import java.time.LocalDate
 import com.gilesc.mynab.transaction._
 import com.gilesc.mynab.transaction.Transaction._
 
-trait MockTransactionCreation {
-  def t(withdrawal: Double, deposit: Double): Transaction = {
-    Transaction(LocalDate.now(),
-      Payee("Me"),
-      Category.apply(MajorCategory("loans"), MinorCategory("student loan")),
-      Memo(""),
-      Amount(BigDecimal(withdrawal)),
-      Amount(BigDecimal(deposit)),
-      Cleared(false))
-  }
-}
-
 class TransactionSpec extends TestCase with MockTransactionCreation {
   "Transactions" should {
     "have deposits sum correctly" in {

@@ -3,13 +3,6 @@ package account
 
 import com.gilesc.mynab.transaction._
 
-trait MockAccountCreation {
-  def banking(name: String, transactions: List[Transaction]): BankingAccount =
-    BankingAccount(AccountName(name), transactions)
-  def loan(name: String, transactions: List[Transaction]): LoanAccount =
-    LoanAccount(AccountName(name), transactions)
-}
-
 class AccountGroupSpec extends TestCase with MockTransactionCreation with MockAccountCreation {
   import AccountGroup._
 
