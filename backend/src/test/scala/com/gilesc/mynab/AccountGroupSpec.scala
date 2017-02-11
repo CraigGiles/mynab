@@ -1,8 +1,6 @@
 package com.gilesc.mynab
 package account
 
-import com.gilesc.mynab.transaction._
-
 class AccountGroupSpec extends TestCase with MockTransactionCreation with MockAccountCreation {
   import AccountGroup._
 
@@ -13,11 +11,11 @@ class AccountGroupSpec extends TestCase with MockTransactionCreation with MockAc
       val l = loan("chase", List(t(0.0, 1000.0)))
 
       // append to an empty account list
-      appendAccount(b, al) should be(List(b))
+      prepend(b, al) should be(List(b))
 
       // ensure its appending not adding to end
-      val state0 = appendAccount(b, al)
-      val state1 = appendAccount(l, state0)
+      val state0 = prepend(b, al)
+      val state1 = prepend(l, state0)
 
       state0 should be(List(b))
       state1 should be(List(l, b))

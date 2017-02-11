@@ -1,22 +1,17 @@
 package com.gilesc.mynab
 package account
 
+import com.gilesc.commons.{Prepending, Removing}
 import com.gilesc.mynab.transaction.{Cleared, Transaction}
 
-trait AccountModule {
+trait AccountModule { self: Prepending with Removing =>
   type TransactionState = List[Transaction]
 
-  def prependTransaction: (Transaction, TransactionState) => TransactionState
-  def removeTransaction: (Transaction, TransactionState) => TransactionState
   def toggleCleared: (List[Transaction], TransactionState) => TransactionState
 }
 
-object Account extends AccountModule {
-  val prependTransaction: (Transaction, TransactionState) => TransactionState =
-    (t, s) => t :: s
-  val removeTransaction: (Transaction, TransactionState) => TransactionState =
-    (t, s) => s.filterNot(tr => tr == t)
-  val toggleCleared: (List[Transaction], TransactionState) => TransactionState =
+object Account extends AccountModule with Prepending with Removing {
+  def toggleCleared: (List[Transaction], TransactionState) => TransactionState =
     (t, s) => s.flatMap { tr =>
       t.map { ti =>
         if (tr == ti) ti.copy(cleared = Cleared(!tr.cleared.value)) else tr

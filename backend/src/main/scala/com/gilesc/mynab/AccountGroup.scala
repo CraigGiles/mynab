@@ -1,14 +1,13 @@
 package com.gilesc.mynab
 package account
 
-trait AccountGroupModule {
-  type AccountState = List[Account]
+import com.gilesc.commons.{Prepending, Removing}
 
-  def appendAccount: (Account, AccountState) => AccountState
+trait AccountGroupModule { self: Prepending =>
+  type AccountState = List[Account]
 }
 
-object AccountGroup extends AccountGroupModule {
-  val appendAccount: (Account, AccountState) => AccountState = (a, al) => a :: al
+object AccountGroup extends AccountGroupModule with Prepending {
 }
 
 // Account List Domain Objects

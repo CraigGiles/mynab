@@ -11,8 +11,8 @@ class AccountSpec extends TestCase with MockTransactionCreation {
       val state0 = List(t(0.0,0.0))
       val state1 = List(t(0.0,1.0), t(0.0,0.0))
 
-      prependTransaction(t(0.0,0.0), Nil) should be(state0)
-      prependTransaction(t(0.0,1.0), state0) should be(state1)
+      prepend(t(0.0,0.0), Nil) should be(state0)
+      prepend(t(0.0,1.0), state0) should be(state1)
     }
 
     "have the ability to remove a specific transaction" in {
@@ -20,7 +20,7 @@ class AccountSpec extends TestCase with MockTransactionCreation {
       val state = List(t(0.0,2.0), t1, t(0.0,0.0))
       val expected = List(t(0.0,2.0), t(0.0,0.0))
 
-      removeTransaction(t1, state) should be(expected)
+      remove(t1, state) should be(expected)
     }
 
     "have the ability to mark transactions as 'cleared'" in {
