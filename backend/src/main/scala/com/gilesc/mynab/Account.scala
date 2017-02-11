@@ -4,17 +4,19 @@ package account
 import com.gilesc.mynab.transaction.{Cleared, Transaction}
 
 trait AccountModule {
-  def prependTransaction: (Transaction, List[Transaction]) => List[Transaction]
-  def removeTransaction: (Transaction, List[Transaction]) => List[Transaction]
-  def toggleCleared: (List[Transaction], List[Transaction]) => List[Transaction]
+  type TransactionState = List[Transaction]
+
+  def prependTransaction: (Transaction, TransactionState) => TransactionState
+  def removeTransaction: (Transaction, TransactionState) => TransactionState
+  def toggleCleared: (List[Transaction], TransactionState) => TransactionState
 }
 
 object Account extends AccountModule {
-  val prependTransaction: (Transaction, List[Transaction]) => List[Transaction] =
+  val prependTransaction: (Transaction, TransactionState) => TransactionState =
     (t, s) => t :: s
-  val removeTransaction: (Transaction, List[Transaction]) => List[Transaction] =
+  val removeTransaction: (Transaction, TransactionState) => TransactionState =
     (t, s) => s.filterNot(tr => tr == t)
-  val toggleCleared: (List[Transaction], List[Transaction]) => List[Transaction] = {
+  val toggleCleared: (List[Transaction], TransactionState) => TransactionState = {
     (t, s) => s.flatMap { tr =>
       t.map { ti =>
         if (tr == ti) ti.copy(cleared = Cleared(!tr.cleared.value)) else tr
