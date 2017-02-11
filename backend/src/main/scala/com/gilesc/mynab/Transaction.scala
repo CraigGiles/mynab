@@ -5,6 +5,7 @@ import java.time.{LocalDate => Date}
 
 trait TransactionModule {
   def sumTransactions: List[Transaction] => BigDecimal
+  def changeCategory: (Category, List[Transaction]) => List[Transaction]
 }
 
 object Transaction {
@@ -12,6 +13,9 @@ object Transaction {
     _.foldRight(BigDecimal(0.0)) { (t, sum) =>
       t.deposit.value - t.withdrawal.value + sum
     }
+
+  val changeCategory: (Category, List[Transaction]) => List[Transaction] = (c, ts) =>
+    ts.map(_.copy(category = c))
 }
 
 // Transaction Domain Objects
