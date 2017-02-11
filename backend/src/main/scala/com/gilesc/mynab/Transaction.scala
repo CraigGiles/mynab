@@ -5,10 +5,10 @@ import java.time.{LocalDate => Date}
 
 trait TransactionModule {
   def sumTransactions: List[Transaction] => BigDecimal
-  def changeCategory: (Category, List[Transaction]) => List[Transaction]
+  def recategorize: (Category, List[Transaction]) => List[Transaction]
 }
 
-object Transaction {
+object Transaction extends TransactionModule {
   val sumTransactions: List[Transaction] => BigDecimal =
     _.foldRight(BigDecimal(0.0)) { (t, sum) =>
       t.deposit.value - t.withdrawal.value + sum
