@@ -10,7 +10,7 @@ trait TransactionModule {
 object Transaction {
   val sumTransactions: List[Transaction] => BigDecimal =
     _.foldRight(BigDecimal(0.0)) { (t, sum) =>
-      (t.deposit.value + sum) - t.withdrawal.value
+      t.deposit.value - t.withdrawal.value + sum
     }
 }
 
