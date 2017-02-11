@@ -40,7 +40,7 @@ class TransactionSpec extends TestCase with MockTransactionCreation {
       val minor = MinorCategory("student")
       val c = Category(major, minor)
 
-      val changed = changeCategory(c, ts)
+      val changed = recategorize(c, ts)
       changed.head.category.major should be(major)
       changed.head.category.minor should be(minor)
     }

@@ -14,7 +14,7 @@ object Transaction {
       t.deposit.value - t.withdrawal.value + sum
     }
 
-  val changeCategory: (Category, List[Transaction]) => List[Transaction] = (c, ts) =>
+  val recategorize: (Category, List[Transaction]) => List[Transaction] = (c, ts) =>
     ts.map(_.copy(category = c))
 }
 
