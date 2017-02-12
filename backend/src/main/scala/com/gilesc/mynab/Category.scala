@@ -1,6 +1,7 @@
 package com.gilesc.mynab
 package category
 
+import com.gilesc.commons._
 import com.gilesc.mynab.transaction.Transaction
 import com.gilesc.mynab.account._
 
@@ -8,11 +9,13 @@ case class MajorCategory(value: String) extends AnyVal
 case class MinorCategory(value: String) extends AnyVal
 case class Category(major: MajorCategory, minor: MinorCategory)
 
-trait CategoryModule {
+trait CategoryModule { self: Prepending with Removing =>
+  type CategoryList = List[Category]
+
   def renameCategory(before: Category, after: Category, accts: AccountGroup): AccountGroup
 }
 
-object Category extends CategoryModule {
+object Category extends CategoryModule with Prepending with Removing {
   def renameCategory(before: Category, after: Category, accts: AccountGroup): AccountGroup = {
     def rename(transactions: List[Transaction]): List[Transaction] = {
       transactions.map { t =>
