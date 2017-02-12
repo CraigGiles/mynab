@@ -23,5 +23,23 @@ trait MockTransactionCreation {
       Amount(BigDecimal(deposit)),
       Cleared(false))
   }
+
+  def trans(date: LocalDate = LocalDate.now(),
+    payee: String = "Me",
+    majorCategory: String = "loans",
+    minorCategory: String = "studen",
+    memo: String = "loans",
+    withdrawal: Double = 0.0,
+    deposit: Double = 0.0,
+    cleared: Boolean = false): Transaction = {
+
+    Transaction(LocalDate.now(),
+      Payee(payee),
+      Category.apply(MajorCategory(majorCategory), MinorCategory(minorCategory)),
+      Memo(memo),
+      Amount(BigDecimal(withdrawal)),
+      Amount(BigDecimal(deposit)),
+      Cleared(cleared))
+  }
 }
 
