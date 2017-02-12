@@ -3,6 +3,8 @@ package transaction
 
 import java.time.{LocalDate => Date}
 
+import com.gilesc.mynab.category._
+
 trait TransactionModule {
   def sumTransactions: List[Transaction] => BigDecimal
   def recategorize: (Category, List[Transaction]) => List[Transaction]
@@ -21,10 +23,6 @@ object Transaction extends TransactionModule {
 // Transaction Domain Objects
 // ------------------------------------------------------------------------
 case class Payee(value: String) extends AnyVal
-
-case class MajorCategory(value: String) extends AnyVal
-case class MinorCategory(value: String) extends AnyVal
-case class Category(major: MajorCategory, minor: MinorCategory)
 
 case class Memo(value: String) extends AnyVal
 case class Amount(value: BigDecimal) extends AnyVal {

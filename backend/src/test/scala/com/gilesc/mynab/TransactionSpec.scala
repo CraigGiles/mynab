@@ -1,9 +1,8 @@
 package com.gilesc.mynab
 
-import java.time.LocalDate
-
-import com.gilesc.mynab.transaction._
+import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction.Transaction._
+import com.gilesc.mynab.transaction._
 
 class TransactionSpec extends TestCase with MockTransactionCreation {
   "Transactions" should {
