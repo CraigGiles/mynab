@@ -3,6 +3,7 @@ package account
 
 import com.gilesc.commons.{Prepending, Removing}
 import com.gilesc.mynab.transaction.Transaction._
+import com.gilesc.mynab.transaction._
 
 trait AccountGroupModule { self: Prepending with Removing =>
   type AccountState = List[Account]
@@ -18,4 +19,7 @@ object AccountGroup extends AccountGroupModule with Prepending with Removing {
 
 // Account List Domain Objects
 // ------------------------------------------------------------------------
+case class AccountGroup(name: AccountName, accounts: List[Account]) {
+  def transactions: List[Transaction] = accounts.head.transactions
+}
 
