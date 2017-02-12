@@ -24,12 +24,7 @@ object Category extends CategoryModule {
     // for each account, map over the transaction list
     // foreach transaction in the transaction list
     //    if we need to rename the category, rename it
-    val newAccounts = accts.accounts map {
-      case BankingAccount(name, transactions) => BankingAccount(name, rename(transactions))
-      case LoanAccount(name, transactions) => LoanAccount(name, rename(transactions))
-      case InvestmentAccount(name, transactions) => InvestmentAccount(name, rename(transactions))
-      case RetirementAccount(name, transactions) => RetirementAccount(name, rename(transactions))
-    }
+    val newAccounts = accts.accounts map(t => t.copy(t.name, rename(t.transactions)))
 
     accts.copy(accounts = newAccounts)
   }

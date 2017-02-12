@@ -30,8 +30,16 @@ final case object Investment extends AccountType
 final case object Retirement extends AccountType
 
 trait Account {
+  def name: AccountName
   def accountType: AccountType
   def transactions: List[Transaction]
+
+  def copy(name: AccountName, transactions: List[Transaction]) = this match {
+    case BankingAccount(_, _) => BankingAccount(name, transactions)
+    case LoanAccount(_, _) => LoanAccount(name, transactions)
+    case InvestmentAccount(_, _) => InvestmentAccount(name, transactions)
+    case RetirementAccount(_, _) => RetirementAccount(name, transactions)
+  }
 }
 
 case class BankingAccount(name: AccountName, transactions: List[Transaction])
