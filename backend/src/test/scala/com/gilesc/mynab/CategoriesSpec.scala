@@ -18,10 +18,10 @@ class CategorySpec extends TestCase
       val c1 = Category(MajorCategory(loans), MinorCategory(mortgage))
       val c2 = Category(MajorCategory(loans), MinorCategory(student))
 
-      val group = List(c2, c1)
+      val group = Vector(c2, c1)
 
-      val state01 = prepend(c1, List.empty[Category])
-      state01 should be(List(c1))
+      val state01 = prepend(c1, Vector.empty[Category])
+      state01 should be(Vector(c1))
 
       prepend(c2, state01) should be(group)
     }
@@ -36,11 +36,11 @@ class CategorySpec extends TestCase
 
       val transaction = trans(minorCategory = changeme)
       val stay = trans(minorCategory = mortgage)
-      val checkingAcc = banking("chase", List(transaction, stay))
+      val checkingAcc = banking("chase", Vector(transaction, stay))
 
       val before = Category(MajorCategory(loans), MinorCategory(changeme))
       val after = Category(MajorCategory(loans), MinorCategory(student))
-      val group = AccountGroup(AccountName("budget accounts"), List(checkingAcc))
+      val group = AccountGroup(AccountName("budget accounts"), Vector(checkingAcc))
 
       val newAccountGroup = renameCategory(before, after, group)
 

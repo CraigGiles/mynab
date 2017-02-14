@@ -10,14 +10,14 @@ case class MinorCategory(value: String) extends AnyVal
 case class Category(major: MajorCategory, minor: MinorCategory)
 
 trait CategoryModule { self: Prepending with Removing =>
-  type CategoryList = List[Category]
+  type CategoryList = Vector[Category]
 
   def renameCategory(before: Category, after: Category, accts: AccountGroup): AccountGroup
 }
 
 object Category extends CategoryModule with Prepending with Removing {
   def renameCategory(before: Category, after: Category, accts: AccountGroup): AccountGroup = {
-    def rename(transactions: List[Transaction]): List[Transaction] = {
+    def rename(transactions: Vector[Transaction]): Vector[Transaction] = {
       transactions.map { t =>
         if (t.category == before) t.copy(category = after) else t
       }

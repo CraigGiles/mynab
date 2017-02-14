@@ -6,7 +6,7 @@ import com.gilesc.mynab.transaction.Transaction._
 import com.gilesc.mynab.transaction._
 
 trait AccountGroupModule { self: Prepending with Removing =>
-  type AccountState = List[Account]
+  type AccountState = Vector[Account]
 
   def sumAllAccounts: AccountState => BigDecimal
 }
@@ -17,9 +17,9 @@ object AccountGroup extends AccountGroupModule with Prepending with Removing {
   }
 }
 
-// Account List Domain Objects
+// Account Group Domain Objects
 // ------------------------------------------------------------------------
-case class AccountGroup(name: AccountName, accounts: List[Account]) {
-  def transactions: List[Transaction] = accounts.head.transactions
+case class AccountGroup(name: AccountName, accounts: Vector[Account]) {
+  def transactions: Vector[Transaction] = accounts.head.transactions
 }
 

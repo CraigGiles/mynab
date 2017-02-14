@@ -7,9 +7,9 @@ import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction._
 
 trait MockAccountCreation {
-  def banking(name: String, transactions: List[Transaction]): BankingAccount =
+  def banking(name: String, transactions: Vector[Transaction]): BankingAccount =
     BankingAccount(AccountName(name), transactions)
-  def loan(name: String, transactions: List[Transaction]): LoanAccount =
+  def loan(name: String, transactions: Vector[Transaction]): LoanAccount =
     LoanAccount(AccountName(name), transactions)
 }
 

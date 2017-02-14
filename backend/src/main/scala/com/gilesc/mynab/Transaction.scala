@@ -6,17 +6,17 @@ import java.time.{LocalDate => Date}
 import com.gilesc.mynab.category._
 
 trait TransactionModule {
-  def sumTransactions: List[Transaction] => BigDecimal
-  def recategorize: (Category, List[Transaction]) => List[Transaction]
+  def sumTransactions: Vector[Transaction] => BigDecimal
+  def recategorize: (Category, Vector[Transaction]) => Vector[Transaction]
 }
 
 object Transaction extends TransactionModule {
-  val sumTransactions: List[Transaction] => BigDecimal =
+  val sumTransactions: Vector[Transaction] => BigDecimal =
     _.foldRight(BigDecimal(0.0)) { (t, sum) =>
       t.deposit.value - t.withdrawal.value + sum
     }
 
-  val recategorize: (Category, List[Transaction]) => List[Transaction] = (c, ts) =>
+  val recategorize: (Category, Vector[Transaction]) => Vector[Transaction] = (c, ts) =>
     ts.map(_.copy(category = c))
 }
 

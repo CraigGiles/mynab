@@ -5,13 +5,13 @@ import com.gilesc.commons.{Prepending, Removing}
 import com.gilesc.mynab.transaction.{Cleared, Transaction}
 
 trait AccountModule { self: Prepending with Removing =>
-  type TransactionState = List[Transaction]
+  type TransactionState = Vector[Transaction]
 
-  def toggleCleared: (List[Transaction], TransactionState) => TransactionState
+  def toggleCleared: (Vector[Transaction], TransactionState) => TransactionState
 }
 
 object Account extends AccountModule with Prepending with Removing {
-  def toggleCleared: (List[Transaction], TransactionState) => TransactionState =
+  def toggleCleared: (Vector[Transaction], TransactionState) => TransactionState =
     (t, s) => s.flatMap { tr =>
       t.map { ti =>
         if (tr == ti) ti.copy(cleared = Cleared(!tr.cleared.value)) else tr
@@ -32,9 +32,9 @@ final case object Retirement extends AccountType
 trait Account {
   def name: AccountName
   def accountType: AccountType
-  def transactions: List[Transaction]
+  def transactions: Vector[Transaction]
 
-  def copy(name: AccountName, transactions: List[Transaction]) = this match {
+  def copy(name: AccountName, transactions: Vector[Transaction]) = this match {
     case BankingAccount(_, _) => BankingAccount(name, transactions)
     case LoanAccount(_, _) => LoanAccount(name, transactions)
     case InvestmentAccount(_, _) => InvestmentAccount(name, transactions)
@@ -42,14 +42,14 @@ trait Account {
   }
 }
 
-case class BankingAccount(name: AccountName, transactions: List[Transaction])
+case class BankingAccount(name: AccountName, transactions: Vector[Transaction])
   extends Account { val accountType = Banking }
 
-case class LoanAccount(name: AccountName, transactions: List[Transaction])
+case class LoanAccount(name: AccountName, transactions: Vector[Transaction])
   extends Account { val accountType = Loan }
 
-case class InvestmentAccount(name: AccountName, transactions: List[Transaction])
+case class InvestmentAccount(name: AccountName, transactions: Vector[Transaction])
   extends Account { val accountType = Investment }
 
-case class RetirementAccount(name: AccountName, transactions: List[Transaction])
+case class RetirementAccount(name: AccountName, transactions: Vector[Transaction])
   extends Account { val accountType = Retirement }
