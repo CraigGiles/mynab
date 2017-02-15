@@ -11,6 +11,15 @@ trait AccountModule { self: Prepending with Removing =>
 }
 
 object Account extends AccountModule with Prepending with Removing {
+  def apply(account: AccountType, name: String, transactions: Vector[Transaction]): Account = {
+    account match {
+      case BankingAccount(_, _) => BankingAccount(AccountName(name), transactions)
+      case LoanAccount(_, _) => LoanAccount(AccountName(name), transactions)
+      case InvestmentAccount(_, _) => InvestmentAccount(AccountName(name), transactions)
+      case RetirementAccount(_, _) => RetirementAccount(AccountName(name), transactions)
+    }
+  }
+
   def toggleCleared: (Vector[Transaction], TransactionState) => TransactionState =
     (t, s) => s.flatMap { tr =>
       t.map { ti =>
