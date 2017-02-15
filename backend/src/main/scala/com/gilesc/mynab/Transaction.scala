@@ -11,6 +11,25 @@ trait TransactionModule {
 }
 
 object Transaction extends TransactionModule {
+  import java.time.LocalDate
+  def apply(date: LocalDate,
+            payee: String,
+            majorCategory: String,
+            minorCategory: String,
+            memo: String,
+            withdrawal: Double,
+            deposit: Double,
+            cleared: Boolean): Transaction = {
+
+    Transaction(date,
+      Payee(payee),
+      Category.apply(MajorCategory(majorCategory), MinorCategory(minorCategory)),
+      Memo(memo),
+      Amount(BigDecimal(withdrawal)),
+      Amount(BigDecimal(deposit)),
+      Cleared(cleared))
+  }
+
   val sumTransactions: Vector[Transaction] => BigDecimal =
     _.foldRight(BigDecimal(0.0)) { (t, sum) =>
       t.deposit.value - t.withdrawal.value + sum
