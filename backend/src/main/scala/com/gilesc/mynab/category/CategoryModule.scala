@@ -1,9 +1,8 @@
-package com.gilesc.mynab
-package category
+package com.gilesc.mynab.category
 
-import com.gilesc.commons._
+import com.gilesc.commons.{Prepending, Removing}
+import com.gilesc.mynab.account.AccountGroup
 import com.gilesc.mynab.transaction.Transaction
-import com.gilesc.mynab.account._
 
 trait CategoryModule { self: Prepending with Removing =>
   type CategoryList = Vector[Category]
@@ -24,10 +23,3 @@ trait CategoryModule { self: Prepending with Removing =>
     accts.copy(accounts = newAccounts)
   }
 }
-
-object Category extends CategoryModule with Prepending with Removing {
-}
-
-case class MajorCategory(value: String) extends AnyVal
-case class MinorCategory(value: String) extends AnyVal
-case class Category(major: MajorCategory, minor: MinorCategory)
