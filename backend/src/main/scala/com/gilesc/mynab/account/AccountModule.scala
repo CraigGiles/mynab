@@ -8,13 +8,10 @@ import com.gilesc.mynab.transaction.Transaction
 
 trait AccountModule { self: Prepending with Removing =>
 
-  val addTransactionState: Transaction => State[Account, Unit] = trans =>
+  val addTransaction: Transaction => State[Account, Unit] = trans =>
     State[Account, Unit] { acc =>
       (acc.copy(acc.name, prepend(trans, acc.transactions)), ())
   }
-
-  val addTransaction: (Transaction, Account) => Account = (t, a) =>
-    a.copy(a.name, prepend(t, a.transactions))
 
   val newAccount: (AccountType, String) => Account = (t, s) =>
     Account(t, s, Vector.empty[Transaction])

@@ -31,16 +31,16 @@ object Main extends App
   }
 
   val checkingTransactions = for {
-    a <- addTransactionState(Transaction("East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
-    b <- addTransactionState(Transaction("Credit Karma", "Income", "This Month", "", 0, 3742.56))
+    a <- addTransaction(Transaction("East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
+    b <- addTransaction(Transaction("Credit Karma", "Income", "This Month", "", 0, 3742.56))
   } yield ()
   val chaseChecking = checkingTransactions.runS(newAccount(Banking, "Chase Checking")).value
 
   val visaTransactions = for {
-    _ <- addTransactionState(Transaction("Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
-    _ <- addTransactionState(Transaction("Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
-    _ <- addTransactionState(Transaction("Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
-    _ <- addTransactionState(Transaction("T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
+    _ <- addTransaction(Transaction("Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
+    _ <- addTransaction(Transaction("Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
+    _ <- addTransaction(Transaction("Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
+    _ <- addTransaction(Transaction("T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
   } yield ()
   val chaseVisaAmazon = visaTransactions.runS(newAccount(Banking, "Chase Amazon CC")).value
 

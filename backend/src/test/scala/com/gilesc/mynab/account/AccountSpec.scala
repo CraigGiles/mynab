@@ -20,7 +20,7 @@ class AccountSpec extends TestCase
 
       val account = banking("Chase Banking", Vector.empty[Transaction])
       account.transactions should be(Vector.empty[Transaction])
-      val newacc = addTransaction(trans(payee = payeeInfo, withdrawal = 100.0), account)
+      val newacc = addTransaction(trans(payee = payeeInfo, withdrawal = 100.0)).runS(account).value
       newacc.transactions.size should be(1)
       newacc.transactions.head.payee.value should be(payeeInfo)
     }
