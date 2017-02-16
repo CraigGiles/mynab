@@ -12,4 +12,7 @@ trait AccountModule { self: Prepending with Removing =>
         if (tr == ti) ti.copy(cleared = Cleared(!tr.cleared.value)) else tr
       }
     }
+
+  val addTransaction: (Transaction, Account) => Account = (t, a) =>
+    a.copy(a.name, prepend(t, a.transactions))
 }
