@@ -1,6 +1,6 @@
 package com.gilesc.mynab.account
 
-import com.gilesc.mynab.transaction.{Cleared, Transaction}
+import com.gilesc.mynab.transaction.Transaction
 import com.gilesc.mynab.{MockAccountCreation, MockTransactionCreation, TestCase}
 
 class AccountSpec extends TestCase
