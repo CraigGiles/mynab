@@ -1,7 +1,12 @@
-package com.gilesc.mynab.account
+package com.gilesc.mynab
+package account
 
 import com.gilesc.commons.{Prepending, Removing}
 import com.gilesc.mynab.transaction.Transaction
+
+object AccountImplicits {
+  implicit def str2AccountName(str: String): AccountName = AccountName(str)
+}
 
 case class AccountName(value: String) extends AnyVal
 

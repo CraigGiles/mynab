@@ -15,22 +15,20 @@ case class Transaction(date: Date, payee: Payee, category: Category,
 
 object Transaction extends TransactionModule {
   import java.time.LocalDate
-  def apply(date: LocalDate,
-            payee: String,
+  def apply(payee: String,
             majorCategory: String,
             minorCategory: String,
             memo: String,
             withdrawal: Double,
-            deposit: Double,
-            cleared: Boolean): Transaction = {
+            deposit: Double): Transaction = {
 
-    Transaction(date,
+    Transaction(LocalDate.now(),
       Payee(payee),
       Category.apply(MajorCategory(majorCategory), MinorCategory(minorCategory)),
       Memo(memo),
       Amount(BigDecimal(withdrawal)),
       Amount(BigDecimal(deposit)),
-      Cleared(cleared))
+      Cleared(false))
   }
 }
 

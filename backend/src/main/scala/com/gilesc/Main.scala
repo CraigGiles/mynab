@@ -10,7 +10,11 @@ object Main extends App
   with Prepending
   with Removing
   with TransactionModule
-  with AccountGroupModule {
+  with AccountGroupModule
+  with AccountModule {
+
+  // for the account name implicit
+  import AccountImplicits._
 
   def prettyPrint(group: AccountGroup) = {
 
@@ -26,21 +30,25 @@ object Main extends App
 
   }
 
-  implicit def str2AccountName(str: String): AccountName = AccountName(str)
+  val checkingTransactions = for {
+    a <- addTransactionState(Transaction("East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
+    b <- addTransactionState(Transaction("Credit Karma", "Income", "This Month", "", 0, 3742.56))
+  } yield ()
+  val chaseChecking = checkingTransactions.runS(newAccount(Banking, "Chase Checking")).value
 
-  val ebmud = Transaction(LocalDate.now(), "East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0, cleared = false)
-  val income = Transaction(LocalDate.now(), "Credit Karma", "Income", "This Month", "", 0, 3742.56, cleared = false)
-  val chaseChecking = BankingAccount("Chase Checking", Vector(income, ebmud))
+  val visaTransactions = for {
+    _ <- addTransactionState(Transaction("Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
+    _ <- addTransactionState(Transaction("Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
+    _ <- addTransactionState(Transaction("Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
+    _ <- addTransactionState(Transaction("T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
+  } yield ()
+  val chaseVisaAmazon = visaTransactions.runS(newAccount(Banking, "Chase Amazon CC")).value
 
-  val trans1 = Transaction(LocalDate.now(), "Frontpoint Security", "Housing", "Security", "", 45.00, 0.0, cleared = false)
-  val trans2 = Transaction(LocalDate.now(), "Netflix", "Lifestyle", "Movies", "", 9.99, 0.0, cleared = false)
-  val trans3 = Transaction(LocalDate.now(), "Comcast", "Lifestyle", "Internet", "", 65.00, 0.0, cleared = false)
-  val trans4 = Transaction(LocalDate.now(), "T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0, cleared = false)
-
-  val cc_state = Vector(trans1, trans2, trans3, trans4)
-  val chaseVisaAmazon = BankingAccount("Chase Amazon CC", cc_state)
-
-  val group = AccountGroup("Budget Accounts", Vector(chaseChecking, chaseVisaAmazon))
+  val accounts = for {
+    _ <- addAccount(chaseChecking)
+    _ <- addAccount(chaseVisaAmazon)
+  } yield ()
+  val group = accounts.runS(newAccountGroup("Budget Accounts")).value
 
   prettyPrint(group)
 
