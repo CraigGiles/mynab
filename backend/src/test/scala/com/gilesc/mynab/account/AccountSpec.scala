@@ -33,13 +33,5 @@ class AccountSpec extends TestCase
       remove(t1, state) should be(expected)
     }
 
-    "have the ability to mark transactions as 'cleared'" in {
-      val t1 = t(0.0,1.0)
-      val state = Vector(t(0.0,2.0), t1)
-      val expected = Vector(t(0.0,2.0), t1.copy(cleared = Cleared(true)))
-
-      toggleCleared(Vector(t1), Vector(t1)) should be(Vector(t1.copy(cleared = Cleared(true))))
-      toggleCleared(Vector(t1), state) should be(expected)
-    }
   }
 }
