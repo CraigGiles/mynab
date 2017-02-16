@@ -1,7 +1,7 @@
-package com.gilesc.mynab
-package category
+package com.gilesc.mynab.category
 
 import com.gilesc.mynab.account._
+import com.gilesc.mynab.{MockAccountCreation, MockTransactionCreation, TestCase}
 
 class CategorySpec extends TestCase
   with MockTransactionCreation

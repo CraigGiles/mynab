@@ -1,8 +1,8 @@
-package com.gilesc.mynab
+package com.gilesc.mynab.transaction
 
 import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction.Transaction._
-import com.gilesc.mynab.transaction._
+import com.gilesc.mynab.{MockTransactionCreation, TestCase}
 
 class TransactionSpec extends TestCase with MockTransactionCreation {
   "Transactions" should {
