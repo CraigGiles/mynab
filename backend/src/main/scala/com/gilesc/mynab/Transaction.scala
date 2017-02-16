@@ -6,8 +6,13 @@ import java.time.{LocalDate => Date}
 import com.gilesc.mynab.category._
 
 trait TransactionModule {
-  def sumTransactions: Vector[Transaction] => BigDecimal
-  def recategorize: (Category, Vector[Transaction]) => Vector[Transaction]
+  val sumTransactions: Vector[Transaction] => BigDecimal =
+    _.foldRight(BigDecimal(0.0)) { (t, sum) =>
+      t.deposit.value - t.withdrawal.value + sum
+    }
+
+  val recategorize: (Category, Vector[Transaction]) => Vector[Transaction] = (c, ts) =>
+    ts.map(_.copy(category = c))
 }
 
 object Transaction extends TransactionModule {
@@ -29,14 +34,6 @@ object Transaction extends TransactionModule {
       Amount(BigDecimal(deposit)),
       Cleared(cleared))
   }
-
-  val sumTransactions: Vector[Transaction] => BigDecimal =
-    _.foldRight(BigDecimal(0.0)) { (t, sum) =>
-      t.deposit.value - t.withdrawal.value + sum
-    }
-
-  val recategorize: (Category, Vector[Transaction]) => Vector[Transaction] = (c, ts) =>
-    ts.map(_.copy(category = c))
 }
 
 // Transaction Domain Objects

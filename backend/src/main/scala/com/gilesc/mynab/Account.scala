@@ -7,7 +7,12 @@ import com.gilesc.mynab.transaction.{Cleared, Transaction}
 trait AccountModule { self: Prepending with Removing =>
   type TransactionState = Vector[Transaction]
 
-  def toggleCleared: (Vector[Transaction], TransactionState) => TransactionState
+  def toggleCleared: (Vector[Transaction], TransactionState) => TransactionState =
+    (t, s) => s.flatMap { tr =>
+      t.map { ti =>
+        if (tr == ti) ti.copy(cleared = Cleared(!tr.cleared.value)) else tr
+      }
+    }
 }
 
 object Account extends AccountModule with Prepending with Removing {
@@ -19,13 +24,6 @@ object Account extends AccountModule with Prepending with Removing {
       case Retirement => RetirementAccount(AccountName(name), transactions)
     }
   }
-
-  def toggleCleared: (Vector[Transaction], TransactionState) => TransactionState =
-    (t, s) => s.flatMap { tr =>
-      t.map { ti =>
-        if (tr == ti) ti.copy(cleared = Cleared(!tr.cleared.value)) else tr
-      }
-    }
 }
 
 // Account Domain Objects

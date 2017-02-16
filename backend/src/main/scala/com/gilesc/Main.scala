@@ -6,11 +6,13 @@ import com.gilesc.commons._
 import com.gilesc.mynab.account._
 import com.gilesc.mynab.transaction._
 
-object Main extends App with Prepending {
+object Main extends App
+  with Prepending
+  with Removing
+  with TransactionModule
+  with AccountGroupModule {
 
   def prettyPrint(group: AccountGroup) = {
-    import com.gilesc.mynab.account.AccountGroup._
-    import com.gilesc.mynab.transaction.Transaction._
 
     println()
     println("----------------------------- ")

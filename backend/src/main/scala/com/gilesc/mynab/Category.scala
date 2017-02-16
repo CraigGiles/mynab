@@ -5,17 +5,9 @@ import com.gilesc.commons._
 import com.gilesc.mynab.transaction.Transaction
 import com.gilesc.mynab.account._
 
-case class MajorCategory(value: String) extends AnyVal
-case class MinorCategory(value: String) extends AnyVal
-case class Category(major: MajorCategory, minor: MinorCategory)
-
 trait CategoryModule { self: Prepending with Removing =>
   type CategoryList = Vector[Category]
 
-  def renameCategory(before: Category, after: Category, accts: AccountGroup): AccountGroup
-}
-
-object Category extends CategoryModule with Prepending with Removing {
   def renameCategory(before: Category, after: Category, accts: AccountGroup): AccountGroup = {
     def rename(transactions: Vector[Transaction]): Vector[Transaction] = {
       transactions.map { t =>
@@ -32,3 +24,10 @@ object Category extends CategoryModule with Prepending with Removing {
     accts.copy(accounts = newAccounts)
   }
 }
+
+object Category extends CategoryModule with Prepending with Removing {
+}
+
+case class MajorCategory(value: String) extends AnyVal
+case class MinorCategory(value: String) extends AnyVal
+case class Category(major: MajorCategory, minor: MinorCategory)

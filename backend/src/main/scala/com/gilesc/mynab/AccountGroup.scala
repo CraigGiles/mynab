@@ -8,13 +8,12 @@ import com.gilesc.mynab.transaction._
 trait AccountGroupModule { self: Prepending with Removing =>
   type AccountState = Vector[Account]
 
-  def sumAllAccounts: AccountState => BigDecimal
-}
-
-object AccountGroup extends AccountGroupModule with Prepending with Removing {
   def sumAllAccounts: AccountState => BigDecimal = _.foldRight(BigDecimal(0)) { (acc, sum) =>
     sumTransactions(acc.transactions) + sum
   }
+}
+
+object AccountGroup extends AccountGroupModule with Prepending with Removing {
 }
 
 // Account Group Domain Objects
