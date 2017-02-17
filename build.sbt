@@ -71,7 +71,7 @@ lazy val rootProject = (project in file("."))
   .settings(
     name := "mynab",
     aggregate in update := false)
-  .aggregate(flyway, backend, http4s)
+  .aggregate(flyway, domain, backend, http4s)
 
 lazy val flyway = (project in file("flyway"))
   .settings(commonSettings: _*)
@@ -80,18 +80,14 @@ lazy val flyway = (project in file("flyway"))
 
 lazy val domain = Project("domain", file("domain"))
   .settings(commonSettings: _*)
-  .settings(
-    libraryDependencies ++= Dependencies.domain
-  )
+  .settings(libraryDependencies ++= Dependencies.domain)
 
 lazy val backend = Project("backend", file("backend"))
   .settings(commonSettings: _*)
   .dependsOn(domain % "test->compile;compile->compile")
-  .settings(
-    libraryDependencies ++= Dependencies.backend
-  )
+  .settings(libraryDependencies ++= Dependencies.backend)
 
 lazy val http4s = Project("http4s", file("http4s"))
   .settings(commonSettings: _*)
-  .dependsOn(backend % "compile->compile")
+  .dependsOn(backend % "test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.http4s)
