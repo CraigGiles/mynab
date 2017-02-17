@@ -1,12 +1,12 @@
 package com.gilesc
 
-import org.http4s._
-import org.http4s.server._
-import org.http4s.dsl._
+import argonaut.Argonaut._
+import org.http4s.HttpService
+import org.http4s.dsl.{->, /, Root, _}
 
-import _root_.argonaut._, Argonaut._
-import org.http4s.argonaut._
-
+/**
+  * Created by craiggiles on 2/17/17.
+  */
 object HelloWorld {
   val service = HttpService {
     case GET -> Root / "hello" / name =>

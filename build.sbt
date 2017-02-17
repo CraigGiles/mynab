@@ -84,6 +84,12 @@ lazy val backend = Project("backend", file("backend"))
     libraryDependencies ++= Dependencies.backend
   )
 
+lazy val domain = Project("domain", file("domain"))
+  .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= Dependencies.backend
+  )
+
 lazy val http4s = Project("http4s", file("http4s"))
   .settings(commonSettings: _*)
   .dependsOn(backend % "compile->compile")

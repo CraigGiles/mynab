@@ -21,8 +21,10 @@ object Dependencies {
     "org.http4s" %% "http4s-dsl"          % "0.15.3a",
     "org.http4s" %% "http4s-argonaut"     % "0.15.3a")
 
+  lazy val domain = core ++ Seq(
+  )
+
   lazy val backend = core ++ Seq(
-      "org.javamoney" % "moneta" % "1.1",
       mysqlConnectorJava)
 
   // Libraries
