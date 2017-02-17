@@ -6,6 +6,6 @@ trait TransactionModule {
   type TransactionState = Vector[Transaction]
 
   def toggleCleared: (Vector[Transaction], TransactionState) => TransactionState
-  def sumTransactions: Vector[Transaction] => BigDecimal
+  def sum: Vector[Transaction] => BigDecimal
   def recategorize: (Category, Vector[Transaction]) => Vector[Transaction]
 }

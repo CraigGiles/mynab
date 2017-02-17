@@ -8,17 +8,17 @@ object AccountGroup extends AccountGroupModule with Prepending with Removing {
   type AccountState = Vector[Account]
   import AccountImplicits._
 
-  val newAccountGroup: (String) => AccountGroup =
+  val create: (String) => AccountGroup =
     AccountGroup(_, Vector.empty[Account])
 
-  val addAccount: Account => State[AccountGroup, Unit] = a =>
+  val add: Account => State[AccountGroup, Unit] = a =>
     State[AccountGroup, Unit] { group =>
       (group.copy(accounts = prepend(a, group.accounts)), ())
     }
 
   val sumAllAccounts: AccountState => BigDecimal =
     _.foldRight(BigDecimal(0)) { (acc, sum) =>
-      Transaction.sumTransactions(acc.transactions) + sum
+      Transaction.sum(acc.transactions) + sum
     }
 }
 

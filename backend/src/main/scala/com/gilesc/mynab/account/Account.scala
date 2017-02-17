@@ -34,10 +34,10 @@ object Account extends AccountModule with Prepending with Removing {
     }
   }
 
-  val newAccount: (AccountType, String) => Account = (t, s) =>
+  val create: (AccountType, String) => Account = (t, s) =>
     Account(t, s, Vector.empty[Transaction])
 
-  val addTransaction: Transaction => State[Account, Unit] = trans =>
+  val add: Transaction => State[Account, Unit] = trans =>
     State[Account, Unit] { acc =>
       (acc.copy(acc.name, prepend(trans, acc.transactions)), ())
     }

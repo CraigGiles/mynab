@@ -39,7 +39,7 @@ object Transaction extends TransactionModule {
       }
     }
 
-  val sumTransactions: Vector[Transaction] => BigDecimal =
+  val sum: Vector[Transaction] => BigDecimal =
     _.foldRight(BigDecimal(0.0)) { (t, sum) =>
       t.deposit.value - t.withdrawal.value + sum
     }
