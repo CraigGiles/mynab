@@ -78,14 +78,15 @@ lazy val flyway = (project in file("flyway"))
   .enablePlugins(FlywayPlugin)
   .settings(libraryDependencies ++= Dependencies.flyway)
 
-lazy val backend = Project("backend", file("backend"))
-  .settings(commonSettings: _*)
-  .settings(
-    libraryDependencies ++= Dependencies.backend
-  )
-
 lazy val domain = Project("domain", file("domain"))
   .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= Dependencies.domain
+  )
+
+lazy val backend = Project("backend", file("backend"))
+  .settings(commonSettings: _*)
+  .dependsOn(domain % "test->compile;compile->compile")
   .settings(
     libraryDependencies ++= Dependencies.backend
   )

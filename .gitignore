@@ -21,6 +21,8 @@ dist
 *.log
 
 # sbt specific
+.ensime*
+/.ensime_cache
 .cache
 .history
 .lib/
@@ -34,3 +36,4 @@ project/plugins/project/
 # Scala-IDE specific
 .scala_dependencies
 .worksheet
+.sc
