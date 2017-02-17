@@ -7,10 +7,14 @@ import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction._
 
 trait MockAccountCreation {
+  implicit def str2accountName(value: String): AccountName = {
+    AccountName(value).toOption.getOrElse(AccountName("Random Account").toOption.get)
+  }
+
   def banking(name: String, transactions: Vector[Transaction]): BankingAccount =
-    BankingAccount(AccountName(name), transactions)
+    BankingAccount(name, transactions)
   def loan(name: String, transactions: Vector[Transaction]): LoanAccount =
-    LoanAccount(AccountName(name), transactions)
+    LoanAccount(name, transactions)
 }
 
 trait MockTransactionCreation {

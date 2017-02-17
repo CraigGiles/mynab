@@ -43,7 +43,6 @@ object Account extends AccountModule with Prepending with Removing {
     }
 }
 
-case class AccountName(value: String) extends AnyVal
 case class BankingAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Banking }
 case class LoanAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Loan }
 case class InvestmentAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Investment }
