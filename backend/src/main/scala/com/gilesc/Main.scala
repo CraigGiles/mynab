@@ -1,17 +1,9 @@
 package com.gilesc
 
-import java.time.LocalDate
-
-import com.gilesc.commons._
 import com.gilesc.mynab.account._
 import com.gilesc.mynab.transaction._
 
-object Main extends App
-  with Prepending
-  with Removing {
-
-  // for the account name implicit
-  import AccountImplicits._
+object Main extends App {
 
   def prettyPrint(group: AccountGroup) = {
 

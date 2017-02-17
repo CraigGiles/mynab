@@ -1,5 +1,6 @@
 package com.gilesc.mynab.account
 
+import com.gilesc.mynab.transaction.Transaction
 import com.gilesc.mynab.{MockAccountCreation, MockTransactionCreation, TestCase}
 
 class AccountGroupSpec extends TestCase with MockTransactionCreation with MockAccountCreation {
@@ -46,6 +47,31 @@ class AccountGroupSpec extends TestCase with MockTransactionCreation with MockAc
 
       sum(al) should be(BigDecimal(-4000.0))
       sum(al2) should be(BigDecimal(10000.0))
+    }
+
+    "should allow me to create accounts and transactions cleanly" in {
+      val checkingTransactions = for {
+        _ <- Account.add(Transaction("East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
+        _ <- Account.add(Transaction("Credit Karma", "Income", "This Month", "", 0, 3742.56))
+      } yield ()
+      val chaseChecking = checkingTransactions.runS(Account.create(Banking, "Chase Checking")).value
+
+      val visaTransactions = for {
+        _ <- Account.add(Transaction("Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
+        _ <- Account.add(Transaction("Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
+        _ <- Account.add(Transaction("Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
+        _ <- Account.add(Transaction("T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
+      } yield ()
+      val chaseVisaAmazon = visaTransactions.runS(Account.create(Banking, "Chase Amazon CC")).value
+
+      val accounts = for {
+        _ <- AccountGroup.add(chaseChecking)
+        _ <- AccountGroup.add(chaseVisaAmazon)
+      } yield ()
+      val group = accounts.runS(AccountGroup.create("Budget Accounts")).value
+
+      AccountGroup.sum(group.accounts) should be(3406.19)
+
     }
   }
 }
