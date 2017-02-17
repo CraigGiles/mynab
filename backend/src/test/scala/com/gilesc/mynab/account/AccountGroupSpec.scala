@@ -44,8 +44,8 @@ class AccountGroupSpec extends TestCase with MockTransactionCreation with MockAc
       val al = Vector(b, l)
       val al2 = Vector(b, l, i)
 
-      sumAllAccounts(al) should be(BigDecimal(-4000.0))
-      sumAllAccounts(al2) should be(BigDecimal(10000.0))
+      sum(al) should be(BigDecimal(-4000.0))
+      sum(al2) should be(BigDecimal(10000.0))
     }
   }
 }

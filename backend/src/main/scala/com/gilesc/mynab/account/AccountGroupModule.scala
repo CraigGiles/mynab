@@ -7,5 +7,5 @@ import com.gilesc.commons.{Prepending, Removing}
 trait AccountGroupModule { self: Prepending with Removing =>
   val create: (String) => AccountGroup
   val add: Account => State[AccountGroup, Unit]
-  val sumAllAccounts: Vector[Account] => BigDecimal
+  val sum: Vector[Account] => BigDecimal
 }

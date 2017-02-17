@@ -17,7 +17,7 @@ object Main extends App
 
     println()
     println("----------------------------- ")
-    println(s" ${group.name.value}  -  ${AccountGroup.sumAllAccounts(group.accounts)}")
+    println(s" ${group.name.value}  -  ${AccountGroup.sum(group.accounts)}")
     println("----------------------------- ")
     group.accounts.foreach { account =>
       println(s" > ${account.name.value}  - $$${Transaction.sum(account.transactions)}")

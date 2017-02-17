@@ -16,7 +16,7 @@ object AccountGroup extends AccountGroupModule with Prepending with Removing {
       (group.copy(accounts = prepend(a, group.accounts)), ())
     }
 
-  val sumAllAccounts: AccountState => BigDecimal =
+  val sum: AccountState => BigDecimal =
     _.foldRight(BigDecimal(0)) { (acc, sum) =>
       Transaction.sum(acc.transactions) + sum
     }
