@@ -8,13 +8,13 @@ import com.gilesc.mynab.transaction._
 
 object Main extends App
   with Prepending
-  with Removing
-  with TransactionModule
-  with AccountGroupModule
-  with AccountModule {
+  with Removing {
 
   // for the account name implicit
   import AccountImplicits._
+  import AccountGroup._
+  import Transaction._
+  import Account._
 
   def prettyPrint(group: AccountGroup) = {
 

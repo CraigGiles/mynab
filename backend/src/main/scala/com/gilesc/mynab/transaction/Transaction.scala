@@ -30,5 +30,21 @@ object Transaction extends TransactionModule {
       Amount(BigDecimal(deposit)),
       Cleared(false))
   }
+
+
+  val toggleCleared: (Vector[Transaction], TransactionState) => TransactionState =
+    (t, s) => s.flatMap { tr =>
+      t.map { ti =>
+        if (tr == ti) ti.copy(cleared = Cleared(!tr.cleared.value)) else tr
+      }
+    }
+
+  val sumTransactions: Vector[Transaction] => BigDecimal =
+    _.foldRight(BigDecimal(0.0)) { (t, sum) =>
+      t.deposit.value - t.withdrawal.value + sum
+    }
+
+  val recategorize: (Category, Vector[Transaction]) => Vector[Transaction] = (c, ts) =>
+    ts.map(_.copy(category = c))
 }
 
