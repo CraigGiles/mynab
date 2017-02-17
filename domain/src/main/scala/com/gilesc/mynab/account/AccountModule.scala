@@ -6,5 +6,5 @@ import com.gilesc.mynab.transaction.Transaction
 
 trait AccountModule { self: Prepending with Removing =>
   def add: Transaction => State[Account, Unit]
-  def create: (AccountType, String) => Account
+  def create: (AccountType, AccountName) => Account
 }

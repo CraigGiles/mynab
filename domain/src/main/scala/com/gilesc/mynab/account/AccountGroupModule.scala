@@ -5,7 +5,7 @@ import cats.data.State
 import com.gilesc.commons.{Prepending, Removing}
 
 trait AccountGroupModule { self: Prepending with Removing =>
-  val create: (String) => AccountGroup
+  val create: AccountName => AccountGroup
   val add: Account => State[AccountGroup, Unit]
   val sum: Vector[Account] => BigDecimal
 }

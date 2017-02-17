@@ -25,26 +25,22 @@ trait Account {
 }
 
 object Account extends AccountModule with Prepending with Removing {
-  def apply(account: AccountType, name: String, transactions: Vector[Transaction]): Account = {
+  def apply(account: AccountType, name: AccountName, transactions: Vector[Transaction]): Account = {
     account match {
-      case Banking => BankingAccount(AccountName(name), transactions)
-      case Loan => LoanAccount(AccountName(name), transactions)
-      case Investment => InvestmentAccount(AccountName(name), transactions)
-      case Retirement => RetirementAccount(AccountName(name), transactions)
+      case Banking => BankingAccount(name, transactions)
+      case Loan => LoanAccount(name, transactions)
+      case Investment => InvestmentAccount(name, transactions)
+      case Retirement => RetirementAccount(name, transactions)
     }
   }
 
-  val create: (AccountType, String) => Account = (t, s) =>
-    Account(t, s, Vector.empty[Transaction])
+  val create: (AccountType, AccountName) => Account = (t, n) =>
+    Account(t, n, Vector.empty[Transaction])
 
   val add: Transaction => State[Account, Unit] = trans =>
     State[Account, Unit] { acc =>
       (acc.copy(acc.name, prepend(trans, acc.transactions)), ())
     }
-}
-
-object AccountImplicits {
-  implicit def str2AccountName(str: String): AccountName = AccountName(str)
 }
 
 case class AccountName(value: String) extends AnyVal

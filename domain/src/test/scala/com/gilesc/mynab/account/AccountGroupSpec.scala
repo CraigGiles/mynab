@@ -5,6 +5,7 @@ import com.gilesc.mynab.{MockAccountCreation, MockTransactionCreation, TestCase}
 
 class AccountGroupSpec extends TestCase with MockTransactionCreation with MockAccountCreation {
   import AccountGroup._
+  implicit def str2AccountName(str: String): AccountName = AccountName(str)
 
   "Account groups" should {
     "allow the addition of new accounts" in {

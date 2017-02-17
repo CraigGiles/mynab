@@ -6,9 +6,8 @@ import com.gilesc.mynab.transaction._
 
 object AccountGroup extends AccountGroupModule with Prepending with Removing {
   type AccountState = Vector[Account]
-  import AccountImplicits._
 
-  val create: (String) => AccountGroup =
+  val create: (AccountName) => AccountGroup =
     AccountGroup(_, Vector.empty[Account])
 
   val add: Account => State[AccountGroup, Unit] = a =>
