@@ -1,8 +1,5 @@
 package com.gilesc.commons.validation
 
-sealed trait ValidationError
-case object InvalidLengthError extends ValidationError
-
 object StringValidation {
   val lengthIsGreaterThan:
     Int => String => Either[InvalidLengthError.type, String] = {
