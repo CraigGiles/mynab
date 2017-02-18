@@ -19,21 +19,20 @@ object AccountService {
   def create(accounts: AccountRepositoryModule,
     log: LoggingModule)(details: AccountDetails): AddAccountResult = {
 
-    val accountE = convert(details)
+    val results = convert(details) map { account =>
+      accounts.save(account) match {
+        case PersistenceSuccessful =>
+          Success(account)
 
-    accountE match {
-      case Left(s) =>
-        Failure(s.toString)
+        case x =>
+          log.info(s"Persistence Failure: $x")
+          Failure(x.toString)
+      }
+    }
 
-      case Right(a) =>
-        accounts.save(a) match {
-          case PersistenceSuccessful =>
-            Success(a)
-
-          case x =>
-            log.info(s"Persistence Failure: $x")
-            Failure(x.toString)
-        }
+    results match {
+      case Left(s) => Failure(s)
+      case Right(a) => a
     }
   }
 
