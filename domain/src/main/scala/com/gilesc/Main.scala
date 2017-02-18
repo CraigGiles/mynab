@@ -4,7 +4,9 @@ import com.gilesc.mynab.account._
 import com.gilesc.mynab.transaction._
 
 object Main extends App {
-  implicit def str2AccountName(str: String): AccountName = AccountName(str)
+  implicit def str2accountName(value: String): AccountName = {
+    AccountName(value).toOption.getOrElse(AccountName("Random Account").toOption.get)
+  }
 
   def prettyPrint(group: AccountGroup) = {
 

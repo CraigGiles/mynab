@@ -15,7 +15,7 @@ class StringValidationSpec extends TestCase {
     }
 
     "validate non-empty strings" in {
-      val something = "something"
+      val something = "s"
       val empty = ""
       StringValidation.nonEmpty(empty) should be(Left(InvalidLengthError))
       StringValidation.nonEmpty(something) should be(Right(something))

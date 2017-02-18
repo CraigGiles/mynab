@@ -3,7 +3,9 @@ package account
 
 import com.gilesc.commons.validation.{StringValidation, ValidationError}
 
-class AccountName private (val value: String) extends AnyVal
+class AccountName private (val value: String) extends AnyVal {
+  override def toString: String = value
+}
 
 object AccountName {
   val AccountNameLength = 8

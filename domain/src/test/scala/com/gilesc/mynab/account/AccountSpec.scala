@@ -31,5 +31,10 @@ class AccountSpec extends TestCase
       Account.remove(t1, state) should be(expected)
     }
 
+    "give me a proper account type object" in {
+      AccountType("Banking") should be(Right(Banking))
+      AccountType("banking") should be(Right(Banking))
+      AccountType("BANKING") should be(Right(Banking))
+    }
   }
 }

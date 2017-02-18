@@ -5,12 +5,6 @@ import cats.data.State
 import com.gilesc.commons.{Prepending, Removing}
 import com.gilesc.mynab.transaction.Transaction
 
-sealed trait AccountType
-case object Banking extends AccountType
-case object Loan extends AccountType
-case object Investment extends AccountType
-case object Retirement extends AccountType
-
 trait Account {
   def name: AccountName
   def accountType: AccountType
@@ -43,7 +37,3 @@ object Account extends AccountModule with Prepending with Removing {
     }
 }
 
-case class BankingAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Banking }
-case class LoanAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Loan }
-case class InvestmentAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Investment }
-case class RetirementAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Retirement }

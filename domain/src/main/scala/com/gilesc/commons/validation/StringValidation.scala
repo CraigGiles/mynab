@@ -9,6 +9,6 @@ object StringValidation {
   }
 
   val nonEmpty: String => Either[InvalidLengthError.type, String] = {
-    lengthIsGreaterThan(1)(_)
+    lengthIsGreaterThan(0)(_)
   }
 }
