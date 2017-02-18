@@ -1,5 +1,6 @@
 package com.gilesc.mynab.account
 
+import com.gilesc.mynab.logging.LoggingModule
 import com.gilesc.mynab.repository._
 
 sealed trait AddAccountResult
@@ -14,8 +15,8 @@ trait AccountServiceModule {
 
 object AccountService {
 
-  def create(persist: Account => PersistenceResult,
-             log: String => Unit)(details: AccountDetails): AddAccountResult = {
+  def create(accounts: AccountRepositoryModule,
+    log: LoggingModule)(details: AccountDetails): AddAccountResult = {
 
     val accountE = for {
       t <- AccountType(details.accountType)
@@ -28,12 +29,12 @@ object AccountService {
         Failure(s.toString)
 
       case Right(a) =>
-        persist(a) match {
+        accounts.save(a) match {
           case PersistenceSuccessful =>
             Success(a)
 
           case x =>
-            log(s"Persistence Failure: $x")
+            log.info(s"Persistence Failure: $x")
             Failure(x.toString)
         }
     }

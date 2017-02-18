@@ -7,7 +7,7 @@ import com.gilesc.mynab.repository.InMemoryAccountRepository
 object Main extends App with AccountServiceModule {
   val details = AccountDetails("My Account Name", "Banking", "No Group Name")
 
-  def create = AccountService.create(InMemoryAccountRepository.save, PrintlnLoggingService.log)
+  def create = AccountService.create(InMemoryAccountRepository, PrintlnLoggingService)
   val account = create(details)
 
   println(account)
