@@ -1,11 +1,13 @@
-package com.gilesc.mynab.account
+package com.gilesc.mynab
+package account
 
 import com.gilesc.mynab.transaction.Transaction
-import com.gilesc.mynab.{MockAccountCreation, MockTransactionCreation, TestCase}
+import com.gilesc.mynab._
 
 class AccountSpec extends TestCase
   with MockTransactionCreation
-  with MockAccountCreation {
+  with MockAccountCreation
+  with TestCaseHelpers {
 
   "An account" should {
     "have the ability to prepend transactions" in {

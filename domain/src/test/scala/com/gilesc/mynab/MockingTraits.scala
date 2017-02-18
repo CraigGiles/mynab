@@ -6,18 +6,21 @@ import com.gilesc.mynab.account._
 import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction._
 
-trait MockAccountCreation {
+trait TestCaseHelpers {
   implicit def str2accountName(value: String): AccountName = {
     AccountName(value).toOption.getOrElse(AccountName("Random Account").toOption.get)
   }
 
+}
+
+trait MockAccountCreation { self: TestCaseHelpers =>
   def banking(name: String, transactions: Vector[Transaction]): BankingAccount =
     BankingAccount(name, transactions)
   def loan(name: String, transactions: Vector[Transaction]): LoanAccount =
     LoanAccount(name, transactions)
 }
 
-trait MockTransactionCreation {
+trait MockTransactionCreation { self: TestCaseHelpers =>
   def t(withdrawal: Double, deposit: Double): Transaction = {
     Transaction(LocalDate.now(),
       Payee("Me"),

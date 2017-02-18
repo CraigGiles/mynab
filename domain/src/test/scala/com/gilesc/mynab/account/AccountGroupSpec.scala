@@ -1,10 +1,15 @@
-package com.gilesc.mynab.account
+package com.gilesc.mynab
+package account
 
 import com.gilesc.mynab.transaction.Transaction
-import com.gilesc.mynab.{MockAccountCreation, MockTransactionCreation, TestCase}
 
-class AccountGroupSpec extends TestCase with MockTransactionCreation with MockAccountCreation {
+class AccountGroupSpec extends TestCase
+  with MockTransactionCreation
+  with MockAccountCreation
+  with TestCaseHelpers {
+
   import AccountGroup._
+
   "Account groups" should {
     "allow the addition of new accounts" in {
       val al = Vector.empty[Account]

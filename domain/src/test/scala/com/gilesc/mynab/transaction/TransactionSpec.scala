@@ -1,9 +1,12 @@
-package com.gilesc.mynab.transaction
+package com.gilesc.mynab
+package transaction
 
 import com.gilesc.mynab.category._
-import com.gilesc.mynab.{MockTransactionCreation, TestCase}
 
-class TransactionSpec extends TestCase with MockTransactionCreation {
+class TransactionSpec extends TestCase
+  with MockTransactionCreation
+  with TestCaseHelpers {
+
   "Transactions" should {
     "have deposits sum correctly" in {
       val ts = Vector(t(0.0,0.0), t(0.0,1.0), t(0.0,2.0),
