@@ -1,4 +1,5 @@
-package com.gilesc.mynab.account
+package com.gilesc.mynab
+package account
 
 import com.gilesc.mynab.logging.LoggingModule
 import com.gilesc.mynab.repository._
