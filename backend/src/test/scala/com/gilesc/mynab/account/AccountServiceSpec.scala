@@ -18,13 +18,18 @@ class AccountServiceSpec extends TestCase
 
   def create = AccountService.create(InMemoryAccountRepository, NullLoggingModule)
 
-  "Creating a new account service" should {
-
+  "Creating a new account" should {
     "convert an account details object to an Account object" in {
       val name = "visa"
       val details = AccountDetails(name, Banking.toString, "groupname")
       AccountService.convert(details) should be(
         Right(Account(Banking, name, Vector.empty[Transaction])))
+    }
+
+    "not let you convert an invalid name into an account" in {
+      val name = ""
+      val details = AccountDetails(name, Banking.toString, "groupname")
+      AccountService.convert(details) should be(Left("InvalidLengthError"))
     }
 
     "persist the account object" in {
