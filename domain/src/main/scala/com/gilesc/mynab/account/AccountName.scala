@@ -8,7 +8,8 @@ class AccountName private (val value: String) extends AnyVal {
 }
 
 object AccountName {
-  val AccountNameLength = 8
+  val MIN_NAME_LENGTH = 1
+
   def apply(value: String): Either[ValidationError, AccountName] =
-    StringValidation.lengthIsGreaterThan(AccountNameLength)(value) map(new AccountName(_))
+    StringValidation.lengthIsGreaterThan(MIN_NAME_LENGTH)(value) map(new AccountName(_))
 }

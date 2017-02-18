@@ -19,11 +19,7 @@ object AccountService {
   def create(accounts: AccountRepositoryModule,
     log: LoggingModule)(details: AccountDetails): AddAccountResult = {
 
-    val accountE = for {
-      t <- AccountType(details.accountType)
-      n <- AccountName(details.accountName)
-      g <- AccountName(details.groupName)
-    } yield Account.create(t, n)
+    val accountE = convert(details)
 
     accountE match {
       case Left(s) =>
@@ -39,6 +35,16 @@ object AccountService {
             Failure(x.toString)
         }
     }
+  }
+
+  val convert: AccountDetails => Either[String, Account] = { details =>
+    val either = for {
+      t <- AccountType(details.accountType)
+      n <- AccountName(details.accountName)
+      g <- AccountName(details.groupName)
+    } yield Account.create(t, n)
+
+    either.left.map(_.toString)
   }
 }
 

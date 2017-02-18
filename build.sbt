@@ -84,10 +84,10 @@ lazy val domain = Project("domain", file("domain"))
 
 lazy val backend = Project("backend", file("backend"))
   .settings(commonSettings: _*)
-  .dependsOn(domain % "test->compile;compile->compile")
+  .dependsOn(domain % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.backend)
 
 lazy val http4s = Project("http4s", file("http4s"))
   .settings(commonSettings: _*)
-  .dependsOn(backend % "test->compile;compile->compile")
+  .dependsOn(backend % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.http4s)
