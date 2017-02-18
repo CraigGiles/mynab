@@ -2,7 +2,7 @@ package com.gilesc.mynab
 package account
 
 import com.gilesc.mynab.logging.LoggingModule
-import com.gilesc.mynab.repository.{InMemoryAccountRepository, PersistenceSuccessful}
+import com.gilesc.mynab.repository.InMemoryAccountRepository
 import com.gilesc.mynab.transaction.Transaction
 
 object NullLoggingModule extends LoggingModule {
@@ -12,7 +12,12 @@ object NullLoggingModule extends LoggingModule {
   override def error: (String) => Unit = str => ()
 }
 
-class AccountServiceSpec extends TestCase with TestCaseHelpers {
+class AccountServiceSpec extends TestCase
+  with TestCaseHelpers
+  with AccountServiceModule {
+
+  def create = AccountService.create(InMemoryAccountRepository, NullLoggingModule)
+
   "Creating a new account service" should {
 
     "convert an account details object to an Account object" in {
@@ -24,9 +29,7 @@ class AccountServiceSpec extends TestCase with TestCaseHelpers {
 
     "persist the account object" in {
       val name = "visa"
-      def create = AccountService.create(InMemoryAccountRepository, NullLoggingModule)_
       val details = AccountDetails(name, Banking.toString, "groupname")
-      println(details)
       val result = create(details)
       result should be(Success(Account(Banking, name, Vector.empty[Transaction])))
     }
