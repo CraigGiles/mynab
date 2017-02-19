@@ -16,6 +16,7 @@ class AccountServiceSpec extends TestCase
   with TestCaseHelpers
   with AccountServiceModule {
 
+  def find = AccountService.find(InMemoryAccountRepository, NullLoggingModule)
   def create = AccountService.create(InMemoryAccountRepository, NullLoggingModule)
 
   "Creating a new account" should {
@@ -39,4 +40,17 @@ class AccountServiceSpec extends TestCase
       result should be(Success(Account(Banking, name, Vector.empty[Transaction])))
     }
   }
+
+  "Finding an account" should {
+    "attempt to find your account based on account name" in {
+      val name = "visa"
+      val details = FindDetails(name)
+      val accDetails = AccountDetails(name, Banking.toString, "groupname")
+      val result = AccountService.convert(accDetails)
+      val account = result.toOption.get
+
+      find(details) should be(Some(account))
+    }
+  }
+
 }

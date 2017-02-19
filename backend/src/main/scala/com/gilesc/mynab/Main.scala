@@ -8,6 +8,7 @@ object Main extends App with AccountServiceModule {
   val details = AccountDetails("My Account Name", "Banking", "No Group Name")
 
   def create = AccountService.create(InMemoryAccountRepository, PrintlnLoggingService)
+  def find = AccountService.find(InMemoryAccountRepository, PrintlnLoggingService)
   val account = create(details)
 
   println(account)
