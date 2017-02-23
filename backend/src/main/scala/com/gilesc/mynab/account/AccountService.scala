@@ -5,22 +5,22 @@ import com.gilesc.commons.validation.ValidationError
 import com.gilesc.mynab.logging.LoggingModule
 import com.gilesc.mynab.repository._
 
-sealed trait AddAccountResult
-final case class Success(account: Account) extends AddAccountResult
-final case class Failure(message: String) extends AddAccountResult
+sealed trait AccountActionResult
+final case class Success(account: Account) extends AccountActionResult
+final case class Failure(message: String) extends AccountActionResult
 
 case class AccountDetails(accountName: String, accountType: String, groupName: String)
 case class FindDetails(name: String)
 
 trait AccountServiceModule {
-  def create: AccountDetails => AddAccountResult
+  def create: AccountDetails => AccountActionResult
   def find: FindDetails => Option[Account]
 }
 
 object AccountService {
 
   def create(accounts: AccountRepositoryModule,
-    log: LoggingModule)(details: AccountDetails): AddAccountResult = {
+    log: LoggingModule)(details: AccountDetails): AccountActionResult = {
 
     val results = convert(details) map { account =>
       accounts.save(account) match {

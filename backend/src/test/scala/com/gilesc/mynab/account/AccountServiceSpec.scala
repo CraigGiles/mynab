@@ -3,7 +3,7 @@ package account
 
 import com.gilesc.mynab.logging.LoggingModule
 import com.gilesc.mynab.repository.InMemoryAccountRepository
-import com.gilesc.mynab.transaction.Transaction
+import com.gilesc.mynab.transaction.{Transaction, TransactionDetails}
 
 object NullLoggingModule extends LoggingModule {
   override def debug: (String) => Unit = str => ()
@@ -14,10 +14,12 @@ object NullLoggingModule extends LoggingModule {
 
 class AccountServiceSpec extends TestCase
   with TestCaseHelpers
-  with AccountServiceModule {
+  with AccountServiceModule
+  with MockTransactionCreation {
 
   def find = AccountService.find(InMemoryAccountRepository, NullLoggingModule)
   def create = AccountService.create(InMemoryAccountRepository, NullLoggingModule)
+//  def rename = AccountService.rename(InMemoryAccountRepository, NullLoggingModule)
 
   "Creating a new account" should {
     "convert an account details object to an Account object" in {
@@ -53,4 +55,14 @@ class AccountServiceSpec extends TestCase
     }
   }
 
+//  "Renaming an account" should {
+//    "allow you to rename the account" in {
+//      val id = 1l
+//      val newname = "My New Account"
+//      val request = AccountRenameRequest(id, newname)
+//      val result = rename(request)
+//
+//      result should be(Success(Account(id, Banking, newname, Vector.empty[Transaction])))
+//    }
+//  }
 }
