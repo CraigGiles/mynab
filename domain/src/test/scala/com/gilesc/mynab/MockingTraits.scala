@@ -40,7 +40,7 @@ trait MockTransactionCreation { self: TestCaseHelpers =>
     deposit: Double = 0.0,
     cleared: Boolean = false): Transaction = {
 
-    Transaction(LocalDate.now(),
+    Transaction(date,
       Payee(payee),
       Category.apply(MajorCategory(majorCategory), MinorCategory(minorCategory)),
       Memo(memo),
