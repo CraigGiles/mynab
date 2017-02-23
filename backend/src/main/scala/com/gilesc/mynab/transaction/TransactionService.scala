@@ -41,18 +41,17 @@ object TransactionService {
     Try(LocalDate.parse(value)).toEither.left.map(_.getMessage)
 
   val convert: TransactionDetails => Either[String, Transaction] = { details =>
-    val either = for {
-      date <- parseDate(details.date)
-      payee = Payee("Uncle Bob")
-      majorCat = MajorCategory("Education")
-      minorCat = MinorCategory("Books")
-      memo = Memo("New programming book from Uncle Bob")
-      deposit = Amount(BigDecimal(0.0))
-      withdrawal = Amount(BigDecimal(39.99))
-      cleared = Cleared(false)
-    } yield Transaction.apply(date, payee, Category(majorCat, minorCat), memo, withdrawal, deposit, cleared)
+    parseDate(details.date) map { date =>
+      val payee = Payee("Uncle Bob")
+      val majorCat = MajorCategory("Education")
+      val minorCat = MinorCategory("Books")
+      val memo = Memo("New programming book from Uncle Bob")
+      val deposit = Amount(BigDecimal(0.0))
+      val withdrawal = Amount(BigDecimal(39.99))
+      val cleared = Cleared(false)
 
-    either
+      Transaction.apply(date, payee, Category(majorCat, minorCat), memo, withdrawal, deposit, cleared)
+    }
   }
 
 }
