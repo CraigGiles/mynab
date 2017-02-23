@@ -27,6 +27,16 @@ class TransactionServiceSpec extends TestCase
 //      println(newState)
     }
 
+    "give you a Left when parsing incorrect formatted date" in {
+      val date = "20170215"
+      val expected = s"Text '$date' could not be parsed at index 0"
+      TransactionService.parseDate(date) should be(Left(expected))
+
+      val emptyDate = "20170215"
+      val emptyExpected = s"Text '$emptyDate' could not be parsed at index 0"
+      TransactionService.parseDate(date) should be(Left(emptyExpected))
+    }
+
     "convert the input details into a transaction" in {
       val date = "2017-02-15"
       val payee = "Uncle Bob"
