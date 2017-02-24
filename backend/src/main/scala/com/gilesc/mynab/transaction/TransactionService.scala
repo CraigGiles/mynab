@@ -23,18 +23,16 @@ object TransactionService {
   def create(accounts: AccountRepositoryModule,
     log: LoggingModule)(details: TransactionDetails): CreateResult = {
 
-    log.info(s"Adding Transaction: (${details.date}, ${details.payee}")
+    log.info(s"Adding Transaction: (${details.date}, ${details.payee})")
+
     val results = convert(details)
-    println(results)
-
-    // Throws date time parse exception
-//    val date = LocalDate.parse(details.date)
-
-    // TODO: Convert the transaction details to transaction
-    // TODO: Persist the transaction event
+    // TODO: Event-source the transaction event
     // TODO: prepend the transaction to transaction list
 
-    Failure("Unable to create transactions")
+    results match {
+      case Right(t) => Success(t)
+      case Left(s) => Failure(s)
+    }
   }
 
   def parseDate(value: String): Either[String, LocalDate] =

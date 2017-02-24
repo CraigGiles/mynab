@@ -3,28 +3,32 @@ package com.gilesc.mynab.transaction
 import java.time.LocalDate
 
 import com.gilesc.mynab._
+import com.gilesc.mynab.logging.PrintlnLoggingService
 
 class TransactionServiceSpec extends TestCase
   with TestCaseHelpers
+  with TransactionServiceModule
   with MockTransactionCreation {
 
-  def add: TransactionDetails => String = d => "hello"
+  val create = TransactionService.create(InMemoryTransactionRepository, PrintlnLoggingService)
 
   "Adding a new transaction" should {
+    val date = "2017-02-15"
+    val payee = "Uncle Bob"
+    val majorCat = "Education"
+    val minorCat = "Books"
+    val memo = "New programming book from Uncle Bob"
+    val deposit = 0.0
+    val withdrawal = 39.99
+    val cleared = false
+
     "add the transaction to the accounts transaction list" in {
-//      val date = "2017-02-15"
-//      val payee = "Uncle Bob"
-//      val majorCat = "Education"
-//      val minorCat = "Books"
-//      val memo = "New programming book from Uncle Bob"
-//      val deposit = 0.0
-//      val withdrawl = 39.99
-//      val cleared = false
-//
-//      val details = TransactionDetails(date, payee, majorCat, minorCat, memo, deposit, withdrawl, cleared)
-//      val newState = add(details)
-//      println(details)
-//      println(newState)
+      val details = TransactionDetails(date, payee, majorCat, minorCat, memo, deposit, withdrawal, cleared)
+      val expected = trans(LocalDate.parse(date), payee, majorCat, minorCat, memo, withdrawal, deposit, cleared)
+
+      val result = create(details)
+
+      result should be(Success(expected))
     }
 
     "give you a Left when parsing incorrect formatted date" in {
@@ -38,15 +42,6 @@ class TransactionServiceSpec extends TestCase
     }
 
     "convert the input details into a transaction" in {
-      val date = "2017-02-15"
-      val payee = "Uncle Bob"
-      val majorCat = "Education"
-      val minorCat = "Books"
-      val memo = "New programming book from Uncle Bob"
-      val deposit = 0.0
-      val withdrawal = 39.99
-      val cleared = false
-
       val details = TransactionDetails(date, payee, majorCat, minorCat, memo, deposit, withdrawal, cleared)
       val transaction = TransactionService.convert(details)
       val expected = trans(LocalDate.parse(date), payee, majorCat, minorCat, memo, withdrawal, deposit, cleared)
