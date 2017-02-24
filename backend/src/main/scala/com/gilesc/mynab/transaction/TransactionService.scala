@@ -27,7 +27,7 @@ object TransactionService {
 
     val results = convert(details)
     // TODO: Event-source the transaction event
-    // TODO: prepend the transaction to transaction list
+    // TODO: prepend the transaction to accounts transaction list
 
     results match {
       case Right(t) => Success(t)

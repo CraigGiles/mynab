@@ -47,6 +47,10 @@ class TransactionServiceSpec extends TestCase
       val expected = trans(LocalDate.parse(date), payee, majorCat, minorCat, memo, withdrawal, deposit, cleared)
       transaction should be(Right(expected))
     }
+
+    "append the transaction to the proper account" in {
+      // TODO: prepend the transaction to accounts transaction list
+    }
   }
 
 }
