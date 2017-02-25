@@ -82,9 +82,16 @@ lazy val domain = Project("domain", file("domain"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= Dependencies.domain)
 
-lazy val backend = Project("backend", file("backend"))
+lazy val mysql = Project("mysql", file("mysql"))
   .settings(commonSettings: _*)
   .dependsOn(domain % "test->test;test->compile;compile->compile")
+  .settings(libraryDependencies ++= Dependencies.backend)
+
+lazy val backend = Project("backend", file("backend"))
+  .settings(commonSettings: _*)
+  .dependsOn(
+    domain % "test->test;test->compile;compile->compile",
+    mysql % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.backend)
 
 lazy val http4s = Project("http4s", file("http4s"))
