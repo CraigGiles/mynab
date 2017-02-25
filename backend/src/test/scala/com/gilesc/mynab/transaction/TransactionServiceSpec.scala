@@ -4,15 +4,17 @@ import java.time.LocalDate
 
 import com.gilesc.mynab._
 import com.gilesc.mynab.logging.PrintlnLoggingService
+import com.gilesc.mynab.repository.InMemoryAccountRepository
 
 class TransactionServiceSpec extends TestCase
   with TestCaseHelpers
   with TransactionServiceModule
   with MockTransactionCreation {
 
-  val create = TransactionService.create(InMemoryTransactionRepository, PrintlnLoggingService)
+  val create = TransactionService.create(InMemoryAccountRepository.find, PrintlnLoggingService)
 
   "Adding a new transaction" should {
+    val accountId = 1L
     val date = "2017-02-15"
     val payee = "Uncle Bob"
     val majorCat = "Education"
@@ -22,8 +24,11 @@ class TransactionServiceSpec extends TestCase
     val withdrawal = 39.99
     val cleared = false
 
+    val transaction = trans(LocalDate.parse(date), payee, majorCat,
+      minorCat, memo, withdrawal, deposit, cleared)
+
     "add the transaction to the accounts transaction list" in {
-      val details = TransactionDetails(date, payee, majorCat, minorCat, memo, deposit, withdrawal, cleared)
+      val details = TransactionDetails(accountId, date, payee, majorCat, minorCat, memo, deposit, withdrawal, cleared)
       val expected = trans(LocalDate.parse(date), payee, majorCat, minorCat, memo, withdrawal, deposit, cleared)
 
       val result = create(details)
@@ -42,14 +47,18 @@ class TransactionServiceSpec extends TestCase
     }
 
     "convert the input details into a transaction" in {
-      val details = TransactionDetails(date, payee, majorCat, minorCat, memo, deposit, withdrawal, cleared)
-      val transaction = TransactionService.convert(details)
-      val expected = trans(LocalDate.parse(date), payee, majorCat, minorCat, memo, withdrawal, deposit, cleared)
-      transaction should be(Right(expected))
+      val details = TransactionDetails(accountId, date, payee, majorCat, minorCat, memo, deposit, withdrawal, cleared)
+      val result = TransactionService.convert(details)
+      result should be(Right(transaction))
     }
 
     "append the transaction to the proper account" in {
       // TODO: prepend the transaction to accounts transaction list
+      val accountId = 1L
+      val details = TransactionDetails(accountId, date, payee,
+        majorCat, minorCat, memo, deposit, withdrawal, cleared)
+
+      println(details)
     }
   }
 

@@ -2,12 +2,14 @@ package com.gilesc.mynab.transaction
 
 import java.time.LocalDate
 
+import com.gilesc.mynab.account.Account
 import com.gilesc.mynab.category._
 import com.gilesc.mynab.logging.LoggingModule
 
 import scala.util.Try
 
 case class TransactionDetails(
+  accountId: Long,
   date: String, payee: String, majorCat: String, minorCat: String, memo: String,
   deposit: Double, withdrawal: Double, cleared: Boolean)
 
@@ -20,8 +22,9 @@ trait TransactionServiceModule {
 }
 
 object TransactionService {
-  def create(accounts: AccountRepositoryModule,
-    log: LoggingModule)(details: TransactionDetails): CreateResult = {
+  import com.gilesc.mynab.repository.{FindBy => AccountFindBy}
+  def create(find: AccountFindBy => Option[Account], log: LoggingModule)
+    (details: TransactionDetails): CreateResult = {
 
     log.info(s"Adding Transaction: (${details.date}, ${details.payee})")
 
