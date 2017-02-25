@@ -9,7 +9,7 @@ sealed trait AccountActionResult
 final case class Success(account: Account) extends AccountActionResult
 final case class Failure(message: String) extends AccountActionResult
 
-case class AccountDetails(accountName: String, accountType: String, groupName: String)
+case class AccountDetails(id: Long, accountName: String, accountType: String, groupName: String)
 case class FindDetails(name: String)
 
 trait AccountServiceModule {
@@ -51,11 +51,12 @@ object AccountService {
   }
 
   val convert: AccountDetails => Either[String, Account] = { details =>
+    val i = AccountId(details.id)
     val either = for {
       t <- AccountType(details.accountType)
       n <- AccountName(details.accountName)
       g <- AccountName(details.groupName)
-    } yield Account.create(t, n)
+    } yield Account.create(i, t, n)
 
     either.left.map(_.toString)
   }

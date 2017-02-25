@@ -24,30 +24,34 @@ class AccountServiceSpec extends TestCase
   "Creating a new account" should {
     "convert an account details object to an Account object" in {
       val name = "visa"
-      val details = AccountDetails(name, Banking.toString, "groupname")
+      val id = 1L
+      val details = AccountDetails(id, name, Banking.toString, "groupname")
       AccountService.convert(details) should be(
-        Right(Account(Banking, name, Vector.empty[Transaction])))
+        Right(Account(id, Banking, name, Vector.empty[Transaction])))
     }
 
     "not let you convert an invalid name into an account" in {
       val name = ""
-      val details = AccountDetails(name, Banking.toString, "groupname")
+      val id = 1L
+      val details = AccountDetails(id, name, Banking.toString, "groupname")
       AccountService.convert(details) should be(Left("InvalidLengthError"))
     }
 
     "persist the account object" in {
       val name = "visa"
-      val details = AccountDetails(name, Banking.toString, "groupname")
+      val id = 1L
+      val details = AccountDetails(id, name, Banking.toString, "groupname")
       val result = create(details)
-      result should be(Success(Account(Banking, name, Vector.empty[Transaction])))
+      result should be(Success(Account(id, Banking, name, Vector.empty[Transaction])))
     }
   }
 
   "Finding an account" should {
     "attempt to find your account based on account name" in {
       val name = "visa"
+      val id = 1L
       val details = FindDetails(name)
-      val accDetails = AccountDetails(name, Banking.toString, "groupname")
+      val accDetails = AccountDetails(id, name, Banking.toString, "groupname")
       val result = AccountService.convert(accDetails)
       val account = result.toOption.get
 

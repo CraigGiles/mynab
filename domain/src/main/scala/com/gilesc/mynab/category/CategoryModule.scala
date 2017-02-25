@@ -18,7 +18,7 @@ trait CategoryModule { self: Prepending with Removing =>
     // for each account, map over the transaction list
     // foreach transaction in the transaction list
     //    if we need to rename the category, rename it
-    val newAccounts = accts.accounts map(t => t.copy(t.name, rename(t.transactions)))
+    val newAccounts = accts.accounts map(t => t.copy(t.id, t.name, rename(t.transactions)))
 
     accts.copy(accounts = newAccounts)
   }

@@ -8,6 +8,8 @@ object Main extends App {
     AccountName(value).toOption.getOrElse(AccountName("Random Account").toOption.get)
   }
 
+  implicit def long2AccountId(value: Long): AccountId = AccountId(value)
+
   def prettyPrint(group: AccountGroup) = {
 
     println()
@@ -26,7 +28,7 @@ object Main extends App {
     a <- Account.add(Transaction("East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
     b <- Account.add(Transaction("Credit Karma", "Income", "This Month", "", 0, 3742.56))
   } yield ()
-  val chaseChecking = checkingTransactions.runS(Account.create(Banking, "Chase Checking")).value
+  val chaseChecking = checkingTransactions.runS(Account.create(1L, Banking, "Chase Checking")).value
 
   val visaTransactions = for {
     _ <- Account.add(Transaction("Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
@@ -34,7 +36,7 @@ object Main extends App {
     _ <- Account.add(Transaction("Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
     _ <- Account.add(Transaction("T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
   } yield ()
-  val chaseVisaAmazon = visaTransactions.runS(Account.create(Banking, "Chase Amazon CC")).value
+  val chaseVisaAmazon = visaTransactions.runS(Account.create(2L, Banking, "Chase Amazon CC")).value
 
   val accounts = for {
     _ <- AccountGroup.add(chaseChecking)

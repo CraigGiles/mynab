@@ -5,7 +5,7 @@ import com.gilesc.mynab.logging.PrintlnLoggingService
 import com.gilesc.mynab.repository.InMemoryAccountRepository
 
 object Main extends App with AccountServiceModule {
-  val details = AccountDetails("My Account Name", "Banking", "No Group Name")
+  val details = AccountDetails(1L, "My Account Name", "Banking", "No Group Name")
 
   def create = AccountService.create(InMemoryAccountRepository, PrintlnLoggingService)
   def find = AccountService.find(InMemoryAccountRepository, PrintlnLoggingService)

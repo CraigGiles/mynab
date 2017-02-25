@@ -6,18 +6,21 @@ import com.gilesc.mynab.account._
 import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction._
 
+import scala.util.Random
+
 trait TestCaseHelpers {
   implicit def str2accountName(value: String): AccountName = {
-    AccountName(value).toOption.getOrElse(AccountName("Random Account").toOption.get)
+    AccountName(value).getOrElse(AccountName("Random Account").toOption.get)
   }
 
+  implicit def long2AccountId(value: Long): AccountId = AccountId(value)
 }
 
 trait MockAccountCreation { self: TestCaseHelpers =>
   def banking(name: String, transactions: Vector[Transaction]): BankingAccount =
-    BankingAccount(name, transactions)
+    BankingAccount(Random.nextLong(), name, transactions)
   def loan(name: String, transactions: Vector[Transaction]): LoanAccount =
-    LoanAccount(name, transactions)
+    LoanAccount(Random.nextLong(), name, transactions)
 }
 
 trait MockTransactionCreation { self: TestCaseHelpers =>

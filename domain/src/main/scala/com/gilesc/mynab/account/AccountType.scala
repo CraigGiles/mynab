@@ -9,10 +9,10 @@ case object Loan extends AccountType
 case object Investment extends AccountType
 case object Retirement extends AccountType
 
-case class BankingAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Banking }
-case class LoanAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Loan }
-case class InvestmentAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Investment }
-case class RetirementAccount(name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Retirement }
+case class BankingAccount(id: AccountId, name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Banking }
+case class LoanAccount(id: AccountId, name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Loan }
+case class InvestmentAccount(id: AccountId, name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Investment }
+case class RetirementAccount(id: AccountId, name: AccountName, transactions: Vector[Transaction]) extends Account { val accountType = Retirement }
 
 final case class InvalidAccountType(message: String) extends AnyVal {
   override def toString: String = message
