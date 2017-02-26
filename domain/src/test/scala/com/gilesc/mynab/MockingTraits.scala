@@ -14,6 +14,7 @@ trait TestCaseHelpers {
   }
 
   implicit def long2AccountId(value: Long): AccountId = AccountId(value)
+  implicit def long2TransactionId(value: Long): TransactionId = TransactionId(value)
 }
 
 trait MockAccountCreation { self: TestCaseHelpers =>
@@ -24,17 +25,9 @@ trait MockAccountCreation { self: TestCaseHelpers =>
 }
 
 trait MockTransactionCreation { self: TestCaseHelpers =>
-  def t(withdrawal: Double, deposit: Double): Transaction = {
-    Transaction(LocalDate.now(),
-      Payee("Me"),
-      Category.apply(MajorCategory("loans"), MinorCategory("student loan")),
-      Memo(""),
-      Amount(BigDecimal(withdrawal)),
-      Amount(BigDecimal(deposit)),
-      Cleared(false))
-  }
-
-  def trans(date: LocalDate = LocalDate.now(),
+  def trans(
+    id: Long = Random.nextLong(),
+    date: LocalDate = LocalDate.now(),
     payee: String = "Me",
     majorCategory: String = "loans",
     minorCategory: String = "studen",
@@ -43,7 +36,9 @@ trait MockTransactionCreation { self: TestCaseHelpers =>
     deposit: Double = 0.0,
     cleared: Boolean = false): Transaction = {
 
-    Transaction(date,
+    Transaction(
+      TransactionId(id),
+      date,
       Payee(payee),
       Category.apply(MajorCategory(majorCategory), MinorCategory(minorCategory)),
       Memo(memo),

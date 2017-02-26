@@ -9,7 +9,7 @@ import com.gilesc.mynab.logging.LoggingModule
 import scala.util.Try
 
 case class TransactionDetails(
-  accountId: Long,
+  accountId: Long, transactionId: Long,
   date: String, payee: String, majorCat: String, minorCat: String, memo: String,
   deposit: Double, withdrawal: Double, cleared: Boolean)
 
@@ -43,6 +43,7 @@ object TransactionService {
 
   val convert: TransactionDetails => Either[String, Transaction] = { details =>
     parseDate(details.date) map { date =>
+      val transactionId = TransactionId(details.transactionId)
       val payee = Payee("Uncle Bob")
       val majorCat = MajorCategory("Education")
       val minorCat = MinorCategory("Books")
@@ -51,7 +52,8 @@ object TransactionService {
       val withdrawal = Amount(BigDecimal(39.99))
       val cleared = Cleared(false)
 
-      Transaction.apply(date, payee, Category(majorCat, minorCat), memo, withdrawal, deposit, cleared)
+      Transaction.apply(transactionId, date, payee, Category(majorCat, minorCat),
+        memo, withdrawal, deposit, cleared)
     }
   }
 

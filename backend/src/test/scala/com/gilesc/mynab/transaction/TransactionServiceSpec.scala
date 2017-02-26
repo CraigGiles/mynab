@@ -23,13 +23,17 @@ class TransactionServiceSpec extends TestCase
     val deposit = 0.0
     val withdrawal = 39.99
     val cleared = false
+    val transactionId = 1L
 
-    val transaction = trans(LocalDate.parse(date), payee, majorCat,
+    val transaction = trans(transactionId, LocalDate.parse(date), payee, majorCat,
       minorCat, memo, withdrawal, deposit, cleared)
 
     "add the transaction to the accounts transaction list" in {
-      val details = TransactionDetails(accountId, date, payee, majorCat, minorCat, memo, deposit, withdrawal, cleared)
-      val expected = trans(LocalDate.parse(date), payee, majorCat, minorCat, memo, withdrawal, deposit, cleared)
+      val transactionId = 1L
+      val details = TransactionDetails(accountId, transactionId, date, payee,
+        majorCat, minorCat, memo, deposit, withdrawal, cleared)
+      val expected = trans(transactionId, LocalDate.parse(date), payee,
+        majorCat, minorCat, memo, withdrawal, deposit, cleared)
 
       val result = create(details)
 
@@ -47,7 +51,9 @@ class TransactionServiceSpec extends TestCase
     }
 
     "convert the input details into a transaction" in {
-      val details = TransactionDetails(accountId, date, payee, majorCat, minorCat, memo, deposit, withdrawal, cleared)
+      val transactionId = 1L
+      val details = TransactionDetails(accountId, transactionId, date, payee,
+        majorCat, minorCat, memo, deposit, withdrawal, cleared)
       val result = TransactionService.convert(details)
       result should be(Right(transaction))
     }
@@ -55,7 +61,8 @@ class TransactionServiceSpec extends TestCase
     "append the transaction to the proper account" in {
       // TODO: prepend the transaction to accounts transaction list
       val accountId = 1L
-      val details = TransactionDetails(accountId, date, payee,
+      val transactionId = 1L
+      val details = TransactionDetails(accountId, transactionId, date, payee,
         majorCat, minorCat, memo, deposit, withdrawal, cleared)
 
       println(details)

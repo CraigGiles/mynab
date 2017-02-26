@@ -9,6 +9,7 @@ object Main extends App {
   }
 
   implicit def long2AccountId(value: Long): AccountId = AccountId(value)
+  implicit def long2TransactionId(value: Long): TransactionId = TransactionId(value)
 
   def prettyPrint(group: AccountGroup) = {
 
@@ -25,16 +26,16 @@ object Main extends App {
   }
 
   val checkingTransactions = for {
-    a <- Account.add(Transaction("East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
-    b <- Account.add(Transaction("Credit Karma", "Income", "This Month", "", 0, 3742.56))
+    a <- Account.add(Transaction(1L, "East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
+    b <- Account.add(Transaction(2L, "Credit Karma", "Income", "This Month", "", 0, 3742.56))
   } yield ()
   val chaseChecking = checkingTransactions.runS(Account.create(1L, Banking, "Chase Checking")).value
 
   val visaTransactions = for {
-    _ <- Account.add(Transaction("Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
-    _ <- Account.add(Transaction("Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
-    _ <- Account.add(Transaction("Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
-    _ <- Account.add(Transaction("T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
+    _ <- Account.add(Transaction(3L, "Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
+    _ <- Account.add(Transaction(4L, "Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
+    _ <- Account.add(Transaction(5L, "Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
+    _ <- Account.add(Transaction(6L, "T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
   } yield ()
   val chaseVisaAmazon = visaTransactions.runS(Account.create(2L, Banking, "Chase Amazon CC")).value
 

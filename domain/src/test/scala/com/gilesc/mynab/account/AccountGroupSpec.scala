@@ -13,8 +13,8 @@ class AccountGroupSpec extends TestCase
   "Account groups" should {
     "allow the addition of new accounts" in {
       val al = Vector.empty[Account]
-      val b = banking("chase", Vector(t(0.0, 1000.0)))
-      val l = loan("chase", Vector(t(0.0, 1000.0)))
+      val b = banking("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
+      val l = loan("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
 
       // append to an empty account list
       prepend(b, al) should be(Vector(b))
@@ -28,8 +28,8 @@ class AccountGroupSpec extends TestCase
     }
 
     "allow the removal of new accounts" in {
-      val b = banking("chase", Vector(t(0.0, 1000.0)))
-      val l = loan("chase", Vector(t(0.0, 1000.0)))
+      val b = banking("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
+      val l = loan("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
       val bl = Vector(b, l)
 
       val state0 = remove(b, bl)
@@ -43,9 +43,9 @@ class AccountGroupSpec extends TestCase
     }
 
     "sum the total transaction list from all its accounts" in {
-      val b = banking("chase", Vector(t(0.0, 1000.0)))
-      val l = loan("nelnet", Vector(t(5000.0, 0.0)))
-      val i = banking("chase-savings", Vector(t(0.0, 14000)))
+      val b = banking("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
+      val l = loan("nelnet", Vector(trans(withdrawal = 5000.0, deposit = 0.0)))
+      val i = banking("chase-savings", Vector(trans(withdrawal = 0.0, deposit = 14000)))
       val al = Vector(b, l)
       val al2 = Vector(b, l, i)
 
@@ -55,16 +55,16 @@ class AccountGroupSpec extends TestCase
 
     "should allow me to create accounts and transactions cleanly" in {
       val checkingTransactions = for {
-        _ <- Account.add(Transaction("East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
-        _ <- Account.add(Transaction("Credit Karma", "Income", "This Month", "", 0, 3742.56))
+        _ <- Account.add(Transaction(1L, "East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
+        _ <- Account.add(Transaction(2L, "Credit Karma", "Income", "This Month", "", 0, 3742.56))
       } yield ()
       val chaseChecking = checkingTransactions.runS(Account.create(1L, Banking, "Chase Checking")).value
 
       val visaTransactions = for {
-        _ <- Account.add(Transaction("Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
-        _ <- Account.add(Transaction("Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
-        _ <- Account.add(Transaction("Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
-        _ <- Account.add(Transaction("T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
+        _ <- Account.add(Transaction(3L, "Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
+        _ <- Account.add(Transaction(4L, "Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
+        _ <- Account.add(Transaction(5L, "Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
+        _ <- Account.add(Transaction(6L, "T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
       } yield ()
       val chaseVisaAmazon = visaTransactions.runS(Account.create(2L, Banking, "Chase Amazon CC")).value
 
