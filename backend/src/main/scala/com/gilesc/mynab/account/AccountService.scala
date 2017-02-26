@@ -19,11 +19,11 @@ trait AccountServiceModule {
 
 object AccountService {
 
-  def create(accounts: AccountRepositoryModule,
+  def create(save: Account => PersistenceResult,
     log: LoggingModule)(details: AccountDetails): AccountActionResult = {
 
     val results = convert(details) map { account =>
-      accounts.save(account) match {
+      save(account) match {
         case PersistenceSuccessful =>
           Success(account)
 
@@ -39,13 +39,13 @@ object AccountService {
     }
   }
 
-  def find(accounts: AccountRepositoryModule,
+  def find(account: FindBy => Option[Account],
     log: LoggingModule)(find: FindDetails): Option[Account] = {
 
     log.info(s"Finding account by name: ${find.name}")
     val either: Either[ValidationError, Option[Account]] = for {
       n <- AccountName(find.name)
-    } yield accounts.find(FindByName(n))
+    } yield account(FindByName(n))
 
     either.toOption.flatten
   }

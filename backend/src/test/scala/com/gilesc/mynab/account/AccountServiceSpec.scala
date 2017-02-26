@@ -3,7 +3,7 @@ package account
 
 import com.gilesc.mynab.logging.LoggingModule
 import com.gilesc.mynab.repository.InMemoryAccountRepository
-import com.gilesc.mynab.transaction.{Transaction, TransactionDetails}
+import com.gilesc.mynab.transaction.Transaction
 
 object NullLoggingModule extends LoggingModule {
   override def debug: (String) => Unit = str => ()
@@ -17,8 +17,8 @@ class AccountServiceSpec extends TestCase
   with AccountServiceModule
   with MockTransactionCreation {
 
-  def find = AccountService.find(InMemoryAccountRepository, NullLoggingModule)
-  def create = AccountService.create(InMemoryAccountRepository, NullLoggingModule)
+  def find = AccountService.find(InMemoryAccountRepository.find, NullLoggingModule)
+  def create = AccountService.create(InMemoryAccountRepository.save, NullLoggingModule)
 //  def rename = AccountService.rename(InMemoryAccountRepository, NullLoggingModule)
 
   "Creating a new account" should {
