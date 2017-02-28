@@ -11,7 +11,10 @@ class TransactionServiceSpec extends TestCase
   with TransactionServiceModule
   with MockTransactionCreation {
 
-  val create = TransactionService.create(InMemoryAccountRepository.find, PrintlnLoggingService)
+  val create = TransactionService.create(
+    InMemoryAccountRepository.find,
+    InMemoryTransactionRepository.save,
+    PrintlnLoggingService)
 
   "Adding a new transaction" should {
     val accountId = 1L

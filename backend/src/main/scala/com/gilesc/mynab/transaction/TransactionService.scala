@@ -2,7 +2,7 @@ package com.gilesc.mynab.transaction
 
 import java.time.LocalDate
 
-import com.gilesc.mynab.account.Account
+import com.gilesc.mynab.account.{Account, AccountId}
 import com.gilesc.mynab.category._
 import com.gilesc.mynab.logging.LoggingModule
 
@@ -22,14 +22,26 @@ trait TransactionServiceModule {
 }
 
 object TransactionService {
-  import com.gilesc.mynab.repository.{FindBy => AccountFindBy}
-  def create(find: AccountFindBy => Option[Account], log: LoggingModule)
-    (details: TransactionDetails): CreateResult = {
+  import com.gilesc.mynab.repository.{FindBy => AccountFindBy,
+    FindById => AccountFindById }
+
+  def create(
+    findAccount: AccountFindBy => Option[Account],
+    saveTransaction: Transaction => Either[PersistenceFailure, Transaction],
+    log: LoggingModule)(details: TransactionDetails): CreateResult = {
 
     log.info(s"Adding Transaction: (${details.date}, ${details.payee})")
 
-    val results = convert(details)
-    // TODO: Event-source the transaction event
+    val persistedTransaction = convert(details) flatMap { transaction =>
+      // TODO: Event-source the transaction event
+      saveTransaction(transaction)
+//      val a = findAccount(AccountFindById(AccountId(details.accountId)))
+//      val asdf = Account.add(transaction).runS(a.get).value
+//      println(asdf)
+    }
+
+    val results = persistedTransaction.left.map(_.toString)
+
     // TODO: prepend the transaction to accounts transaction list
 
     results match {
@@ -59,32 +71,34 @@ object TransactionService {
 
 }
 
+
 // --------------------------------------------------------------------------
 // Move to its own file
 // --------------------------------------------------------------------------
+
 sealed trait PersistenceResult
-case object PersistenceSuccessful extends PersistenceResult
+case class PersistenceSuccessful[T](value: T) extends PersistenceResult
 case class PersistenceFailure(message: String) extends PersistenceResult
 
 sealed trait FindBy
 final case class FindByPayee(payee: Payee) extends FindBy
 
 trait AccountRepositoryModule {
-  def save: Transaction => PersistenceResult
+  def save: Transaction => Either[PersistenceFailure, Transaction]
   def find: FindBy => Option[Transaction]
 }
 
 object InMemoryTransactionRepository extends AccountRepositoryModule {
-  var transaction = Vector.empty[Transaction]
+  private[this] var transactions = Vector.empty[Transaction]
 
-  def save: Transaction => PersistenceResult = { account =>
-    println(s"Persisting $account")
-    transaction = transaction :+ account
-    PersistenceSuccessful
+  def save: Transaction => Either[PersistenceFailure, Transaction] = { t =>
+    println(s"Persisting $t")
+    transactions = transactions :+ t
+    Right(t)
   }
 
   def find: FindBy => Option[Transaction] = {
-    case FindByPayee(payee) => transaction.find(_.payee == payee)
+    case FindByPayee(payee) => transactions.find(_.payee == payee)
   }
 }
 
