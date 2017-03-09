@@ -2,7 +2,7 @@ package com.gilesc
 package mynab
 
 import cats.implicits._
-import com.gilesc.mynab.account.{PersistenceFailure, _}
+import com.gilesc.mynab.account.{AccountGroupPersistenceError, _}
 import com.gilesc.mynab.transaction._
 import org.scalatest._
 
@@ -12,10 +12,10 @@ class AddingAccountsSpec extends FlatSpec with Matchers
   with NewAccountGroupService {
 
   object GroupRepo {
-    import com.gilesc.mynab.account.PersistenceFailure
+    import com.gilesc.mynab.account.AccountGroupPersistenceError
     private var groups = Vector.empty[AccountGroup]
 
-    def save(name: AccountName): Either[PersistenceFailure, AccountGroupId] = {
+    def save(name: AccountName): Either[AccountGroupPersistenceError, AccountGroupId] = {
       val id = AccountGroupId(groups.size + 1L)
       val group = AccountGroup.create(id, name)
 
@@ -28,10 +28,10 @@ class AddingAccountsSpec extends FlatSpec with Matchers
   }
 
   object AccRepo {
-    import com.gilesc.mynab.account.PersistenceFailure
+    import com.gilesc.mynab.account.AccountPersistenceError
     private var accounts = Vector.empty[Account]
 
-    def save(ctx: AccountContext): Either[PersistenceFailure, AccountId] = {
+    def save(ctx: AccountContext): Either[AccountPersistenceError, AccountId] = {
       val id = AccountId(accounts.size + 1L)
       val account = Account.create(id, ctx.accType, ctx.name)
 
@@ -44,7 +44,7 @@ class AddingAccountsSpec extends FlatSpec with Matchers
   val createGroup: AccountName => Either[String, AccountGroup] =
     NewAccountGroupService.create(GroupRepo.save)
 
-  val createAccount: AccountContext => Either[PersistenceFailure, AccountGroup] =
+  val createAccount: AccountContext => Either[AccountPersistenceError, AccountGroup] =
     NewAccountService.create(AccRepo.save, GroupRepo.find)
 
   "Creating an account group by name" should "return the account group" in {

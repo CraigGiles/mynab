@@ -69,39 +69,49 @@ object AccountService {
 // ---------------------------------------------------------------------------
 // NEW DOMAIN
 // ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+//  ACCOUNT GROUP
+// ---------------------------------------------------------------------------
 final case class DuplicateIdException() extends Exception("Duplicate ID")
 
-sealed trait PersistenceFailure
-final case object DuplicateIdError extends PersistenceFailure
-final case class InvalidAccountGroupId(id: AccountGroupId) extends PersistenceFailure
+sealed trait AccountGroupPersistenceError
+final case object DuplicateAccountGroupId extends AccountGroupPersistenceError
 
 trait NewAccountGroupService {
   def createGroup: AccountName => Either[String, AccountGroup]
 }
 
 object NewAccountGroupService {
-  def create(save: AccountName => Either[PersistenceFailure, AccountGroupId])
+  def create(save: AccountName => Either[AccountGroupPersistenceError, AccountGroupId])
     (name: AccountName): Either[String, AccountGroup] = {
 
     save(name) match {
       case Right(id) => Right(AccountGroup.create(id, name))
-      case Left(DuplicateIdError) => Left(DuplicateIdError.toString)
-      case Left(InvalidAccountGroupId(id)) => Left(s"$id exists") // TODO: remove
+      case Left(DuplicateAccountGroupId) => Left(DuplicateAccountGroupId.toString)
     }
   }
 }
+
+// ---------------------------------------------------------------------------
+//  ACCOUNT
+// ---------------------------------------------------------------------------
+sealed trait AccountPersistenceError
+final case object DuplicateAccountId extends AccountPersistenceError
+final case class InvalidAccountGroupId(id: AccountGroupId) extends AccountPersistenceError
 
 case class AccountContext(group: AccountGroupId, name: AccountName, accType: AccountType)
 
 object NewAccountService {
 
   def create(
-    save: AccountContext => Either[PersistenceFailure, AccountId],
+    save: AccountContext => Either[AccountPersistenceError, AccountId],
     find: AccountGroupId => Option[AccountGroup])
-    (ctx: AccountContext): Either[PersistenceFailure, AccountGroup] = {
+    (ctx: AccountContext): Either[AccountPersistenceError, AccountGroup] = {
 
     val eitherAccountGroup = Either.fromOption(find(ctx.group) , InvalidAccountGroupId(ctx.group))
-    val eitherAccountId: Either[PersistenceFailure, AccountId] = save(ctx)
+    val eitherAccountId: Either[AccountPersistenceError, AccountId] = save(ctx)
 
     for {
       group <- eitherAccountGroup
