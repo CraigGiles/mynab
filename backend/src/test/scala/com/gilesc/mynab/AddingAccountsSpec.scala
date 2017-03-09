@@ -2,9 +2,8 @@ package com.gilesc
 package mynab
 
 import cats.implicits._
-import com.gilesc.mynab.account._
+import com.gilesc.mynab.account.{PersistenceFailure, _}
 import com.gilesc.mynab.transaction._
-
 import org.scalatest._
 
 class AddingAccountsSpec extends FlatSpec with Matchers
@@ -24,6 +23,8 @@ class AddingAccountsSpec extends FlatSpec with Matchers
 
       Right(id)
     }
+
+    def find(id: AccountGroupId): Option[AccountGroup] = groups.find(_.id == id)
   }
 
   object AccRepo {
@@ -38,15 +39,13 @@ class AddingAccountsSpec extends FlatSpec with Matchers
 
       Right(id)
     }
-
-    def find(id: AccountGroupId): Option[AccountGroup] = None
   }
 
   val createGroup: AccountName => Either[String, AccountGroup] =
     NewAccountGroupService.create(GroupRepo.save)
 
-  val createAccount: AccountContext => Either[String, Account] =
-    NewAccountService.create(AccRepo.save, AccRepo.find)
+  val createAccount: AccountContext => Either[PersistenceFailure, AccountGroup] =
+    NewAccountService.create(AccRepo.save, GroupRepo.find)
 
   "Creating an account group by name" should "return the account group" in {
     val budgetaccounts = "Budget Accounts"
@@ -64,27 +63,10 @@ class AddingAccountsSpec extends FlatSpec with Matchers
     val groupname = "Budget Accounts"
     val accType = Banking
     val accountId = 1L
-    val ctx = AccountContext(accountId, name, accType)
+    val ctx = AccountContext(groupId, name, accType)
     val group = createAccount(ctx)
     val expectedAccounts = Vector(Account.create(accountId, accType, name))
 
-//    group should be(Right(AccountGroup(groupId, groupname, expectedAccounts)))
-
-//    println(name)
-//    println(groupname)
-//    println(accType)
-//    println(ctx)
-//    println(group)
-//    println(expectedAccounts)
-
-//    // TODO: This is horrible, don't do this.. we should find a way to fix
-//    group match {
-//      case Right(BankingAccount(_, n, t)) =>
-//        n.value should be(name)
-//        t should be(Vector.empty[Transaction])
-//
-//      case Left(err) => sys.error(err.toString)
-//      case _ => sys.error("Didn't get a banking account back")
-//    }
+    group should be(Right(AccountGroup(groupId, groupname, expectedAccounts)))
   }
 }

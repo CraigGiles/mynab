@@ -73,6 +73,7 @@ final case class DuplicateIdException() extends Exception("Duplicate ID")
 
 sealed trait PersistenceFailure
 final case object DuplicateIdError extends PersistenceFailure
+final case class InvalidAccountGroupId(id: AccountGroupId) extends PersistenceFailure
 
 trait NewAccountGroupService {
   def createGroup: AccountName => Either[String, AccountGroup]
@@ -85,6 +86,7 @@ object NewAccountGroupService {
     save(name) match {
       case Right(id) => Right(AccountGroup.create(id, name))
       case Left(DuplicateIdError) => Left(DuplicateIdError.toString)
+      case Left(InvalidAccountGroupId(id)) => Left(s"$id exists") // TODO: remove
     }
   }
 }
@@ -96,24 +98,14 @@ object NewAccountService {
   def create(
     save: AccountContext => Either[PersistenceFailure, AccountId],
     find: AccountGroupId => Option[AccountGroup])
-    (ctx: AccountContext): Either[String, Account] = {
+    (ctx: AccountContext): Either[PersistenceFailure, AccountGroup] = {
 
-    // TODO: Persist Account with AccountGroupId pivot
-    // TODO: Construct Account Object with proper AccountId
-    // TODO: Prepend Account to AccountGroup's `accounts` variable
-    // TODO: Return AccountGroup
-    val result: Either[PersistenceFailure, AccountId] = save(ctx)
+    val eitherAccountGroup = Either.fromOption(find(ctx.group) , InvalidAccountGroupId(ctx.group))
+    val eitherAccountId: Either[PersistenceFailure, AccountId] = save(ctx)
 
-//    val asdf = result.map { id =>
-//      val acc = Account.create(id, ctx.accType, ctx.name)
-//      find(ctx.group) map { group =>
-//        group
-//      }
-//    }
-
-     result match {
-      case Right(id) => Right(Account.create(id, ctx.accType, ctx.name))
-      case Left(err) => Left(err.toString)
-    }
+    for {
+      group <- eitherAccountGroup
+      accId <- eitherAccountId
+    } yield group.copy(accounts = group.accounts :+ Account.create(accId, ctx.accType, ctx.name))
   }
 }
