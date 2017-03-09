@@ -110,12 +110,9 @@ object NewAccountService {
     find: AccountGroupId => Option[AccountGroup])
     (ctx: AccountContext): Either[AccountPersistenceError, AccountGroup] = {
 
-    val eitherAccountGroup = Either.fromOption(find(ctx.group) , InvalidAccountGroupId(ctx.group))
-    val eitherAccountId: Either[AccountPersistenceError, AccountId] = save(ctx)
-
     for {
-      group <- eitherAccountGroup
-      accId <- eitherAccountId
+      group <- Either.fromOption(find(ctx.group) , InvalidAccountGroupId(ctx.group))
+      accId <- save(ctx)
     } yield group.copy(accounts = group.accounts :+ Account.create(accId, ctx.accType, ctx.name))
   }
 }

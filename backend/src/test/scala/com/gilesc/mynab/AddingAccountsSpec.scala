@@ -69,4 +69,15 @@ class AddingAccountsSpec extends FlatSpec with Matchers
 
     group should be(Right(AccountGroup(groupId, groupname, expectedAccounts)))
   }
+
+  it should "give the proper error if no account group can be found" in {
+    val groupId = -1L
+
+    val name = "Chase Checking"
+    val accType = Banking
+    val ctx = AccountContext(groupId, name, accType)
+    val group = createAccount(ctx)
+
+    group should be(Left(InvalidAccountGroupId(groupId)))
+  }
 }
