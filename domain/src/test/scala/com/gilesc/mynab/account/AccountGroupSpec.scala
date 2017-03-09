@@ -72,7 +72,7 @@ class AccountGroupSpec extends TestCase
         _ <- AccountGroup.add(chaseChecking)
         _ <- AccountGroup.add(chaseVisaAmazon)
       } yield ()
-      val group = accounts.runS(AccountGroup.create("Budget Accounts")).value
+      val group = accounts.runS(AccountGroup.create(1L, "Budget Accounts")).value
 
       AccountGroup.sum(group.accounts) should be(3406.19)
 

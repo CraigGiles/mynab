@@ -4,6 +4,10 @@ package account
 import com.gilesc.commons.validation.ValidationError
 import com.gilesc.mynab.logging.LoggingModule
 import com.gilesc.mynab.repository._
+import com.gilesc.mynab.transaction.Transaction
+
+import cats._
+import cats.implicits._
 
 sealed trait AccountActionResult
 final case class Success(account: Account) extends AccountActionResult
@@ -62,4 +66,54 @@ object AccountService {
   }
 }
 
+// ---------------------------------------------------------------------------
+// NEW DOMAIN
+// ---------------------------------------------------------------------------
+final case class DuplicateIdException() extends Exception("Duplicate ID")
 
+sealed trait PersistenceFailure
+final case object DuplicateIdError extends PersistenceFailure
+
+trait NewAccountGroupService {
+  def createGroup: AccountName => Either[String, AccountGroup]
+}
+
+object NewAccountGroupService {
+  def create(save: AccountName => Either[PersistenceFailure, AccountGroupId])
+    (name: AccountName): Either[String, AccountGroup] = {
+
+    save(name) match {
+      case Right(id) => Right(AccountGroup.create(id, name))
+      case Left(DuplicateIdError) => Left(DuplicateIdError.toString)
+    }
+  }
+}
+
+case class AccountContext(group: AccountGroupId, name: AccountName, accType: AccountType)
+
+object NewAccountService {
+
+  def create(
+    save: AccountContext => Either[PersistenceFailure, AccountId],
+    find: AccountGroupId => Option[AccountGroup])
+    (ctx: AccountContext): Either[String, Account] = {
+
+    // TODO: Persist Account with AccountGroupId pivot
+    // TODO: Construct Account Object with proper AccountId
+    // TODO: Prepend Account to AccountGroup's `accounts` variable
+    // TODO: Return AccountGroup
+    val result: Either[PersistenceFailure, AccountId] = save(ctx)
+
+//    val asdf = result.map { id =>
+//      val acc = Account.create(id, ctx.accType, ctx.name)
+//      find(ctx.group) map { group =>
+//        group
+//      }
+//    }
+
+     result match {
+      case Right(id) => Right(Account.create(id, ctx.accType, ctx.name))
+      case Left(err) => Left(err.toString)
+    }
+  }
+}

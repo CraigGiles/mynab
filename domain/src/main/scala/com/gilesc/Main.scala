@@ -3,6 +3,9 @@ package com.gilesc
 import com.gilesc.mynab.account._
 import com.gilesc.mynab.transaction._
 
+import cats._
+import cats.implicits._
+
 object Main extends App {
   implicit def str2accountName(value: String): AccountName = {
     AccountName(value).toOption.getOrElse(AccountName("Random Account").toOption.get)
@@ -43,7 +46,7 @@ object Main extends App {
     _ <- AccountGroup.add(chaseChecking)
     _ <- AccountGroup.add(chaseVisaAmazon)
   } yield ()
-  val group = accounts.runS(AccountGroup.create("Budget Accounts")).value
+  val group = accounts.runS(AccountGroup.create(AccountGroupId(1L), "Budget Accounts")).value
 
   prettyPrint(group)
 

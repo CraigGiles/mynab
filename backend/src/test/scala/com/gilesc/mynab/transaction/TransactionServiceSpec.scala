@@ -11,7 +11,7 @@ class TransactionServiceSpec extends TestCase
   with TransactionServiceModule
   with MockTransactionCreation {
 
-  val create = TransactionService.create(
+  val create: TransactionDetails => CreateResult = TransactionService.create(
     InMemoryAccountRepository.find,
     InMemoryTransactionRepository.save,
     PrintlnLoggingService)
@@ -35,12 +35,12 @@ class TransactionServiceSpec extends TestCase
       val transactionId = 1L
       val details = TransactionDetails(accountId, transactionId, date, payee,
         majorCat, minorCat, memo, deposit, withdrawal, cleared)
-      val expected = trans(transactionId, LocalDate.parse(date), payee,
-        majorCat, minorCat, memo, withdrawal, deposit, cleared)
 
       val result = create(details)
 
-      result should be(Success(expected))
+      result should be(Success(
+        trans(transactionId, LocalDate.parse(date), payee,
+          majorCat, minorCat, memo, withdrawal, deposit, cleared)))
     }
 
     "give you a Left when parsing incorrect formatted date" in {

@@ -41,7 +41,7 @@ class CategorySpec extends TestCase
 
       val before = Category(MajorCategory(loans), MinorCategory(changeme))
       val after = Category(MajorCategory(loans), MinorCategory(student))
-      val group = AccountGroup("budget accounts", Vector(checkingAcc))
+      val group = AccountGroup(1L, "budget accounts", Vector(checkingAcc))
 
       val newAccountGroup = renameCategory(before, after, group)
 

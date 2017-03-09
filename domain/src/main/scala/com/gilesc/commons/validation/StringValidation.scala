@@ -1,5 +1,8 @@
 package com.gilesc.commons.validation
 
+import cats._
+import cats.implicits._
+
 object StringValidation {
   val lengthIsGreaterThan:
     Int => String => Either[InvalidLengthError.type, String] = {

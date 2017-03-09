@@ -1,6 +1,7 @@
 package com.gilesc.mynab
 package account
 
+import cats.implicits._
 import com.gilesc.mynab.logging.LoggingModule
 import com.gilesc.mynab.repository.InMemoryAccountRepository
 import com.gilesc.mynab.transaction.Transaction

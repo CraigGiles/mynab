@@ -5,8 +5,11 @@ import java.time.LocalDate
 import com.gilesc.mynab.account.{Account, AccountId}
 import com.gilesc.mynab.category._
 import com.gilesc.mynab.logging.LoggingModule
+import cats._
+import cats.implicits._
 
 import scala.util.Try
+//import scala.util.Try
 
 case class TransactionDetails(
   accountId: Long, transactionId: Long,
@@ -51,7 +54,7 @@ object TransactionService {
   }
 
   def parseDate(value: String): Either[String, LocalDate] =
-    Try(LocalDate.parse(value)).toEither.left.map(_.getMessage)
+    Either.fromTry(Try(LocalDate.parse(value))).left.map(_.getMessage)
 
   val convert: TransactionDetails => Either[String, Transaction] = { details =>
     parseDate(details.date) map { date =>
@@ -70,7 +73,6 @@ object TransactionService {
   }
 
 }
-
 
 // --------------------------------------------------------------------------
 // Move to its own file

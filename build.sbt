@@ -1,6 +1,6 @@
 val commonSettings = Seq(
   organization := "com.gilesc",
-  scalaVersion in ThisBuild := "2.12.1",
+  scalaVersion in ThisBuild := "2.11.8",
   version := "0.0.1",
   scalacOptions := Seq(
     // Target the 1.8 JVM since we will be using scala 2.12 as a default for
@@ -37,7 +37,7 @@ val commonSettings = Seq(
     "-Ywarn-value-discard",
 
     // Warn us when a function or value is defined but never used.
-    "-Ywarn-unused",
+//    "-Ywarn-unused",
 
     // Kill the compile on warnings
     "-Xfatal-warnings",

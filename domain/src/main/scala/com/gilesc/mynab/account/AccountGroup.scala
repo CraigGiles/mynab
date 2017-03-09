@@ -4,11 +4,13 @@ import cats.data.State
 import com.gilesc.commons.{Prepending, Removing}
 import com.gilesc.mynab.transaction._
 
+case class AccountGroupId(value: Long) extends AnyVal
+
 object AccountGroup extends AccountGroupModule with Prepending with Removing {
   type AccountState = Vector[Account]
 
-  val create: (AccountName) => AccountGroup =
-    AccountGroup(_, Vector.empty[Account])
+  val create: (AccountGroupId, AccountName) => AccountGroup = (id, name) =>
+    AccountGroup(id, name, Vector.empty[Account])
 
   val add: Account => State[AccountGroup, Unit] = a =>
     State[AccountGroup, Unit] { group =>
@@ -21,7 +23,7 @@ object AccountGroup extends AccountGroupModule with Prepending with Removing {
     }
 }
 
-case class AccountGroup(name: AccountName, accounts: Vector[Account]) {
+case class AccountGroup(id: AccountGroupId, name: AccountName, accounts: Vector[Account]) {
   def transactions: Vector[Transaction] = accounts.head.transactions
 }
 

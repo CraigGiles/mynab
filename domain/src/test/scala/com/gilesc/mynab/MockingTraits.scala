@@ -7,6 +7,7 @@ import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction._
 
 import scala.util.Random
+import cats.implicits._
 
 trait TestCaseHelpers {
   implicit def str2accountName(value: String): AccountName = {
@@ -14,6 +15,7 @@ trait TestCaseHelpers {
   }
 
   implicit def long2AccountId(value: Long): AccountId = AccountId(value)
+  implicit def long2AccountGroupId(value: Long): AccountGroupId = AccountGroupId(value)
   implicit def long2TransactionId(value: Long): TransactionId = TransactionId(value)
 }
 

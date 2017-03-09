@@ -1,6 +1,8 @@
 package com.gilesc.commons.validation
 
 import com.gilesc.mynab.TestCase
+import cats._
+import cats.implicits._
 
 class StringValidationSpec extends TestCase {
   "String Validation" should {
