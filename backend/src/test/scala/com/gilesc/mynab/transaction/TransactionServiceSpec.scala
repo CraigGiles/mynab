@@ -3,7 +3,6 @@ package com.gilesc.mynab.transaction
 import java.time.LocalDate
 
 import com.gilesc.mynab._
-import com.gilesc.mynab.logging.PrintlnLoggingService
 import com.gilesc.mynab.repository.InMemoryAccountRepository
 
 class TransactionServiceSpec extends TestCase
@@ -14,7 +13,7 @@ class TransactionServiceSpec extends TestCase
   val create: TransactionDetails => CreateResult = TransactionService.create(
     InMemoryAccountRepository.find,
     InMemoryTransactionRepository.save,
-    PrintlnLoggingService)
+    NullLoggingService)
 
   "Adding a new transaction" should {
     val accountId = 1L
