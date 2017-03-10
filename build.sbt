@@ -37,7 +37,7 @@ val commonSettings = Seq(
     "-Ywarn-value-discard",
 
     // Warn us when a function or value is defined but never used.
-//    "-Ywarn-unused",
+    "-Ywarn-unused",
 
     // Kill the compile on warnings
     "-Xfatal-warnings",

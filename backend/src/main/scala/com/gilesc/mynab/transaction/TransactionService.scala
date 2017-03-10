@@ -94,7 +94,6 @@ object InMemoryTransactionRepository extends AccountRepositoryModule {
   private[this] var transactions = Vector.empty[Transaction]
 
   def save: Transaction => Either[PersistenceFailure, Transaction] = { t =>
-    println(s"Persisting $t")
     transactions = transactions :+ t
     Right(t)
   }

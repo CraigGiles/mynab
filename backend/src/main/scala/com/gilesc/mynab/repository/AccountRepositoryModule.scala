@@ -20,7 +20,6 @@ object InMemoryAccountRepository extends AccountRepositoryModule {
   var accounts = Vector.empty[Account]
 
   def save: Account => PersistenceResult = { account =>
-    println(s"Persisting $account")
     accounts = accounts :+ account
     PersistenceSuccessful
   }
