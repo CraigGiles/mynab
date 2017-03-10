@@ -2,50 +2,19 @@ package com.gilesc
 package mynab
 
 import cats.implicits._
-import com.gilesc.mynab.account.{AccountGroupPersistenceError, _}
-import com.gilesc.mynab.transaction._
+import com.gilesc.mynab.account._
 import org.scalatest._
 
 class AddingAccountsSpec extends FlatSpec with Matchers
   with MockAccountCreation
   with TestCaseHelpers
-  with NewAccountGroupService {
-
-  object GroupRepo {
-    import com.gilesc.mynab.account.AccountGroupPersistenceError
-    private var groups = Vector.empty[AccountGroup]
-
-    def save(name: AccountName): Either[AccountGroupPersistenceError, AccountGroupId] = {
-      val id = AccountGroupId(groups.size + 1L)
-      val group = AccountGroup.create(id, name)
-
-      groups = groups :+ group
-
-      Right(id)
-    }
-
-    def find(id: AccountGroupId): Option[AccountGroup] = groups.find(_.id == id)
-  }
-
-  object AccRepo {
-    import com.gilesc.mynab.account.AccountPersistenceError
-    private var accounts = Vector.empty[Account]
-
-    def save(ctx: AccountContext): Either[AccountPersistenceError, AccountId] = {
-      val id = AccountId(accounts.size + 1L)
-      val account = Account.create(id, ctx.accType, ctx.name)
-
-      accounts = accounts :+ account
-
-      Right(id)
-    }
-  }
+  with AccountGroupService {
 
   val createGroup: AccountName => Either[String, AccountGroup] =
-    NewAccountGroupService.create(GroupRepo.save)
+    AccountGroupService.create(InMemoryAccountGroups.save)
 
   val createAccount: AccountContext => Either[AccountPersistenceError, AccountGroup] =
-    NewAccountService.create(AccRepo.save, GroupRepo.find)
+    AccountService.create(InMemoryAccounts.save, InMemoryAccountGroups.find)
 
   "Creating an account group by name" should "return the account group" in {
     val budgetaccounts = "Budget Accounts"
