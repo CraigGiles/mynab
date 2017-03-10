@@ -7,10 +7,6 @@ import cats.implicits._
 sealed trait AccountGroupPersistenceError
 case object DuplicateAccountGroupId extends AccountGroupPersistenceError
 
-trait AccountGroupService {
-  def createGroup: AccountName => Either[String, AccountGroup]
-}
-
 object AccountGroupService {
   def create(save: AccountName => Either[AccountGroupPersistenceError, AccountGroupId])
     (name: AccountName): Either[String, AccountGroup] = {
