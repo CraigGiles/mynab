@@ -24,6 +24,9 @@ trait MockAccountCreation { self: TestCaseHelpers =>
     BankingAccount(Random.nextLong(), name, transactions)
   def loan(name: String, transactions: Vector[Transaction]): LoanAccount =
     LoanAccount(Random.nextLong(), name, transactions)
+  def bankingWithId(id: Long, name: String, transactions: Vector[Transaction]): BankingAccount = {
+    BankingAccount(id, name, transactions)
+  }
 }
 
 trait MockTransactionCreation { self: TestCaseHelpers =>

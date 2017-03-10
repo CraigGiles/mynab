@@ -2,6 +2,7 @@ package com.gilesc.mynab.transaction
 
 import java.time.{LocalDate => Date}
 
+import com.gilesc.mynab.account.AccountId
 import com.gilesc.mynab.category._
 
 case class TransactionId(value: Long) extends AnyVal
@@ -15,8 +16,19 @@ case class Transaction(id: TransactionId, date: Date, payee: Payee,
   category: Category, memo: Memo, withdrawal: Amount, deposit: Amount,
   cleared: Cleared)
 
+case class TransactionContext(
+  accountId: AccountId,
+  date: Date, payee: Payee, category: Category, memo: Memo,
+  deposit: Amount, withdrawal: Amount, cleared: Cleared)
+
 object Transaction extends TransactionModule {
   import java.time.LocalDate
+
+  def create(transactionId: TransactionId, ctx: TransactionContext) = {
+    Transaction(transactionId, ctx.date, ctx.payee, ctx.category, ctx.memo,
+      ctx.withdrawal, ctx.deposit, ctx.cleared)
+  }
+
   def apply(id: Long,
             payee: String,
             majorCategory: String,

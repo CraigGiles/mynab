@@ -13,7 +13,10 @@ trait Account {
   def accountType: AccountType
   def transactions: Vector[Transaction]
 
-  def copy(id: AccountId, name: AccountName, transactions: Vector[Transaction]) =
+  def copy(id: AccountId = id,
+    name: AccountName = name,
+    transactions: Vector[Transaction] = transactions) =
+
     this match {
       case BankingAccount(_, _, _) => BankingAccount(id, name, transactions)
       case LoanAccount(_, _, _) => LoanAccount(id, name, transactions)
