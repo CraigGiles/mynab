@@ -14,9 +14,9 @@ object TransactionService {
     (ctx: TransactionContext): Either[TransactionPersistenceError, Account] = {
 
     for {
-      group <- Either.fromOption(find(ctx.accountId) , InvalidAccountId(ctx.accountId))
-      accId <- save(ctx)
-    } yield group.copy(transactions = group.transactions :+
-      Transaction(accId, ctx.date, ctx.payee, ctx.category, ctx.memo, ctx.withdrawal, ctx.deposit, ctx.cleared))
+      account <- Either.fromOption(find(ctx.accountId) , InvalidAccountId(ctx.accountId))
+      id <- save(ctx)
+    } yield account.copy(transactions = account.transactions :+
+      Transaction(id, ctx.date, ctx.payee, ctx.category, ctx.memo, ctx.withdrawal, ctx.deposit, ctx.cleared))
   }
 }
