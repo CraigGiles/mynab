@@ -14,10 +14,13 @@ class AddingAccountsSpec extends FlatSpec with Matchers
     val createGroup = AccountGroupService.create(mockSave) _
 
     val budgetaccounts = "Budget Accounts"
-    val nonbudgetaccounts = "Non Budget Accounts"
+    val budgetgroup = AccountGroup(groupId, budgetaccounts, Vector.empty[Account])
 
-    createGroup(budgetaccounts) should be(Right(AccountGroup(groupId, budgetaccounts, Vector.empty[Account])))
-    createGroup(nonbudgetaccounts) should be(Right(AccountGroup(groupId, nonbudgetaccounts, Vector.empty[Account])))
+    val nonbudgetaccounts = "Non Budget Accounts"
+    val nonbudgetgroup = AccountGroup(groupId, nonbudgetaccounts, Vector.empty[Account])
+
+    createGroup(budgetaccounts) should be(Right(budgetgroup))
+    createGroup(nonbudgetaccounts) should be(Right(nonbudgetgroup))
   }
 
   "Creating a new account" should "add the account to a valid account group" in {
