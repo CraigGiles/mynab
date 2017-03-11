@@ -21,4 +21,11 @@ object AccountService {
       accId <- save(ctx)
     } yield group.copy(accounts = group.accounts :+ Account.create(accId, ctx.accType, ctx.name))
   }
+
+  def find(
+    findAccount: AccountId => Option[Account])
+    (id: AccountId): Option[Account] = {
+
+    findAccount(id)
+  }
 }
