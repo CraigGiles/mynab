@@ -2,9 +2,8 @@ package com.gilesc
 package mynab
 
 import com.gilesc.mynab.account._
-import org.scalatest._
 
-class AddingAccountsSpec extends FlatSpec with Matchers
+class AddingAccountsSpec extends TestCase
   with MockAccountCreation
   with TestCaseHelpers {
 

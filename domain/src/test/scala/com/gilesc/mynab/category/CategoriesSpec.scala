@@ -10,8 +10,7 @@ class CategorySpec extends TestCase
 
   import Category._
 
-  "Categories" should {
-    "be able to be added to the system" in {
+  "Categories" should "be able to be added to the system" in {
       val loans = "loans"
       val student = "student"
       val mortgage = "mortgage"
@@ -26,10 +25,8 @@ class CategorySpec extends TestCase
 
       prepend(c2, state01) should be(group)
     }
-  }
 
-  "Renaming a category" should {
-    "rename all categories within the transaction system" in {
+  "Renaming a category" should "rename all categories within the transaction system" in {
       val changeme = "changeme"
       val loans = "loans"
       val student = "student"
@@ -56,7 +53,5 @@ class CategorySpec extends TestCase
         // only the proper minor categories get changed
         assert(one || two)
       }
-
     }
-  }
 }

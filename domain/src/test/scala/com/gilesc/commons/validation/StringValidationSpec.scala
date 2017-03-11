@@ -5,8 +5,7 @@ import cats._
 import cats.implicits._
 
 class StringValidationSpec extends TestCase {
-  "String Validation" should {
-    "validate the length of a string" in {
+  "String Validation" should "validate the length of a string" in {
       val greaterThanOne = StringValidation.lengthIsGreaterThan(1)
       val testme = "1"
       val valid = "12"
@@ -16,14 +15,14 @@ class StringValidationSpec extends TestCase {
       greaterThanOne(valid) should be(Right(valid))
     }
 
-    "validate non-empty strings" in {
+    it should "validate non-empty strings" in {
       val something = "s"
       val empty = ""
       StringValidation.nonEmpty(empty) should be(Left(InvalidLengthError))
       StringValidation.nonEmpty(something) should be(Right(something))
     }
 
-    "let you chain validations" in {
+    it should "let you chain validations" in {
       val greaterThanOne = StringValidation.lengthIsGreaterThan(1)
       val valid = "12"
 
@@ -34,6 +33,5 @@ class StringValidationSpec extends TestCase {
 
       something should be(Right(valid))
     }
-  }
 
 }

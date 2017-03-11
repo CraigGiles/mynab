@@ -10,8 +10,7 @@ class AccountGroupSpec extends TestCase
 
   import AccountGroup._
 
-  "Account groups" should {
-    "allow the addition of new accounts" in {
+  "Account groups" should "allow the addition of new accounts" in {
       val al = Vector.empty[Account]
       val b = banking("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
       val l = loan("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
@@ -27,7 +26,7 @@ class AccountGroupSpec extends TestCase
       state1 should be(Vector(l, b))
     }
 
-    "allow the removal of new accounts" in {
+    it should "allow the removal of new accounts" in {
       val b = banking("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
       val l = loan("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
       val bl = Vector(b, l)
@@ -42,7 +41,7 @@ class AccountGroupSpec extends TestCase
       remove(b, state0) should be(Vector(l))
     }
 
-    "sum the total transaction list from all its accounts" in {
+    it should "sum the total transaction list from all its accounts" in {
       val b = banking("chase", Vector(trans(withdrawal = 0.0, deposit = 1000.0)))
       val l = loan("nelnet", Vector(trans(withdrawal = 5000.0, deposit = 0.0)))
       val i = banking("chase-savings", Vector(trans(withdrawal = 0.0, deposit = 14000)))
@@ -53,7 +52,7 @@ class AccountGroupSpec extends TestCase
       sum(al2) should be(BigDecimal(10000.0))
     }
 
-    "should allow me to create accounts and transactions cleanly" in {
+    it should "should allow me to create accounts and transactions cleanly" in {
       val checkingTransactions = for {
         _ <- Account.add(Transaction(1L, "East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
         _ <- Account.add(Transaction(2L, "Credit Karma", "Income", "This Month", "", 0, 3742.56))
@@ -75,7 +74,5 @@ class AccountGroupSpec extends TestCase
       val group = accounts.runS(AccountGroup.create(1L, "Budget Accounts")).value
 
       AccountGroup.sum(group.accounts) should be(3406.19)
-
     }
-  }
 }

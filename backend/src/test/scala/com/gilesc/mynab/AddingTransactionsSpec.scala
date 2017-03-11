@@ -5,9 +5,8 @@ import java.time.LocalDate
 import com.gilesc.mynab.account._
 import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction._
-import org.scalatest.{FlatSpec, Matchers}
 
-class AddingTransactionsSpec extends FlatSpec with Matchers
+class AddingTransactionsSpec extends TestCase
   with TestCaseHelpers
   with MockTransactionCreation
   with MockAccountCreation {

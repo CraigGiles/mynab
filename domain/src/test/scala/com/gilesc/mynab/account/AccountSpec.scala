@@ -8,8 +8,7 @@ class AccountSpec extends TestCase
   with MockAccountCreation
   with TestCaseHelpers {
 
-  "An account" should {
-    "have the ability to prepend transactions" in {
+  "An account" should "have the ability to prepend transactions" in {
       val payeeInfo = "mynab-test"
       val trans01 = trans(withdrawal = 0.0, deposit = 0.0)
       val trans02 = trans(withdrawal = 0.0, deposit = 1.0)
@@ -26,7 +25,7 @@ class AccountSpec extends TestCase
       newacc.transactions.head.payee.value should be(payeeInfo)
     }
 
-    "have the ability to remove a specific transaction" in {
+    it should "have the ability to remove a specific transaction" in {
       val t0 = trans(deposit = 0.0, withdrawal = 0.0)
       val t1 = trans(deposit = 0.0, withdrawal = 1.0)
       val t2 = trans(deposit = 0.0, withdrawal = 2.0)
@@ -37,10 +36,9 @@ class AccountSpec extends TestCase
       Account.remove(t1, state) should be(expected)
     }
 
-    "give me a proper account type object" in {
+    it should "give me a proper account type object" in {
       AccountType("Banking") should be(Right(Banking))
       AccountType("banking") should be(Right(Banking))
       AccountType("BANKING") should be(Right(Banking))
     }
-  }
 }

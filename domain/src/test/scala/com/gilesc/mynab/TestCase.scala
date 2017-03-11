@@ -1,6 +1,6 @@
 package com.gilesc.mynab
 
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.{Matchers, FlatSpec}
 
-abstract class TestCase extends WordSpecLike with Matchers
+abstract class TestCase extends FlatSpec with Matchers
 

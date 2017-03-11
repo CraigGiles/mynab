@@ -7,8 +7,7 @@ class TransactionSpec extends TestCase
   with MockTransactionCreation
   with TestCaseHelpers {
 
-  "Transactions" should {
-    "have deposits sum correctly" in {
+  "Transactions" should "have deposits sum correctly" in {
       val ts = Vector(trans(withdrawal = 0.0, deposit = 0.0),
         trans(withdrawal = 0.0, deposit = 1.0),
         trans(withdrawal = 0.0, deposit = 2.0),
@@ -20,7 +19,7 @@ class TransactionSpec extends TestCase
       Transaction.sum(ts) should be(BigDecimal(15.0))
     }
 
-    "have withdrawls sum correctly" in {
+    it should "have withdrawls sum correctly" in {
       val ts = Vector(
         trans(withdrawal = 10.0, deposit = 0.0),
         trans(withdrawal = 2.0, deposit = 0.0),
@@ -32,7 +31,7 @@ class TransactionSpec extends TestCase
       Transaction.sum(ts) should be(BigDecimal(2.0))
     }
 
-    "allow you to change the category" in {
+    it should "allow you to change the category" in {
       val ts = Vector(trans(withdrawal = 0.0, deposit = 1.0))
       val major = MajorCategory("loans")
       val minor = MinorCategory("student")
@@ -43,7 +42,7 @@ class TransactionSpec extends TestCase
       changed.head.category.minor should be(minor)
     }
 
-    "have the ability to mark transactions as 'cleared'" in {
+    it should "have the ability to mark transactions as 'cleared'" in {
       val t1 = trans(withdrawal = 0.0, deposit = 1.0)
       val t2 = trans(withdrawal = 0.0, deposit = 2.0)
       val state = Vector(t2, t1)
@@ -54,5 +53,4 @@ class TransactionSpec extends TestCase
       result should be(Vector(t1.copy(cleared = Cleared(true))))
       Transaction.toggleCleared(Vector(t1), state) should be(expected)
     }
-  }
 }
