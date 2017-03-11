@@ -35,8 +35,8 @@ object HelloWorld {
           Ok(jSingleObject("error", jString("Unable to create account name")))
       }
 
-    case GET -> root / "transaction" / id =>
-      AccountService.find()
+//    case GET -> root / "transaction" / id =>
+//      AccountService.find()
   }
 
   val service = HttpService {
