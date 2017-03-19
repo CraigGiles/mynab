@@ -5,7 +5,7 @@ package endpoint
 
 import com.gilesc.mynab.account.{AccountName, Banking}
 import com.gilesc.mynab.finch.InMemoryRepos.AccountsRepo
-import com.gilesc.mynab.finch.presenter.CircePresenter
+import com.gilesc.mynab.finch.presenter.CirceAccountPresenter
 import com.gilesc.mynab.transaction.Transaction
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
@@ -28,7 +28,7 @@ object AccountEndpoints {
           case Right(id) => id.asJson
             val account = AccountsRepo.accounts.find(_.id == id).head
             val t = Transaction(1L, "Payee", "Major", "Minor", "Memo", 100, 0)
-            CircePresenter.present(account.copy(transactions = Vector(t)))
+            CirceAccountPresenter.present(account.copy(transactions = Vector(t)))
           case Left(error) => error.asJson
         }
 

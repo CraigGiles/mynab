@@ -6,7 +6,7 @@ package presenter
 import com.gilesc.mynab.account.Account
 import io.circe.Json
 
-object CircePresenter extends Presenter[Account, Json] {
+object CirceAccountPresenter extends Presenter[Account, Json] {
   import io.circe._
   import io.circe.generic.auto._
   import io.circe.syntax._
