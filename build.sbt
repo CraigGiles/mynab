@@ -71,7 +71,7 @@ lazy val rootProject = (project in file("."))
   .settings(
     name := "mynab",
     aggregate in update := false)
-  .aggregate(flyway, domain, backend, http4s)
+  .aggregate(flyway, domain, backend, finch)
 
 lazy val flyway = (project in file("flyway"))
   .settings(commonSettings: _*)
@@ -94,7 +94,7 @@ lazy val backend = Project("backend", file("backend"))
     mysql % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.backend)
 
-lazy val http4s = Project("http4s", file("http4s"))
+lazy val finch = Project("finch", file("finch"))
   .settings(commonSettings: _*)
   .dependsOn(backend % "test->test;test->compile;compile->compile")
-  .settings(libraryDependencies ++= Dependencies.http4s)
+  .settings(libraryDependencies ++= Dependencies.finch)
