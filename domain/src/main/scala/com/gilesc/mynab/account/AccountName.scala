@@ -3,7 +3,6 @@ package account
 
 import com.gilesc.commons.validation.{StringValidation, ValidationError}
 
-import cats._
 import cats.implicits._
 
 class AccountName private (val value: String) extends AnyVal {

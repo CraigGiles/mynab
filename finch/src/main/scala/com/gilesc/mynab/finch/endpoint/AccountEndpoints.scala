@@ -3,7 +3,7 @@ package mynab
 package finch
 package endpoint
 
-import com.gilesc.mynab.account.{AccountName, Banking}
+import com.gilesc.mynab.account._
 import com.gilesc.mynab.finch.InMemoryRepos.AccountsRepo
 import com.gilesc.mynab.finch.presenter.CirceAccountPresenter
 import com.gilesc.mynab.transaction.Transaction
@@ -22,13 +22,14 @@ object AccountEndpoints {
   }
 
   def postAccount: Endpoint[Json] = get(path :: string) { name: String =>
+    val t = Banking // TODO: Remove
+
     val result = AccountName(name) match {
       case Right(accountName) =>
-        AccountsRepo.save(accountName, Banking) match {
+        AccountsRepo.save(accountName, t) match {
           case Right(id) => id.asJson
-            val account = AccountsRepo.accounts.find(_.id == id).head
-            val t = Transaction(1L, "Payee", "Major", "Minor", "Memo", 100, 0)
-            CirceAccountPresenter.present(account.copy(transactions = Vector(t)))
+            val account = Account.create(id, t, accountName)
+            CirceAccountPresenter.present(account)
           case Left(error) => error.asJson
         }
 
