@@ -5,11 +5,11 @@ package endpoint
 
 import com.gilesc.mynab.account._
 import com.gilesc.mynab.finch.InMemoryRepos._
-import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
-import io.circe.generic.auto._
+import com.gilesc.mynab.finch.presenter.DataFactories
+import io.circe.syntax._
 import io.finch._
-import io.finch.circe._
+
+import io.circe.generic.auto._
 
 object AccountGroupEndpoints {
   val path = "account-group"
@@ -21,22 +21,21 @@ object AccountGroupEndpoints {
     val result = AccountName(name) match {
       case Right(accountName) =>
         GroupsRepo.save(accountName) match {
-          case Right(id) => GroupsRepo.groups.toString
-          case Left(error) => s"ERROR: $error"
+          case Right(id) =>
+            val account = Account.create(AccountId(id.value), Banking, accountName)
+            val mapped = GroupsRepo.groups map { group =>
+              group.copy(accounts = Vector(account))
+            }
+
+            (mapped map DataFactories.accountGroup).asJson
+          case Left(error) => Vector(error.asJson)
         }
 
-      case Left(_) => "ERROR"
+      case Left(error) => Vector(error.asJson)
     }
 
-    Created(result)
+    Created(result.toString)
   }
-
-  val api: Service[Request, Response] = (
-    AccountGroupEndpoints.postGroup :+: 
-    AccountGroupEndpoints.getGroup
-  ).handle({
-    case e => NotFound(new Exception(e.toString))
-  }).toServiceAs[Text.Plain]
 
 }
 

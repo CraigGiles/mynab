@@ -3,14 +3,21 @@ package com.gilesc.mynab.finch.presenter
 import java.time.LocalDate
 
 import com.gilesc.mynab._
+import com.gilesc.mynab.account.Banking
 
-class JsonPresenterSpec extends TestCase
+class DataFactorySpec extends TestCase
   with TestCaseHelpers
   with MockAccountCreation
   with MockTransactionCreation {
 
+  val id = 0L
+  val name = "hithere"
+  val typ = Banking.toString
+
   val t = trans(1, LocalDate.parse("2017-03-19"), "Payee", "Major", "Minor", "Memo", 100, 0)
-  val account = bankingWithId(0L, "hithere", Vector(t))
+  val tr = Vector(DataFactories.transaction(t))
+  val account = bankingWithId(id, name, Vector(t))
+
   val expected =
     """
       |{
@@ -35,7 +42,7 @@ class JsonPresenterSpec extends TestCase
       |}
     """.stripMargin
 
-  "Json Presenter" should "convert an account object to proper JSON" in {
-    CirceAccountPresenter.present(account).toString().trim should be(expected.trim)
+  "Data Factory" should "Convert correctly" in {
+    DataFactories.account(account) should be(AccountData(id, name, typ, tr))
   }
 }

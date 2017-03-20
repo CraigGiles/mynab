@@ -5,14 +5,13 @@ package endpoint
 
 import com.gilesc.mynab.account._
 import com.gilesc.mynab.finch.InMemoryRepos.AccountsRepo
-import com.gilesc.mynab.finch.presenter.CirceAccountPresenter
-import com.gilesc.mynab.transaction.Transaction
+import com.gilesc.mynab.finch.presenter.DataFactories
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
-import io.finch.{Endpoint, Text, _}
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
+import io.finch.{Endpoint, Text, _}
 
 object AccountEndpoints {
   val path = "account"
@@ -29,7 +28,7 @@ object AccountEndpoints {
         AccountsRepo.save(accountName, t) match {
           case Right(id) => id.asJson
             val account = Account.create(id, t, accountName)
-            CirceAccountPresenter.present(account)
+            DataFactories.account(account).asJson
           case Left(error) => error.asJson
         }
 

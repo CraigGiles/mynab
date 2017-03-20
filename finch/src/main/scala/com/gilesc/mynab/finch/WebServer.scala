@@ -8,12 +8,14 @@ import com.twitter.util.Await
 import io.finch.{Text, _}
 
 import com.gilesc.mynab.finch.endpoint._
+import io.circe.generic.auto._
+import io.finch.circe._
 
 object WebServer {
   // Endpoints
   val api: Service[Request, Response] = (
-//      AccountGroupEndpoints.postGroup :+:
-//      AccountGroupEndpoints.getGroup :+:
+      AccountGroupEndpoints.postGroup :+:
+      AccountGroupEndpoints.getGroup :+:
       AccountEndpoints.getAccount :+:
       AccountEndpoints.postAccount
     ).handle({
