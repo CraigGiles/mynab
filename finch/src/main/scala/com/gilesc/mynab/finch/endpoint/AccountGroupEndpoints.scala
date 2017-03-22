@@ -3,40 +3,43 @@ package mynab
 package finch
 package endpoint
 
-import com.gilesc.mynab.account._
-import com.gilesc.mynab.finch.InMemoryRepos._
-import com.gilesc.mynab.finch.presenter.DataFactories
-import io.circe.syntax._
-import io.finch._
 
+import com.gilesc.mynab.account._
+import com.gilesc.mynab.finch.InMemoryRepos.GroupsRepo
+import com.gilesc.mynab.finch.presenter.{AccountGroupData, DataFactories}
 import io.circe.generic.auto._
+import io.finch.circe._
+import io.finch.{Created, Endpoint, post, _}
 
 object AccountGroupEndpoints {
+  case class AccountGroupContext(name: String)
+
   val path = "account-group"
-  def getGroup: Endpoint[String] = get(path) {
-    Ok(GroupsRepo.groups.toString)
+  def getGroup: Endpoint[Vector[AccountGroupData]] = get(path) {
+    Ok(GroupsRepo.groups map DataFactories.accountGroup)
   }
 
-  def postGroup: Endpoint[String] = get(path :: string) { name: String =>
-    val result = AccountName(name) match {
-      case Right(accountName) =>
-        GroupsRepo.save(accountName) match {
-          case Right(id) =>
-            val account = Account.create(AccountId(id.value), Banking, accountName)
-            val mapped = GroupsRepo.groups map { group =>
-              group.copy(accounts = Vector(account))
-            }
+  def postGroup: Endpoint[AccountGroupData] = post(path :: jsonBody[AccountGroupContext]) { s: AccountGroupContext =>
+    val name = s.name
 
-            (mapped map DataFactories.accountGroup).asJson
-          case Left(error) => Vector(error.asJson)
+    AccountName(name) match {
+      case Right(an) =>
+        GroupsRepo.save(an) match {
+          case Right(id) =>
+            val account = Account.create(AccountId(id.value), Banking, an)
+            val group = GroupsRepo.groups.find(_.id == id).get
+            val newgroup = DataFactories.accountGroup(group.copy(accounts = group.accounts :+ account))
+
+            Created(newgroup)
+
+          case Left(persistenceError) =>
+            BadRequest(new IllegalArgumentException(persistenceError.toString))
         }
 
-      case Left(error) => Vector(error.asJson)
+      case Left(error) => BadRequest(new IllegalArgumentException(error.toString))
     }
 
-    Created(result.toString)
   }
-
 }
 
 
