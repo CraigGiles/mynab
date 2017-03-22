@@ -17,6 +17,33 @@ trait TestCaseHelpers {
   implicit def long2AccountId(value: Long): AccountId = AccountId(value)
   implicit def long2AccountGroupId(value: Long): AccountGroupId = AccountGroupId(value)
   implicit def long2TransactionId(value: Long): TransactionId = TransactionId(value)
+
+  implicit def str2Payee(value: String): Payee = Payee(value)
+  implicit def str2Memo(value: String): Memo = Memo(value)
+  implicit def str2MajorCategory(value: String): MajorCategory = MajorCategory(value)
+  implicit def str2MinorCategory(value: String): MinorCategory = MinorCategory(value)
+  implicit def double2Amount(value: Double): Amount = Amount(BigDecimal(value))
+
+  def createTransaction(id: Long,
+    payee: String,
+    majorCategory: String,
+    minorCategory: String,
+    memo: String,
+    withdrawal: Double,
+    deposit: Double,
+    localDate: LocalDate = LocalDate.now()): Transaction = {
+
+    Transaction(
+      TransactionId(id),
+      localDate,
+      Payee(payee),
+      Category.apply(MajorCategory(majorCategory), MinorCategory(minorCategory)),
+      Memo(memo),
+      Amount(BigDecimal(withdrawal)),
+      Amount(BigDecimal(deposit)),
+      Cleared(false))
+  }
+
 }
 
 trait MockAccountCreation { self: TestCaseHelpers =>

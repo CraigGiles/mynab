@@ -2,7 +2,6 @@ package com.gilesc
 package mynab
 
 import com.gilesc.mynab.account._
-import com.gilesc.mynab.transaction.Transaction
 
 class GettingAccountDetailsSpec extends TestCase
   with TestCaseHelpers
@@ -18,8 +17,8 @@ class GettingAccountDetailsSpec extends TestCase
 
   it should "give you an account with all of its transactions" in {
     val id = 1L
-    val transaction01 = Transaction(1L, "East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0)
-    val transaction02 = Transaction(2L, "Credit Karma", "Income", "This Month", "", 0, 3742.56)
+    val transaction01 = createTransaction(1L, "East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0)
+    val transaction02 = createTransaction(2L, "Credit Karma", "Income", "This Month", "", 0, 3742.56)
     val chasechecking = "Chase Checking"
     val accountType = Banking
     val expected = Account(id, accountType, chasechecking, Vector(transaction02, transaction01))

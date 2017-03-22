@@ -1,14 +1,12 @@
 package com.gilesc.mynab
 package account
 
-import com.gilesc.mynab.transaction.Transaction
-
 class AccountGroupSpec extends TestCase
   with MockTransactionCreation
   with MockAccountCreation
   with TestCaseHelpers {
 
-  import AccountGroup._
+  import com.gilesc.mynab.account.AccountGroup._
 
   "Account groups" should "allow the addition of new accounts" in {
       val al = Vector.empty[Account]
@@ -54,16 +52,16 @@ class AccountGroupSpec extends TestCase
 
     it should "should allow me to create accounts and transactions cleanly" in {
       val checkingTransactions = for {
-        _ <- Account.add(Transaction(1L, "East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
-        _ <- Account.add(Transaction(2L, "Credit Karma", "Income", "This Month", "", 0, 3742.56))
+        _ <- Account.add(createTransaction(1L, "East Bay Municipal District", "Housing", "Water", "", 105.26, 0.0))
+        _ <- Account.add(createTransaction(2L, "Credit Karma", "Income", "This Month", "", 0, 3742.56))
       } yield ()
       val chaseChecking = checkingTransactions.runS(Account.create(1L, Banking, "Chase Checking")).value
 
       val visaTransactions = for {
-        _ <- Account.add(Transaction(3L, "Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
-        _ <- Account.add(Transaction(4L, "Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
-        _ <- Account.add(Transaction(5L, "Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
-        _ <- Account.add(Transaction(6L, "T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
+        _ <- Account.add(createTransaction(3L, "Frontpoint Security", "Housing", "Security", "", 45.00, 0.0))
+        _ <- Account.add(createTransaction(4L, "Netflix", "Lifestyle", "Movies", "", 9.99, 0.0))
+        _ <- Account.add(createTransaction(5L, "Comcast", "Lifestyle", "Internet", "", 65.00, 0.0))
+        _ <- Account.add(createTransaction(6L, "T-Mobile", "Lifestyle", "Cell Phone", "", 111.12, 0.0))
       } yield ()
       val chaseVisaAmazon = visaTransactions.runS(Account.create(2L, Banking, "Chase Amazon CC")).value
 

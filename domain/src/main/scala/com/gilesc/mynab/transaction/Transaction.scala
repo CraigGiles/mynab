@@ -22,30 +22,10 @@ case class TransactionContext(
   deposit: Amount, withdrawal: Amount, cleared: Cleared)
 
 object Transaction extends TransactionModule {
-  import java.time.LocalDate
 
   def create(transactionId: TransactionId, ctx: TransactionContext) = {
     Transaction(transactionId, ctx.date, ctx.payee, ctx.category, ctx.memo,
       ctx.withdrawal, ctx.deposit, ctx.cleared)
-  }
-
-  def apply(id: Long,
-            payee: String,
-            majorCategory: String,
-            minorCategory: String,
-            memo: String,
-            withdrawal: Double,
-            deposit: Double): Transaction = {
-
-    Transaction(
-      TransactionId(id),
-      LocalDate.now(),
-      Payee(payee),
-      Category.apply(MajorCategory(majorCategory), MinorCategory(minorCategory)),
-      Memo(memo),
-      Amount(BigDecimal(withdrawal)),
-      Amount(BigDecimal(deposit)),
-      Cleared(false))
   }
 
 
