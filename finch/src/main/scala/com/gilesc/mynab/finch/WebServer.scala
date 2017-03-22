@@ -17,7 +17,7 @@ object WebServer {
       AccountGroupEndpoints.postGroup :+:
       AccountGroupEndpoints.getGroup :+:
       AccountEndpoints.getAccount :+:
-      AccountEndpoints.postAccount :+:
+      AccountEndpoints.postAccount
     ).handle({
     case e => NotFound(new Exception(e.toString))
   }).toServiceAs[Application.Json]
