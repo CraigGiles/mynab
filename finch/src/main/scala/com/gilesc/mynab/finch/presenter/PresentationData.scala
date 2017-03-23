@@ -11,7 +11,7 @@ case class TransactionData(id: Long, date: String, payee: String, category: Cate
 case class AccountData(id: Long, name: String, `type`: String, transactions: Vector[TransactionData])
 case class AccountGroupData(id: Long, name: String, accounts: Vector[AccountData])
 
-object DataFactories {
+object PresentationData {
   def transaction(t: Transaction): TransactionData =
     TransactionData(t.id.value,
       t.date.toString,

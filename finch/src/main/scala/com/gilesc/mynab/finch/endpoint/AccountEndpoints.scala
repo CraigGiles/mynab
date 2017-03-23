@@ -5,7 +5,7 @@ package endpoint
 
 import com.gilesc.mynab.account._
 import com.gilesc.mynab.finch.InMemoryRepos.AccountsRepo
-import com.gilesc.mynab.finch.presenter.{AccountData, DataFactories}
+import com.gilesc.mynab.finch.presenter.{AccountData, PresentationData}
 import io.finch.{Endpoint, _}
 import io.circe.generic.auto._
 import io.finch.circe._
@@ -15,7 +15,7 @@ object AccountEndpoints {
   case class AccountContext(name: String)
 
   def getAccount: Endpoint[Vector[AccountData]] = get(path) {
-    Ok(AccountsRepo.accounts map DataFactories.account)
+    Ok(AccountsRepo.accounts map PresentationData.account)
   }
 
   def postAccount: Endpoint[AccountData] = post(path :: jsonBody[AccountContext]) { ctx: AccountContext =>
@@ -26,7 +26,7 @@ object AccountEndpoints {
         AccountsRepo.save(an, t) match {
           case Right(id) =>
             val account = Account.create(id, t, an)
-            Created(DataFactories.account(account))
+            Created(PresentationData.account(account))
           case Left(error) =>
             BadRequest(new IllegalArgumentException(error.toString))
         }

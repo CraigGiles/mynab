@@ -15,7 +15,7 @@ class DataFactorySpec extends TestCase
   val typ = Banking.toString
 
   val t = trans(1, LocalDate.parse("2017-03-19"), "Payee", "Major", "Minor", "Memo", 100, 0)
-  val tr = Vector(DataFactories.transaction(t))
+  val tr = Vector(PresentationData.transaction(t))
   val account = bankingWithId(id, name, Vector(t))
 
   val expected =
@@ -43,6 +43,6 @@ class DataFactorySpec extends TestCase
     """.stripMargin
 
   "Data Factory" should "Convert correctly" in {
-    DataFactories.account(account) should be(AccountData(id, name, typ, tr))
+    PresentationData.account(account) should be(AccountData(id, name, typ, tr))
   }
 }

@@ -6,7 +6,7 @@ package endpoint
 
 import com.gilesc.mynab.account._
 import com.gilesc.mynab.finch.InMemoryRepos.GroupsRepo
-import com.gilesc.mynab.finch.presenter.{AccountGroupData, DataFactories}
+import com.gilesc.mynab.finch.presenter.{AccountGroupData, PresentationData}
 import io.circe.generic.auto._
 import io.finch.circe._
 import io.finch.{Created, Endpoint, post, _}
@@ -16,7 +16,7 @@ object AccountGroupEndpoints {
 
   val path = "account-group"
   def getGroup: Endpoint[Vector[AccountGroupData]] = get(path) {
-    Ok(GroupsRepo.groups map DataFactories.accountGroup)
+    Ok(GroupsRepo.groups map PresentationData.accountGroup)
   }
 
   def postGroup: Endpoint[AccountGroupData] = post(path :: jsonBody[AccountGroupContext]) { s: AccountGroupContext =>
@@ -28,7 +28,7 @@ object AccountGroupEndpoints {
           case Right(id) =>
             val account = Account.create(AccountId(id.value), Banking, an)
             val group = GroupsRepo.groups.find(_.id == id).get
-            val newgroup = DataFactories.accountGroup(group.copy(accounts = group.accounts :+ account))
+            val newgroup = PresentationData.accountGroup(group.copy(accounts = group.accounts :+ account))
 
             Created(newgroup)
 
