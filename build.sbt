@@ -71,7 +71,7 @@ lazy val rootProject = (project in file("."))
   .settings(
     name := "mynab",
     aggregate in update := false)
-  .aggregate(flyway, domain, backend, finch)
+  .aggregate(flyway, domain, backend, finch, mysql)
 
 lazy val flyway = (project in file("flyway"))
   .settings(commonSettings: _*)
@@ -85,7 +85,7 @@ lazy val domain = Project("domain", file("domain"))
 lazy val mysql = Project("mysql", file("mysql"))
   .settings(commonSettings: _*)
   .dependsOn(domain % "test->test;test->compile;compile->compile")
-  .settings(libraryDependencies ++= Dependencies.backend)
+  .settings(libraryDependencies ++= Dependencies.mysql)
 
 lazy val backend = Project("backend", file("backend"))
   .settings(commonSettings: _*)

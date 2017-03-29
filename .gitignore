@@ -16,6 +16,7 @@ dist
 /.project
 /RUNNING_PID
 /.settings
+db/
 
 *.class
 *.log
