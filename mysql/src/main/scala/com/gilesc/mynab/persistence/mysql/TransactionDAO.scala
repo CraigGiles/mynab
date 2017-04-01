@@ -21,11 +21,10 @@ object TransactionDAO {
 
     Transaction(id, date, payee, Category(majorCat, minorCat), memo, withdrawal, deposit, cleared)
   }
-
 }
 
 object TransactionRepository {
-  Initializer.init()
+  DatabaseInitializer.init()
   implicit val session = AutoSession
 
   val createString = sql"""
@@ -58,5 +57,5 @@ object TransactionRepository {
     """.stripMargin('|').updateAndReturnGeneratedKey.apply()
 
     Transaction.create(TransactionId(id), t)
-}
+  }
 }

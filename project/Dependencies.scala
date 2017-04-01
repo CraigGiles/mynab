@@ -14,12 +14,12 @@ object Dependencies {
   lazy val backend = core ++ Seq()
 
   lazy val mysql = Seq(
-    mysqlConnectorJava,
     cats,
     scalatest(scope),
     scalalikeJDBC(""),
     scalalikeJDBC("-config"),
     scalalikeJDBC("-jsr310"),
+    mysqlConnectorJava,
     h2database,
     logbackClassic)
 
