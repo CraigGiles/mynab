@@ -66,12 +66,14 @@ val commonSettings = Seq(
   )
 )
 
+addCommandAlias("migrate", ";flyway/flywayMigrate")
+
 lazy val rootProject = (project in file("."))
   .settings(commonSettings: _*)
   .settings(
     name := "mynab",
     aggregate in update := false)
-  .aggregate(flyway, domain, backend, finch, mysql)
+  .aggregate(domain, backend, finch, mysql)
 
 lazy val flyway = (project in file("flyway"))
   .settings(commonSettings: _*)
