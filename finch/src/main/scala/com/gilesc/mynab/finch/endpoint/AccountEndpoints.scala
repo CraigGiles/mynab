@@ -35,5 +35,4 @@ object AccountEndpoints {
         BadRequest(new IllegalArgumentException(error.toString))
     }
   }
-
 }

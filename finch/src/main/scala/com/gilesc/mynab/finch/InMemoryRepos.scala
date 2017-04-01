@@ -6,13 +6,6 @@ object InMemoryRepos {
   object GroupsRepo {
     var groups = Vector.empty[AccountGroup]
 
-    def save(name: AccountName): Either[AccountGroupPersistenceError, AccountGroupId] = {
-      val id = groups.length
-      val group = AccountGroup(AccountGroupId(id.toLong), name, Vector.empty[Account])
-      groups = groups :+ group
-      Right(group.id)
-    }
-
     def find(id: AccountGroupId): Option[AccountGroup] = groups.find(_.id == id)
   }
 

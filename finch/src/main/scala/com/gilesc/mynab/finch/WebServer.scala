@@ -2,7 +2,8 @@ package com.gilesc
 package mynab
 package finch
 
-import com.gilesc.mynab.finch.endpoint.{AccountEndpoints, AccountGroupEndpoints}
+import com.gilesc.mynab.finch.endpoint.AccountEndpoints
+import com.gilesc.mynab.finch.endpoint.AccountGroupEndpoints
 
 object WebServer {
   import com.twitter.finagle.http.{Request, Response}

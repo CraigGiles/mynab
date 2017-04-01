@@ -13,7 +13,16 @@ object Dependencies {
   lazy val domain = core ++ Seq()
   lazy val backend = core ++ Seq()
 
-  lazy val mysql = core ++ Seq(mysqlConnectorJava)
+  lazy val mysql = Seq(
+    cats,
+    scalatest(scope),
+    scalalikeJDBC(""),
+    scalalikeJDBC("-config"),
+    scalalikeJDBC("-jsr310"),
+    mysqlConnectorJava,
+    h2database,
+    logbackClassic)
+
   lazy val flyway = Seq(
       flywayCore,
       mysqlConnectorJava)
@@ -41,6 +50,9 @@ object Dependencies {
 
   // Database
   def flywayCore = "org.flywaydb" % "flyway-core" % "4.0"
+  def scalalikeJDBC(module: String) = "org.scalikejdbc" %% s"scalikejdbc$module" % "2.3.5"
+  def h2database = "com.h2database"  %  "h2" % "1.4.191"
+  def logbackClassic = "ch.qos.logback"  %  "logback-classic" % "1.1.3"
 
   // NOTE: plugins.sbt has the same version of mysql-connector-java.
   //       Please keep these two versions in sync.
