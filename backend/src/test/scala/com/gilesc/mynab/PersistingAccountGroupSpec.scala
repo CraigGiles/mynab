@@ -35,9 +35,10 @@ class PersistingAccountGroupSpec extends TestCase
       Right(AccountGroup.create(1L, validName)))
   }
 
-  it should "give you sensible error messages" in {
+  it should "never call the mock function if an invalid account name is provided" in {
     val expected = s"$invalidName is not a valid account name"
-    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, AccountGroupRow] = ???
+    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, AccountGroupRow] =
+      sys.error("Somehow passed the AccountName restriction")
 
     AccountGroupService.find(mockFind)(FindByName(invalidName)) should be(Left(expected))
   }
