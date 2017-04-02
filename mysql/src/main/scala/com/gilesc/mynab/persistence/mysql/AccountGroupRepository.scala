@@ -3,8 +3,6 @@ package mynab
 package persistence
 package account
 
-// save: AccountName => Either[AccountGroupPersistenceError, AccountGroupId]
-
 import scalikejdbc._
 import scalikejdbc.jsr310._
 import java.time._
@@ -14,6 +12,7 @@ import cats.implicits._
 
 sealed trait AccountGroupPersistenceError
 case object DuplicateAccountGroupId extends AccountGroupPersistenceError
+case class InvalidAccountNameLength(value: String) extends AccountGroupPersistenceError
 
 case class AccountGroupRow(id: AccountGroupId, name: AccountName, createdAt: ZonedDateTime,
   updatedAt: ZonedDateTime, deletedAt: Option[ZonedDateTime])
