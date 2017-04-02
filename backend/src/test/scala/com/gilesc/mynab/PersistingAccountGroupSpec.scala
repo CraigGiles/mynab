@@ -17,7 +17,7 @@ class PersistingAccountGroupSpec extends TestCase
 
   val id = 1L
   val validName = "newaccountgroup"
-  val invalidName = "er"
+  val invalidName = "r"
   val time = ZonedDateTime.now()
 
   "Giving the service an AccountName" should "persist the account group" in {
@@ -37,9 +37,7 @@ class PersistingAccountGroupSpec extends TestCase
 
   it should "give you sensible error messages" in {
     val expected = s"$invalidName is not a valid account name"
-
-    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, AccountGroupRow] =
-      Left(InvalidAccountNameLength(invalidName))
+    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, AccountGroupRow] = ???
 
     AccountGroupService.find(mockFind)(FindByName(invalidName)) should be(Left(expected))
   }

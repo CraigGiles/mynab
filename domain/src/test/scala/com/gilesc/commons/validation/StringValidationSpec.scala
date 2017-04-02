@@ -10,15 +10,15 @@ class StringValidationSpec extends TestCase {
       val testme = "1"
       val valid = "12"
       val empty = ""
-      greaterThanOne(testme) should be(Left(InvalidLengthError))
-      greaterThanOne(empty) should be(Left(InvalidLengthError))
+      greaterThanOne(testme) should be(Left(InvalidLengthError(testme)))
+      greaterThanOne(empty) should be(Left(InvalidLengthError(empty)))
       greaterThanOne(valid) should be(Right(valid))
     }
 
     it should "validate non-empty strings" in {
       val something = "s"
       val empty = ""
-      StringValidation.nonEmpty(empty) should be(Left(InvalidLengthError))
+      StringValidation.nonEmpty(empty) should be(Left(InvalidLengthError(empty)))
       StringValidation.nonEmpty(something) should be(Right(something))
     }
 
