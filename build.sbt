@@ -89,11 +89,15 @@ lazy val mysql = Project("mysql", file("mysql"))
   .dependsOn(domain % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.mysql)
 
+lazy val BehaviorTest = config("bt") extend(Test)
+
 lazy val backend = Project("backend", file("backend"))
   .settings(commonSettings: _*)
   .dependsOn(
     domain % "test->test;test->compile;compile->compile",
     mysql % "test->test;test->compile;compile->compile")
+  .configs(BehaviorTest)
+  .settings(inConfig(BehaviorTest)(Defaults.testSettings) : _*)
   .settings(libraryDependencies ++= Dependencies.backend)
 
 lazy val finch = Project("finch", file("finch"))

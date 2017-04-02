@@ -11,7 +11,8 @@ object Dependencies {
   )
 
   lazy val domain = core ++ Seq()
-  lazy val backend = core ++ Seq()
+  lazy val backend = core ++ Seq(
+    scalalikeJDBCTest("bt"))
 
   lazy val mysql = Seq(
     cats,
@@ -19,6 +20,7 @@ object Dependencies {
     scalalikeJDBC(""),
     scalalikeJDBC("-config"),
     scalalikeJDBC("-jsr310"),
+    scalalikeJDBCTest("test"),
     mysqlConnectorJava,
     h2database,
     logbackClassic)
@@ -53,6 +55,7 @@ object Dependencies {
   def scalalikeJDBC(module: String) = "org.scalikejdbc" %% s"scalikejdbc$module" % "2.3.5"
   def h2database = "com.h2database"  %  "h2" % "1.4.191"
   def logbackClassic = "ch.qos.logback"  %  "logback-classic" % "1.1.3"
+  def scalalikeJDBCTest(scope: String) = scalalikeJDBC("-test") % scope
 
   // NOTE: plugins.sbt has the same version of mysql-connector-java.
   //       Please keep these two versions in sync.
