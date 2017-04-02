@@ -8,7 +8,6 @@ import cats.implicits._
 object AccountGroupService {
   sealed trait FindBy
   final case class FindByName(value: String) extends FindBy
-  type AccountGroupResult[T] = Either[AccountGroupPersistenceError, T]
 
   def createWithPersistence(name: AccountName): Either[String, AccountGroup] =
     create(AccountGroupRepository.create)(name)
@@ -23,7 +22,7 @@ object AccountGroupService {
     }
   }
 
-  def find(read: AccountName => AccountGroupResult[AccountGroupRow])
+  def find(read: AccountName => Either[AccountGroupPersistenceError, AccountGroupRow])
     (by: FindBy): Either[String, AccountGroup] = {
 
       by match {
