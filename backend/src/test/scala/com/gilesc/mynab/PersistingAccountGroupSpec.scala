@@ -28,16 +28,16 @@ class PersistingAccountGroupSpec extends TestCase
   }
 
   it should "find an account group given a proper account name" in {
-    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, AccountGroupRow] =
-      Right(AccountGroupRow(id, an, time, time, None))
+    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, Option[AccountGroupRow]] =
+      Right(Option(AccountGroupRow(id, an, time, time, None)))
 
     AccountGroupService.find(mockFind)(FindByName(validName)) should be(
-      Right(AccountGroup.create(1L, validName)))
+      Right(Some(AccountGroup.create(1L, validName))))
   }
 
   it should "never call the mock function if an invalid account name is provided" in {
     val expected = s"$invalidName is not a valid account name"
-    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, AccountGroupRow] =
+    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, Option[AccountGroupRow]] =
       sys.error("Somehow passed the AccountName restriction")
 
     AccountGroupService.find(mockFind)(FindByName(invalidName)) should be(Left(expected))
@@ -46,7 +46,7 @@ class PersistingAccountGroupSpec extends TestCase
   it should "fail gracefully if the database contains an invalid name" in {
     val expected = s"n is not a valid account name"
 
-    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, AccountGroupRow] =
+    def mockFind(an: AccountName): Either[AccountGroupPersistenceError, Option[AccountGroupRow]] =
       Left(InvalidAccountNameLength("n"))
 
     AccountGroupService.find(mockFind)(FindByName(validName)) should be(Left(expected))

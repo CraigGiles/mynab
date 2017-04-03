@@ -10,6 +10,8 @@ import com.gilesc.mynab.account._
 import com.gilesc.commons.validation.ValidationError
 import cats.implicits._
 
+import com.gilesc.commons.validation._
+
 sealed trait AccountGroupPersistenceError
 case object DuplicateAccountGroupId extends AccountGroupPersistenceError
 case class InvalidAccountNameLength(value: String) extends AccountGroupPersistenceError
@@ -44,6 +46,24 @@ object AccountGroupRepository {
       """.stripMargin('|').updateAndReturnGeneratedKey.apply()
 
       Right(AccountGroupId(id))
+    }
+  }
+
+  val read: AccountName => Either[AccountGroupPersistenceError, Option[AccountGroupRow]] = { n =>
+    val opt: Option[Either[ValidationError, AccountGroupRow]] = DB autoCommit { implicit session =>
+      sql"""SELECT * FROM account_groups WHERE name=${n.value};"""
+        .map(AccountGroupDAO.fromDb)
+        .first()
+        .apply()
+    }
+
+    opt match {
+      case None => Right(None)
+      case Some(either) =>
+      either leftMap {
+        case InvalidLengthError(n) => InvalidAccountNameLength(n)
+      } map(result => Option(result))
+
     }
   }
 

@@ -3,6 +3,7 @@ package mynab
 package account
 
 import com.gilesc.mynab.persistence.account._
+import cats._
 import cats.implicits._
 
 object AccountGroupService {
@@ -11,6 +12,9 @@ object AccountGroupService {
 
   def createWithPersistence(name: AccountName): Either[String, AccountGroup] =
     create(AccountGroupRepository.create)(name)
+
+  def findWithPersistence(by: FindBy): Either[String, Option[AccountGroup]] =
+    find(AccountGroupRepository.read)(by)
 
   def create(save: AccountName => Either[AccountGroupPersistenceError, AccountGroupId])
     (name: AccountName): Either[String, AccountGroup] = {
@@ -22,27 +26,28 @@ object AccountGroupService {
     }
   }
 
-  def find(read: AccountName => Either[AccountGroupPersistenceError, AccountGroupRow])
-    (by: FindBy): Either[String, AccountGroup] = {
+  def find(read: AccountName => Either[AccountGroupPersistenceError, Option[AccountGroupRow]])
+    (by: FindBy): Either[String, Option[AccountGroup]] = {
 
       by match {
         case FindByName(name) => findByName(read)(FindByName(name))
       }
   }
 
-  def findByName(read: AccountName => Either[AccountGroupPersistenceError, AccountGroupRow])
-    (name: FindByName): Either[String, AccountGroup] = {
+  def findByName(read: AccountName => Either[AccountGroupPersistenceError, Option[AccountGroupRow]])
+    (name: FindByName): Either[String, Option[AccountGroup]] = {
     import com.gilesc.commons.validation._
 
+    val lifted = Monad[Option].lift(parseRow)
     AccountName(name.value) flatMap { n =>
-      read(n) map { r => parseRow(r) }
+      read(n) map { r => lifted(r) }
     } leftMap {
       case InvalidLengthError(n) => s"$n is not a valid account name"
       case InvalidAccountNameLength(n) => s"$n is not a valid account name"
     }
   }
 
-  def parseRow(row: AccountGroupRow): AccountGroup = {
+  def parseRow: AccountGroupRow => AccountGroup = { row =>
     AccountGroup(row.id, row.name, Vector.empty[Account])
   }
 }
