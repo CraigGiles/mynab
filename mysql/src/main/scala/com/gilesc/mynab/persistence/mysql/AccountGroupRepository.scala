@@ -46,4 +46,14 @@ object AccountGroupRepository {
       Right(AccountGroupId(id))
     }
   }
+
+  val count: () => Int = { () =>
+    DB autoCommit { implicit session =>
+      sql"""SELECT COUNT(*) as count FROM account_groups;"""
+        .map(rs => rs.int("count"))
+        .single()
+        .apply()
+        .getOrElse(0)
+    }
+  }
 }

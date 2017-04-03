@@ -52,7 +52,7 @@ object Dependencies {
 
   // Database
   def flywayCore = "org.flywaydb" % "flyway-core" % "4.0"
-  def scalalikeJDBC(module: String) = "org.scalikejdbc" %% s"scalikejdbc$module" % "2.3.5"
+  def scalalikeJDBC(module: String) = "org.scalikejdbc" %% s"scalikejdbc$module" % "2.5.1"
   def h2database = "com.h2database"  %  "h2" % "1.4.191"
   def logbackClassic = "ch.qos.logback"  %  "logback-classic" % "1.1.3"
   def scalalikeJDBCTest(scope: String) = scalalikeJDBC("-test") % scope
