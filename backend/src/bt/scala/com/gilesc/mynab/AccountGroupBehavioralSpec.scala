@@ -34,7 +34,7 @@ abstract class BehavioralTestCase extends FlatSpec
 
 }
 
-class PersistingAccountGroupSpec extends BehavioralTestCase {
+class AccountGroupBehavioralSpec extends BehavioralTestCase {
   override def fixture(implicit session: DBSession) = {
     ()
   }

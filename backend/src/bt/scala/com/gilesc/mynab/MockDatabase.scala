@@ -4,6 +4,10 @@ package mynab
 import scalikejdbc._
 import scalikejdbc.jsr310._
 
+/**
+ * TODO: Eventually I would really like a system that reads in the *.sql
+ * files from the flyway directory and creates migrations based on that.
+ */
 object MockDatabase {
   implicit val session = AutoSession
 
