@@ -37,7 +37,8 @@ class AccountGroupBehavioralSpec extends BehavioralTestCase {
       be(Right(Some(expected)))
   }
 
-  it should "be able to guard against bad name in the database" in { implicit session =>
+  it should "be able to guard against bad name in the database" in {
+    implicit session =>
     import AccountGroupService._
     val name = "x"
 

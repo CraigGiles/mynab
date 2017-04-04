@@ -50,20 +50,21 @@ object AccountGroupRepository {
   }
 
   val read: AccountName => Either[AccountGroupPersistenceError, Option[AccountGroupRow]] = { n =>
-    val opt: Option[Either[ValidationError, AccountGroupRow]] = DB autoCommit { implicit session =>
+    import cats._
+    import cats.implicits._
+
+    val opt = DB autoCommit { implicit session =>
       sql"""SELECT * FROM account_groups WHERE name=${n.value};"""
         .map(AccountGroupDAO.fromDb)
         .first()
         .apply()
     }
 
-    opt match {
-      case None => Right(None)
-      case Some(either) =>
-      either leftMap {
-        case InvalidLengthError(n) => InvalidAccountNameLength(n)
-      } map(result => Option(result))
-
+    // sequenceU will take Option[Either[A, B]] and turn it into
+    // Either[A, Option[B]]. Then we leftMap to convert the left
+    // side to the AccountGroupPersistenceError.
+    opt.sequenceU leftMap {
+      case InvalidLengthError(n) => InvalidAccountNameLength(n)
     }
   }
 
