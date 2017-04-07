@@ -13,13 +13,10 @@ import com.gilesc.mynab.persistence.account._
 import scalikejdbc._
 
 class AccountGroupBehavioralSpec extends BehavioralTestCase {
-  override def fixture(implicit session: DBSession) = {
-    ()
-  }
-
-  behavior of "AccountGroups"
+  import AccountGroupService._
   val userId = UserId(1L)
 
+  behavior of "AccountGroups"
   it should "persist the group in a database" in { implicit session =>
     val before = AccountGroupRepository.count()
 
@@ -32,8 +29,6 @@ class AccountGroupBehavioralSpec extends BehavioralTestCase {
   }
 
   it should "be able to find by name" in { implicit session =>
-    import AccountGroupService._
-
     val name = "Budget Accounts"
     val expected = AccountGroupService.createWithPersistence(userId, name).right.get
 
@@ -42,13 +37,12 @@ class AccountGroupBehavioralSpec extends BehavioralTestCase {
   }
 
   it should "be able to guard against bad name in the database" in { implicit session =>
-    import AccountGroupService._
     val name = "x"
 
     sql"""
       |INSERT INTO account_groups (user_id, name)
       |VALUES
-      |  (${userId.value}, 'x');
+      |  (${userId.value}, ${name});
       """.stripMargin('|').updateAndReturnGeneratedKey.apply()
 
     AccountGroupService.findWithPersistence(FindByName(name)) should
