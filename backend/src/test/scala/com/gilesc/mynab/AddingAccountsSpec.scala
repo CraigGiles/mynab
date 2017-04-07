@@ -2,6 +2,8 @@ package com.gilesc
 package mynab
 
 import com.gilesc.mynab.account._
+import com.gilesc.mynab.user._
+import com.gilesc.mynab.persistence.account.AccountGroupRepository.CreateContext
 
 class AddingAccountsSpec extends TestCase
   with MockAccountCreation
@@ -9,7 +11,7 @@ class AddingAccountsSpec extends TestCase
 
   "Creating an account group by name" should "return the account group" in {
     val groupId = AccountGroupId(1L)
-    def mockSave(name: AccountName) = Right(groupId)
+    def mockSave(ctx: CreateContext) = Right(groupId)
     val createGroup = AccountGroupService.create(mockSave) _
 
     val budgetaccounts = "Budget Accounts"
@@ -18,8 +20,10 @@ class AddingAccountsSpec extends TestCase
     val nonbudgetaccounts = "Non Budget Accounts"
     val nonbudgetgroup = AccountGroup(groupId, nonbudgetaccounts, Vector.empty[Account])
 
-    createGroup(budgetaccounts) should be(Right(budgetgroup))
-    createGroup(nonbudgetaccounts) should be(Right(nonbudgetgroup))
+    val userId = UserId(1L)
+
+    createGroup(userId, budgetaccounts) should be(Right(budgetgroup))
+    createGroup(userId, nonbudgetaccounts) should be(Right(nonbudgetgroup))
   }
 
   "Creating a new account" should "add the account to a valid account group" in {

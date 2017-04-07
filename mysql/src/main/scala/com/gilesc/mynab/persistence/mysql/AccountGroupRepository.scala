@@ -36,13 +36,15 @@ object AccountGroupRepository {
   implicit val session = AutoSession
 
   type PersistenceResult[T] = Either[AccountGroupPersistenceError, T]
+  import com.gilesc.mynab.user.UserId
+  case class CreateContext(userId: UserId, name: AccountName)
 
-  val create: AccountName => PersistenceResult[AccountGroupId] = { n => 
+  val create: CreateContext => PersistenceResult[AccountGroupId] = { ctx =>
     DB autoCommit { implicit session =>
       val id = sql"""
-      |INSERT INTO account_groups (name)
+      |INSERT INTO account_groups (user_id, name)
       |VALUES
-      |  (${n.value});
+      |  (${ctx.userId.value}, ${ctx.name.value});
       """.stripMargin('|').updateAndReturnGeneratedKey.apply()
 
       Right(AccountGroupId(id))

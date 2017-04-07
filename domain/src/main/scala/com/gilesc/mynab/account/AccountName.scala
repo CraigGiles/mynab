@@ -5,7 +5,7 @@ import com.gilesc.commons.validation.{StringValidation, ValidationError}
 
 import cats.implicits._
 
-class AccountName private (val value: String) extends AnyVal {
+class AccountName private (val value: String) extends AnyVal with Serializable {
   override def toString: String = value
 }
 

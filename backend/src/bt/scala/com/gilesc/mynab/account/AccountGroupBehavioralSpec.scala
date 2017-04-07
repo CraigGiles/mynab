@@ -5,6 +5,7 @@ package account
 import java.time.LocalDate
 
 import com.gilesc.mynab.account._
+import com.gilesc.mynab.user._
 import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction._
 import com.gilesc.mynab.persistence.account._
@@ -17,13 +18,16 @@ class AccountGroupBehavioralSpec extends BehavioralTestCase {
   }
 
   behavior of "AccountGroups"
+  val userId = UserId(1L)
+
   it should "persist the group in a database" in { implicit session =>
     val before = AccountGroupRepository.count()
+
     val id = before + 1L
     val name = "newaccountgroup"
     val expected = AccountGroup.create(id, name)
 
-    AccountGroupService.createWithPersistence(name) should be(Right(expected))
+    AccountGroupService.createWithPersistence(userId, name) should be(Right(expected))
     AccountGroupRepository.count() should be(id)
   }
 
@@ -31,21 +35,20 @@ class AccountGroupBehavioralSpec extends BehavioralTestCase {
     import AccountGroupService._
 
     val name = "Budget Accounts"
-    val expected = AccountGroupService.createWithPersistence(name).right.get
+    val expected = AccountGroupService.createWithPersistence(userId, name).right.get
 
     AccountGroupService.findWithPersistence(FindByName(name)) should
       be(Right(Some(expected)))
   }
 
-  it should "be able to guard against bad name in the database" in {
-    implicit session =>
+  it should "be able to guard against bad name in the database" in { implicit session =>
     import AccountGroupService._
     val name = "x"
 
     sql"""
-      |INSERT INTO account_groups (name)
+      |INSERT INTO account_groups (user_id, name)
       |VALUES
-      |  ('x');
+      |  (${userId.value}, 'x');
       """.stripMargin('|').updateAndReturnGeneratedKey.apply()
 
     AccountGroupService.findWithPersistence(FindByName(name)) should

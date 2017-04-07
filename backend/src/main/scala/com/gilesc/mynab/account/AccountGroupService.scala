@@ -3,6 +3,8 @@ package mynab
 package account
 
 import com.gilesc.mynab.persistence.account._
+import com.gilesc.mynab.persistence.account.AccountGroupRepository.CreateContext
+import com.gilesc.mynab.user.UserId
 import cats._
 import cats.implicits._
 
@@ -10,16 +12,16 @@ object AccountGroupService {
   sealed trait FindBy
   final case class FindByName(value: String) extends FindBy
 
-  def createWithPersistence(name: AccountName): Either[String, AccountGroup] =
-    create(AccountGroupRepository.create)(name)
+  def createWithPersistence(id: UserId, name: AccountName): Either[String, AccountGroup] =
+    create(AccountGroupRepository.create)(id, name)
 
   def findWithPersistence(by: FindBy): Either[String, Option[AccountGroup]] =
     find(AccountGroupRepository.read)(by)
 
-  def create(save: AccountName => Either[AccountGroupPersistenceError, AccountGroupId])
-    (name: AccountName): Either[String, AccountGroup] = {
+  def create(save: CreateContext => Either[AccountGroupPersistenceError, AccountGroupId])
+    (id: UserId, name: AccountName): Either[String, AccountGroup] = {
 
-    save(name) match {
+    save(CreateContext(id, name)) match {
       case Right(id) => Right(AccountGroup.create(id, name))
       case Left(InvalidAccountNameLength(name)) => Left(s"$name is not a valid account name")
       case Left(DuplicateAccountGroupId) => Left(DuplicateAccountGroupId.toString)

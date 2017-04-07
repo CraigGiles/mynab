@@ -6,7 +6,9 @@ import java.time.LocalDate
 import com.gilesc.mynab.account._
 import com.gilesc.mynab.category._
 import com.gilesc.mynab.transaction._
+import com.gilesc.mynab.user._
 
+import com.gilesc.mynab.persistence.account.AccountGroupRepository.CreateContext
 import com.gilesc.mynab.persistence.account._
 import AccountGroupService.FindByName
 
@@ -21,10 +23,11 @@ class PersistingAccountGroupSpec extends TestCase
   val time = ZonedDateTime.now()
 
   "Giving the service an AccountName" should "persist the account group" in {
+    val userId = UserId(id)
     val expected = AccountGroup.create(id, validName)
-    def mockSave(name: AccountName) = Right(AccountGroupId(id))
+    def mockSave(ctx: CreateContext) = Right(AccountGroupId(id))
 
-    AccountGroupService.create(mockSave)(validName) should be(Right(expected))
+    AccountGroupService.create(mockSave)(userId, validName) should be(Right(expected))
   }
 
   it should "find an account group given a proper account name" in {
