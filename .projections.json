@@ -1,0 +1,20 @@
+{
+  "domain/src/main/scala/*.scala": {
+    "alternate": "domain/src/test/scala/{}Spec.scala",
+    "type": "source"
+  },
+  "domain/src/test/scala/*Spec.scala": {
+    "alternate": "domain/src/main/scala/{}.scala",
+    "type": "test"
+  },
+  "backend/src/main/scala/*.scala": {
+    "alternate": "backend/src/test/scala/{}Spec.scala",
+    "type": "source"
+  },
+  "backend/src/test/scala/*Spec.scala": {
+    "alternate": "backend/src/main/scala/{}.scala",
+    "type": "test"
+  },
+  "*.scala": {"dispatch": "sbt compile {file}"},
+  "*": {"make": "sbt"}
+}

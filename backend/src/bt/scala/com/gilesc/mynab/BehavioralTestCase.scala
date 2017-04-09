@@ -10,7 +10,7 @@ import scalikejdbc.scalatest.AutoRollback
 
 import com.gilesc.mynab.persistence.DatabaseInitializer
 
-abstract class BehavioralTestCase extends FlatSpec 
+abstract class BehavioralTestCase extends FlatSpec
   with Matchers
   with TestCaseHelpers
   with AutoRollback

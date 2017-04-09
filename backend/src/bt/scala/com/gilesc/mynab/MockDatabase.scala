@@ -12,10 +12,21 @@ object MockDatabase {
   implicit val session = AutoSession
 
   def migrate(): Unit = {
-
     createBudgetSystemTables()
+    seedMockUser()
   }
 
+  def seedMockUser(): Unit = {
+    // seed with a fake user
+    sql"""
+INSERT INTO users (username, email)
+SELECT * FROM (SELECT 'testuser', 'test@email.com') AS tmp
+WHERE NOT EXISTS (
+    SELECT username FROM users WHERE username = 'testuser'
+) LIMIT 1;
+      """.update.apply()
+      ()
+  }
   def createBudgetSystemTables(): Unit = {
     sql"""
 CREATE TABLE IF NOT EXISTS `users` (
@@ -32,7 +43,7 @@ UNIQUE KEY `email` (`email`)
     """.execute().apply()
 
     sql"""
-CREATE TABLE `account_groups` (
+CREATE TABLE IF NOT EXISTS `account_groups` (
   `id` BIGINT(20) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` BIGINT(20) unsigned NOT NULL,
   `name` VARCHAR(120) NOT NULL,
@@ -45,7 +56,7 @@ FOREIGN KEY (`user_id`) REFERENCES users(id)
     """.execute().apply()
 
     sql"""
-CREATE TABLE `account_types` (
+CREATE TABLE IF NOT EXISTS `account_types` (
   `id` BIGINT(20) unsigned NOT NULL AUTO_INCREMENT,
   `type` VARCHAR(120) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -56,7 +67,7 @@ PRIMARY KEY (`id`)
     """.execute().apply()
 
     sql"""
-CREATE TABLE `accounts` (
+CREATE TABLE IF NOT EXISTS `accounts` (
   `id` BIGINT(20) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` BIGINT(20) unsigned NOT NULL,
   `account_group_id` BIGINT(20) unsigned NOT NULL,
@@ -73,7 +84,7 @@ FOREIGN KEY (`account_type_id`) REFERENCES account_types(id)
     """.execute().apply()
 
     sql"""
-CREATE TABLE `transactions` (
+CREATE TABLE IF NOT EXISTS `transactions` (
   `id` BIGINT(20) unsigned NOT NULL AUTO_INCREMENT,
   `account_id` BIGINT(20) unsigned NOT NULL,
   `date` DATE NOT NULL,
@@ -92,12 +103,6 @@ FOREIGN KEY (`account_id`) REFERENCES accounts(id)
 ) ENGINE=InnoDB;
     """.execute().apply()
 
-    // seed with a fake user
-    sql"""
-INSERT INTO users (username, email)
-VALUES
-  ('testuser', 'test@email.com');
-      """.updateAndReturnGeneratedKey.apply()
     ()
   }
 }
