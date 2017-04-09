@@ -12,6 +12,9 @@ import cats.implicits._
 
 import com.gilesc.commons.validation._
 
+import com.typesafe.config.ConfigFactory
+import scala.concurrent.ExecutionContext.Implicits.global
+
 sealed trait AccountGroupPersistenceError
 case object DuplicateAccountGroupId extends AccountGroupPersistenceError
 case class InvalidAccountNameLength(value: String) extends AccountGroupPersistenceError
@@ -62,15 +65,14 @@ object AccountGroupRepository {
 
   lazy val AccountGroupTable = TableQuery[AccountGroupTable]
 
-  val create: CreateContext => PersistenceResult[AccountGroupId] = { ctx =>
+  val createWithdatabase: SlickDatabaseProfile => CreateContext => PersistenceResult[AccountGroupId] = { db => ctx =>
       // TODO
       // val usersInsertQuery = Users returning Users.map(_.id) into ((user, id) => user.copy(id = id))
-      import scala.concurrent.ExecutionContext.Implicits.global
-      import com.typesafe.config.ConfigFactory
-      val config = ConfigFactory.load()
-      val database = SlickDatabaseProfile(config)
-      import database._
-      import database.profile.api._
+      // import com.typesafe.config.ConfigFactory
+      // val config = ConfigFactory.load()
+      // val database = SlickDatabaseProfile(config)
+      import db._
+      import db.profile.api._
 
       val insertQuery = AccountGroupTable returning AccountGroupTable.map(_.id) into ((ag, id) => ag.copy(id = id))
       val ts = OffsetDateTime.now()
@@ -79,7 +81,7 @@ object AccountGroupRepository {
         ctx.name.value,
         ts, ts, None)
 
-      val v = database.execute(action.asTry).map {
+      val v = db.execute(action.asTry).map {
         case scala.util.Success(r) => Right(AccountGroupId(r.id))
 
         case scala.util.Failure(e) => e match {
@@ -99,12 +101,15 @@ object AccountGroupRepository {
       scala.concurrent.Await.result(v, scala.concurrent.duration.Duration.Inf)
     }
 
+  val create: CreateContext => PersistenceResult[AccountGroupId] =
+    createWithdatabase(SlickDatabaseProfile.apply(ConfigFactory.load()))
+
+
   val read: AccountName => Either[AccountGroupPersistenceError, Option[AccountGroupRow]] = { n =>
     import cats._
     import cats.implicits._
 
     import scala.concurrent.ExecutionContext.Implicits.global
-    import com.typesafe.config.ConfigFactory
     val config = ConfigFactory.load()
     val database = SlickDatabaseProfile(config)
     import database._
