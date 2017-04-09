@@ -12,7 +12,7 @@ import com.gilesc.mynab.persistence.account.AccountGroupRepository.CreateContext
 import com.gilesc.mynab.persistence.account._
 import AccountGroupService.FindByName
 
-import java.time.ZonedDateTime
+import java.time.OffsetDateTime
 
 class PersistingAccountGroupSpec extends TestCase
   with MockAccountCreation {
@@ -20,7 +20,7 @@ class PersistingAccountGroupSpec extends TestCase
   val id = 1L
   val validName = "newaccountgroup"
   val invalidName = "r"
-  val time = ZonedDateTime.now()
+  val time = OffsetDateTime.now()
 
   "Giving the service an AccountName" should "persist the account group" in {
     val userId = UserId(id)

@@ -1,21 +1,22 @@
-package com.gilesc
-package mynab
-package persistence
+// package com.gilesc
+// package mynab
+// package persistence
 
-import scalikejdbc._
-import scalikejdbc.config._
-import com.typesafe.config.ConfigFactory
+// import scalikejdbc._
+// import scalikejdbc.config._
+// import com.typesafe.config.ConfigFactory
 
-object DatabaseInitializer {
+// object DatabaseInitializer {
 
-  def init() = {
-    val config = ConfigFactory.load()
-    val env = config.getString("db.env")
+//   def init() = {
+//     val config = ConfigFactory.load()
+//     val env = config.getString("db.env")
 
-    DBsWithEnv(env).setupAll()
-  }
+//     println(s"Attempting to set up env $env")
+//     DBsWithEnv(env).setupAll()
+//   }
 
-  def stop() = {
-    DBs.closeAll()
-  }
-}
+//   def stop() = {
+//     DBs.closeAll()
+//   }
+// }
