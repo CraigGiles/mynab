@@ -65,12 +65,7 @@ object AccountGroupRepository {
 
   lazy val AccountGroupTable = TableQuery[AccountGroupTable]
 
-  val createWithdatabase: SlickDatabaseProfile => CreateContext => PersistenceResult[AccountGroupId] = { db => ctx =>
-      // TODO
-      // val usersInsertQuery = Users returning Users.map(_.id) into ((user, id) => user.copy(id = id))
-      // import com.typesafe.config.ConfigFactory
-      // val config = ConfigFactory.load()
-      // val database = SlickDatabaseProfile(config)
+  val createUsingDatabase: SlickDatabaseProfile => CreateContext => PersistenceResult[AccountGroupId] = { db => ctx =>
       import db._
       import db.profile.api._
 
@@ -88,21 +83,16 @@ object AccountGroupRepository {
           case ex: DuplicateKey if ex.getMessage.contains("username") =>
             Left(InvalidAccountNameLength(ctx.name.value))
 
-          // case ex: DuplicateKey if ex.getMessage.contains("email") =>
-          //   DuplicateEmailError
-
           case ex =>
             Left(InvalidAccountNameLength(ex.toString))
         }
       }
-      // val id = 1L // TODO: Delete
-      // Right(AccountGroupId(id))
 
       scala.concurrent.Await.result(v, scala.concurrent.duration.Duration.Inf)
     }
 
   val create: CreateContext => PersistenceResult[AccountGroupId] =
-    createWithdatabase(SlickDatabaseProfile.apply(ConfigFactory.load()))
+    createUsingDatabase(SlickDatabaseProfile.apply(ConfigFactory.load()))
 
 
   val read: AccountName => Either[AccountGroupPersistenceError, Option[AccountGroupRow]] = { n =>
