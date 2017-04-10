@@ -20,6 +20,17 @@ abstract class BehavioralTestCase extends TestCase with BeforeAndAfterAll {
 }
 
 class AccountGroupBehavioralSpec extends BehavioralTestCase {
+  def fixture = new {
+    // TODO: Yeah... lets get rid of this somehow
+    def waitfor[A](fut: scala.concurrent.Future[A]): A =
+      scala.concurrent.Await.result(fut, scala.concurrent.duration.Duration.Inf)
+
+    val db = SlickDatabaseProfile(ConfigFactory.load())
+    import db.profile.api._
+    val create = db.execute(AccountGroupRepository.AccountGroupTable.schema.create)
+    waitfor(create)
+  }
+
   override def beforeAll(): Unit = {
     super.beforeAll()
 
@@ -29,7 +40,6 @@ class AccountGroupBehavioralSpec extends BehavioralTestCase {
 
     val db = SlickDatabaseProfile(ConfigFactory.load())
     import db.profile.api._
-
     val waiton = db.execute(AccountGroupRepository.AccountGroupTable.schema.create) map { a =>
       val statement = sqlu"insert into account_groups (user_id, name) values (1, 'x')"
       waitfor(db.execute(statement))

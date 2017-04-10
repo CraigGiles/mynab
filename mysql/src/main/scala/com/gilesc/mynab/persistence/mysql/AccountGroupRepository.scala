@@ -24,18 +24,6 @@ case class AccountGroupSlick(id: Long, userId: Long, name: String, createdAt: Of
 case class AccountGroupRow(id: AccountGroupId, name: AccountName, createdAt: OffsetDateTime,
   updatedAt: OffsetDateTime, deletedAt: Option[OffsetDateTime])
 
-// object AccountGroupDAO {
-//   def fromDb(rs: WrappedResultSet): Either[ValidationError, AccountGroupRow] = {
-//     val id = AccountGroupId(rs.long("id"))
-//     val name = AccountName(rs.string("name"))
-//     val created = rs.zonedDateTime("created_at")
-//     val updated = rs.zonedDateTime("updated_at")
-//     val deleted = rs.zonedDateTimeOpt("deleted_at")
-
-//     name map(AccountGroupRow(id, _, created, updated, deleted))
-//   }
-// }
-
 import slick.jdbc.H2Profile.api._// TODO: REmove
 
 class AccountGroupTable(tag: Tag) extends Table[AccountGroupSlick](tag, "account_groups") {
