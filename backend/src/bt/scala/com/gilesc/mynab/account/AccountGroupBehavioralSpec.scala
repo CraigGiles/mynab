@@ -14,43 +14,36 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterAll
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.reflectiveCalls
 
 abstract class BehavioralTestCase extends TestCase with BeforeAndAfterAll {
+  val fixture = new {
+    val database = SlickDatabaseProfile(ConfigFactory.load())
+    val AccountGroupTable = {
+      import database.profile.api._
+      TableQuery[AccountGroupDataModule.AccountGroupTable]
+    }
+  }
 
 }
 
 class AccountGroupBehavioralSpec extends BehavioralTestCase {
-  def fixture = new {
-    // TODO: Yeah... lets get rid of this somehow
-    def waitfor[A](fut: scala.concurrent.Future[A]): A =
-      scala.concurrent.Await.result(fut, scala.concurrent.duration.Duration.Inf)
-
-    val db = SlickDatabaseProfile(ConfigFactory.load())
-    import db.profile.api._
-    lazy val AccountGroupTable = TableQuery[AccountGroupDataModule.AccountGroupTable]
-    val create = db.execute(AccountGroupTable.schema.create)
-    waitfor(create)
-  }
-
   override def beforeAll(): Unit = {
     super.beforeAll()
 
-    // TODO: Yeah... lets get rid of this somehow
+    import fixture.database.profile.api._
+
+    val invalidGroupInsert = sqlu"insert into account_groups (user_id, name) values (1, 'x')"
+    val selectNameFromGroup = sql"select name from account_groups".as[String]
+
     def waitfor[A](fut: scala.concurrent.Future[A]): A =
       scala.concurrent.Await.result(fut, scala.concurrent.duration.Duration.Inf)
 
-    val db = SlickDatabaseProfile(ConfigFactory.load())
-    import db.profile.api._
-    lazy val AccountGroupTable = TableQuery[AccountGroupDataModule.AccountGroupTable]
-    val waiton = db.execute(AccountGroupTable.schema.create) map { a =>
-      val statement = sqlu"insert into account_groups (user_id, name) values (1, 'x')"
-      waitfor(db.execute(statement))
-      val res = db.execute(sql"select name from account_groups".as[String])
-      val result = waitfor(res)
-      println("RESULTS! -----------------------------------" + result)
-      // scala.concurrent.Future(result)
-      result
-    }
+    val waiton = for {
+      _ <- fixture.database.execute(fixture.AccountGroupTable.schema.create)
+      _ <- fixture.database.execute(invalidGroupInsert)
+      c <- fixture.database.execute(selectNameFromGroup)
+    } yield c
 
     waitfor(waiton)
     ()
