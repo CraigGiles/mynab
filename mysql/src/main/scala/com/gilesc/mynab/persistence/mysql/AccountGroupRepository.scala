@@ -24,39 +24,67 @@ case class AccountGroupSlick(id: Long, userId: Long, name: String, createdAt: Of
 case class AccountGroupRow(id: AccountGroupId, name: AccountName, createdAt: OffsetDateTime,
   updatedAt: OffsetDateTime, deletedAt: Option[OffsetDateTime])
 
-import slick.jdbc.H2Profile.api._// TODO: REmove
+// import slick.jdbc.H2Profile.api._// TODO: REmove
 
-class AccountGroupTable(tag: Tag) extends Table[AccountGroupSlick](tag, "account_groups") {
-  import java.sql.Date
-  import java.time._
-  implicit val offsetDateTime = MappedColumnType.base[OffsetDateTime, String](
-    z => z.toString,
-    d => OffsetDateTime.parse(d)
-  )
+// class AccountGroupTable(tag: Tag) extends Table[AccountGroupSlick](tag, "account_groups") {
+//   import java.sql.Date
+//   import java.time._
+//   implicit val offsetDateTime = MappedColumnType.base[OffsetDateTime, String](
+//     z => z.toString,
+//     d => OffsetDateTime.parse(d)
+//   )
 
-  def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-  def userId = column[Long]("user_id")
-  def name = column[String]("name")
-  def created_at = column[OffsetDateTime]("created_at", O.Default(OffsetDateTime.now))
-  def updated_at = column[OffsetDateTime]("updated_at", O.Default(OffsetDateTime.now))
-  def deleted_at = column[Option[OffsetDateTime]]("deleted_at")
+//   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+//   def userId = column[Long]("user_id")
+//   def name = column[String]("name")
+//   def created_at = column[OffsetDateTime]("created_at", O.Default(OffsetDateTime.now))
+//   def updated_at = column[OffsetDateTime]("updated_at", O.Default(OffsetDateTime.now))
+//   def deleted_at = column[Option[OffsetDateTime]]("deleted_at")
 
-  def * = (id, userId, name, created_at, updated_at, deleted_at) <> (AccountGroupSlick.tupled, AccountGroupSlick.unapply _)
+//   def * = (id, userId, name, created_at, updated_at, deleted_at) <> (AccountGroupSlick.tupled, AccountGroupSlick.unapply _)
+// }
+
+object AccountGroupDataModule {
+  val db = SlickDatabaseProfile(ConfigFactory.load())
+  import db.profile.api._
+  // val create = db.execute(AccountGroupRepository.AccountGroupTable.schema.create)
+  // import slick.jdbc.H2Profile.api._// TODO: REmove
+
+  class AccountGroupTable(tag: Tag) extends Table[AccountGroupSlick](tag, "account_groups") {
+    import java.sql.Date
+    import java.time._
+    implicit val offsetDateTime = MappedColumnType.base[OffsetDateTime, String](
+      z => z.toString,
+      d => OffsetDateTime.parse(d)
+    )
+
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def userId = column[Long]("user_id")
+    def name = column[String]("name")
+    def created_at = column[OffsetDateTime]("created_at", O.Default(OffsetDateTime.now))
+    def updated_at = column[OffsetDateTime]("updated_at", O.Default(OffsetDateTime.now))
+    def deleted_at = column[Option[OffsetDateTime]]("deleted_at")
+
+    def * = (id, userId, name, created_at, updated_at, deleted_at) <> (AccountGroupSlick.tupled, AccountGroupSlick.unapply _)
+  }
+
 }
 
 
 object AccountGroupRepository {
+  import AccountGroupDataModule.AccountGroupTable
   import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException
   type DuplicateKey = MySQLIntegrityConstraintViolationException
   type PersistenceResult[T] = Either[AccountGroupPersistenceError, T]
   case class CreateContext(userId: UserId, name: AccountName)
 
-  lazy val AccountGroupTable = TableQuery[AccountGroupTable]
+  // lazy val AccountGroupTable = TableQuery[AccountGroupTable]
 
   val createUsingDatabase: SlickDatabaseProfile => CreateContext => PersistenceResult[AccountGroupId] = { db => ctx =>
       import db._
       import db.profile.api._
 
+      lazy val AccountGroupTable = TableQuery[AccountGroupTable]
       val insertQuery = AccountGroupTable returning AccountGroupTable.map(_.id) into ((ag, id) => ag.copy(id = id))
       val ts = OffsetDateTime.now()
       val action = insertQuery += AccountGroupSlick(0L,
@@ -93,6 +121,7 @@ object AccountGroupRepository {
     import database._
     import database.profile.api._
 
+    lazy val AccountGroupTable = TableQuery[AccountGroupTable]
     val query = AccountGroupTable.filter(_.name === n.value).result
 
     val v = database.execute(query)
@@ -141,6 +170,7 @@ object AccountGroupRepository {
     val database = SlickDatabaseProfile(config)
     import database._
     import database.profile.api._
+    lazy val AccountGroupTable = TableQuery[AccountGroupTable]
     val v = database.execute(AccountGroupTable.length.result)
     scala.concurrent.Await.result(v, scala.concurrent.duration.Duration.Inf)
 //    AccountGroupTable.length

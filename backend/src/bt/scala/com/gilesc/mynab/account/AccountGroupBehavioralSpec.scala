@@ -27,7 +27,8 @@ class AccountGroupBehavioralSpec extends BehavioralTestCase {
 
     val db = SlickDatabaseProfile(ConfigFactory.load())
     import db.profile.api._
-    val create = db.execute(AccountGroupRepository.AccountGroupTable.schema.create)
+    lazy val AccountGroupTable = TableQuery[AccountGroupDataModule.AccountGroupTable]
+    val create = db.execute(AccountGroupTable.schema.create)
     waitfor(create)
   }
 
@@ -40,7 +41,8 @@ class AccountGroupBehavioralSpec extends BehavioralTestCase {
 
     val db = SlickDatabaseProfile(ConfigFactory.load())
     import db.profile.api._
-    val waiton = db.execute(AccountGroupRepository.AccountGroupTable.schema.create) map { a =>
+    lazy val AccountGroupTable = TableQuery[AccountGroupDataModule.AccountGroupTable]
+    val waiton = db.execute(AccountGroupTable.schema.create) map { a =>
       val statement = sqlu"insert into account_groups (user_id, name) values (1, 'x')"
       waitfor(db.execute(statement))
       val res = db.execute(sql"select name from account_groups".as[String])
