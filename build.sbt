@@ -1,6 +1,6 @@
 val commonSettings = Seq(
   organization := "com.gilesc",
-  scalaVersion in ThisBuild := "2.11.8",
+  scalaVersion in ThisBuild := "2.12.2",
   version := "0.0.1",
   scalacOptions := Seq(
     // Target the 1.8 JVM since we will be using scala 2.12 as a default for
@@ -40,7 +40,7 @@ val commonSettings = Seq(
     "-Ywarn-unused",
 
     // Kill the compile on warnings
-    "-Xfatal-warnings",
+    // "-Xfatal-warnings",
 
     // Provide more information about often misused language features
     // such as higher kinded types or implicitConversions.
@@ -69,38 +69,39 @@ val commonSettings = Seq(
 addCommandAlias("migrate", ";flyway/flywayMigrate")
 
 lazy val rootProject = (project in file("."))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .settings(
     name := "mynab",
     aggregate in update := false)
-  .aggregate(domain, backend, finch, mysql)
+  .aggregate(domain, backend, finch, `akka-http`, mysql)
 
 lazy val flyway = (project in file("flyway"))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .enablePlugins(FlywayPlugin)
   .settings(libraryDependencies ++= Dependencies.flyway)
 
 lazy val domain = Project("domain", file("domain"))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .settings(libraryDependencies ++= Dependencies.domain)
 
 lazy val mysql = Project("mysql", file("mysql"))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .dependsOn(domain % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.mysql)
 
-lazy val BehaviorTest = config("bt") extend(Test)
-
 lazy val backend = Project("backend", file("backend"))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .dependsOn(
     domain % "test->test;test->compile;compile->compile",
     mysql % "test->test;test->compile;compile->compile")
-  .configs(BehaviorTest)
-  .settings(inConfig(BehaviorTest)(Defaults.testSettings) : _*)
   .settings(libraryDependencies ++= Dependencies.backend)
 
 lazy val finch = Project("finch", file("finch"))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .dependsOn(backend % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.finch)
+
+lazy val `akka-http` = Project("akka-http", file("akka-http"))
+  .settings(commonSettings)
+  .dependsOn(backend % "test->test;test->compile;compile->compile")
+  .settings(libraryDependencies ++= Dependencies.akkahttp)

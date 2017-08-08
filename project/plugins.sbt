@@ -2,7 +2,6 @@ resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releas
 resolvers += "sonatype-releases" at "https://oss.sonatype.org/content/repositories/releases/"
 resolvers += "Flyway" at "https://flywaydb.org/repo"
 
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.10")
 addSbtPlugin("org.flywaydb" % "flyway-sbt" % "4.0.3")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.0")
 
