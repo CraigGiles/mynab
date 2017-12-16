@@ -1,7 +1,10 @@
 val commonSettings = Seq(
   organization := "com.gilesc",
-  scalaVersion in ThisBuild := "2.11.8",
+  scalaVersion in ThisBuild := "2.12.4",
   version := "0.0.1",
+  initialCommands in console := """
+    |import cats.implicits._
+    |""".stripMargin,
   scalacOptions := Seq(
     // Target the 1.8 JVM since we will be using scala 2.12 as a default for
     // the scalaVersion flag.
@@ -40,7 +43,7 @@ val commonSettings = Seq(
     "-Ywarn-unused",
 
     // Kill the compile on warnings
-    "-Xfatal-warnings",
+    // "-Xfatal-warnings",
 
     // Provide more information about often misused language features
     // such as higher kinded types or implicitConversions.
@@ -63,44 +66,56 @@ val commonSettings = Seq(
     // the strategy used for translating lambdas into JVM code.
     // The current standard is "inline" but they're moving towards "method."
     "-Ydelambdafy:method"
-  )
+  ),
+  scalacOptions in (Compile, console) ~= (_.filterNot(_ == "-Xlint")),
+  scalacOptions in (Compile, console) ~= (_.filterNot(_ == "-Ywarn-unused-import"))
 )
 
 addCommandAlias("migrate", ";flyway/flywayMigrate")
 
 lazy val rootProject = (project in file("."))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .settings(
     name := "mynab",
     aggregate in update := false)
-  .aggregate(domain, backend, finch, mysql)
+  .aggregate(arrow, domain, service, mysql, `akka-http`)
+
+lazy val arrow = (project in file("arrow"))
+  .settings(commonSettings)
+  .settings(libraryDependencies ++= Dependencies.arrow)
 
 lazy val flyway = (project in file("flyway"))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .enablePlugins(FlywayPlugin)
   .settings(libraryDependencies ++= Dependencies.flyway)
 
 lazy val domain = Project("domain", file("domain"))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .settings(libraryDependencies ++= Dependencies.domain)
 
 lazy val mysql = Project("mysql", file("mysql"))
-  .settings(commonSettings: _*)
-  .dependsOn(domain % "test->test;test->compile;compile->compile")
-  .settings(libraryDependencies ++= Dependencies.mysql)
-
-lazy val BehaviorTest = config("bt") extend(Test)
-
-lazy val backend = Project("backend", file("backend"))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .dependsOn(
     domain % "test->test;test->compile;compile->compile",
-    mysql % "test->test;test->compile;compile->compile")
-  .configs(BehaviorTest)
-  .settings(inConfig(BehaviorTest)(Defaults.testSettings) : _*)
-  .settings(libraryDependencies ++= Dependencies.backend)
+    testkit % "test->test;test->compile;compile->compile")
+  .settings(libraryDependencies ++= Dependencies.mysql)
 
-lazy val finch = Project("finch", file("finch"))
-  .settings(commonSettings: _*)
-  .dependsOn(backend % "test->test;test->compile;compile->compile")
-  .settings(libraryDependencies ++= Dependencies.finch)
+lazy val service = Project("service", file("service"))
+  .settings(commonSettings)
+  .dependsOn(
+    testkit % "test->test;test->compile;compile->compile",
+    domain % "test->test;test->compile;compile->compile",
+    arrow % "test->test;test->compile;compile->compile",
+    mysql % "test->test;test->compile;compile->compile")
+  .settings(libraryDependencies ++= Dependencies.service)
+
+lazy val `akka-http` = Project("akka-http", file("akka-http"))
+  .settings(commonSettings)
+  .dependsOn(service % "test->test;test->compile;compile->compile",
+    testkit % "test->test;test->compile;compile->compile")
+  .settings(libraryDependencies ++= Dependencies.akkahttp)
+
+lazy val testkit = Project("testkit", file("testkit"))
+  .settings(commonSettings)
+  .settings(libraryDependencies ++= Dependencies.testkit)
+  .dependsOn(domain % "test->test;test->compile;compile->compile")
