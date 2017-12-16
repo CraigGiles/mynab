@@ -3,7 +3,6 @@ package mynab
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Route
@@ -13,13 +12,15 @@ import scala.util.Try
 import scala.io.StdIn
 import scala.concurrent.ExecutionContext.Implicits.global
 
+import com.typesafe.scalalogging.StrictLogging
+
 import com.softwaremill.session._
 import com.softwaremill.session.CsrfDirectives._
 import com.softwaremill.session.CsrfOptions._
 import com.softwaremill.session.SessionDirectives._
 import com.softwaremill.session.SessionOptions._
 
-import com.typesafe.scalalogging.StrictLogging
+import com.gilesc.mynab.route.RouteList
 
 object SessionRoutes extends StrictLogging {
   val sessionConfig = SessionConfig.default("really-long-string-that-needs-to-be-generated")
@@ -93,43 +94,16 @@ object ExampleSession {
     )
 }
 
-object HelloWorldEndpoint {
-  val getFoo = path("foo") {
-    get {
-      complete {
-        HttpEntity(ContentTypes.`text/html(UTF-8)`,
-          "<h1>Say hello to akka-http via foo</h1>")
-      }
-    }
-  }
-
-  val getHello = path("hello") {
-    get {
-      complete {
-        HttpEntity(ContentTypes.`text/html(UTF-8)`,
-          "<h1>Say hello to akka-http via hello</h1>")
-      }
-    }
-  }
-}
-
 object WebServer extends StrictLogging {
-  def main(args: Array[String]): Unit = {
 
-    implicit val system = ActorSystem(MynabSettings.actorSystemName)
+  def main(args: Array[String]): Unit = {
+    implicit val system = ActorSystem(AppSettings.actorSystemName)
     implicit val materializer = ActorMaterializer()
     implicit val executionContext = system.dispatcher
 
-    val routes: Route = concat(
-      HelloWorldEndpoint.getHello
-      ,HelloWorldEndpoint.getFoo
-      ,SessionRoutes.baseRoute
-      ,SessionRoutes.routes
-    )
-
-    val host = MynabSettings.host
-    val port = MynabSettings.port
-    val bindingFuture = Http().bindAndHandle(routes, host, port)
+    val host = AppSettings.host
+    val port = AppSettings.port
+    val bindingFuture = Http().bindAndHandle(RouteList.routes, host, port)
 
     println(s"""
       Server online at http://localhost:8080/\n

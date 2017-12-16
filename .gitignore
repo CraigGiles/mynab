@@ -23,6 +23,7 @@ db/
 
 # sbt specific
 .ensime*
+ensime.sbt
 /.ensime_cache
 .cache
 .history
