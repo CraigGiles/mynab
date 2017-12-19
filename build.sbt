@@ -115,6 +115,18 @@ lazy val `akka-http` = Project("akka-http", file("akka-http"))
     testkit % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.akkahttp)
 
+lazy val scalajs = Project("scalajs", file("scalajs"))
+  .enablePlugins(ScalaJSPlugin)
+  /* .enablePlugins(ScalaJSWeb) */
+  .settings(
+    scalaJSUseMainModuleInitializer := true
+  )
+  .settings(
+      libraryDependencies ++= Seq(
+        "org.scala-js" %%% "scalajs-dom" % "0.9.3"
+      )
+  )
+
 lazy val testkit = Project("testkit", file("testkit"))
   .settings(commonSettings)
   .settings(libraryDependencies ++= Dependencies.testkit)
