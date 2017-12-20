@@ -31,11 +31,11 @@ object WebServer extends StrictLogging {
       Server online at http://localhost:8080/\n
       Press RETURN to stop...""")
 
-    // let it run until user presses return
-    StdIn.readLine()
+    // // let it run until user presses return
+    // StdIn.readLine()
 
-    bindingFuture
-      .flatMap(_.unbind()) // trigger unbinding from the port
-      .onComplete(_ => system.terminate()) // and shutdown when done
+    // bindingFuture
+    //   .flatMap(_.unbind()) // trigger unbinding from the port
+    //   .onComplete(_ => system.terminate()) // and shutdown when done
   }
 }
