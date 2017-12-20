@@ -24,8 +24,6 @@ trait ExceptionHandling {
 object RouteList extends ExceptionHandling {
   val routes: Route = handleExceptions(exceptionHandler) {
     concat(
-      SessionRoutes.baseRoute
-      ,SessionRoutes.routes
     )
   }
 
