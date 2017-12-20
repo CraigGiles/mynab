@@ -27,15 +27,13 @@ object WebServer extends StrictLogging {
     val port = AppSettings.port
     val bindingFuture = Http().bindAndHandle(RouteList.routes, host, port)
 
-    println(s"""
-      Server online at http://localhost:8080/\n
-      Press RETURN to stop...""")
+    println(s"""Server online at http://$host:$port/""")
 
-    // // let it run until user presses return
-    // StdIn.readLine()
+    // let it run until user presses return
+    StdIn.readLine()
 
-    // bindingFuture
-    //   .flatMap(_.unbind()) // trigger unbinding from the port
-    //   .onComplete(_ => system.terminate()) // and shutdown when done
+    bindingFuture
+      .flatMap(_.unbind()) // trigger unbinding from the port
+      .onComplete(_ => system.terminate()) // and shutdown when done
   }
 }
