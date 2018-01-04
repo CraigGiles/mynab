@@ -110,10 +110,26 @@ lazy val service = Project("service", file("service"))
   .settings(libraryDependencies ++= Dependencies.service)
 
 lazy val `akka-http` = Project("akka-http", file("akka-http"))
+  .enablePlugins(SbtWeb)
   .settings(commonSettings)
-  .dependsOn(service % "test->test;test->compile;compile->compile",
+  .dependsOn(
+    service % "test->test;test->compile;compile->compile",
     testkit % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.akkahttp)
+  .settings(
+    pipelineStages in Assets := Seq(scalaJSPipeline),
+    compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
+    WebKeys.packagePrefix in Assets := "public/",
+    managedClasspath in Runtime += (packageBin in Assets).value
+  )
+
+lazy val scalajs = Project("scalajs", file("scalajs"))
+  .enablePlugins(ScalaJSPlugin)
+  .enablePlugins(ScalaJSWeb)
+  .settings(libraryDependencies ++= Seq(
+        "org.scala-js" %%% "scalajs-dom" % "0.9.3",
+        "com.lihaoyi" %%% "scalatags" % "0.6.7"))
+  .settings(scalaJSUseMainModuleInitializer := true)
 
 lazy val testkit = Project("testkit", file("testkit"))
   .settings(commonSettings)
