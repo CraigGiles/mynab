@@ -127,7 +127,8 @@ lazy val scalajs = Project("scalajs", file("scalajs"))
   .enablePlugins(ScalaJSPlugin)
   .enablePlugins(ScalaJSWeb)
   .settings(libraryDependencies ++= Seq(
-        "org.scala-js" %%% "scalajs-dom" % "0.9.3"))
+        "org.scala-js" %%% "scalajs-dom" % "0.9.3",
+        "com.lihaoyi" %%% "scalatags" % "0.6.7"))
   .settings(scalaJSUseMainModuleInitializer := true)
 
 lazy val testkit = Project("testkit", file("testkit"))
