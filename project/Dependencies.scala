@@ -59,7 +59,6 @@ object Dependencies {
   def cats(m: String) = "org.typelevel" %% s"cats-$m" % "1.0.1"
   def logbackClassic = "ch.qos.logback"  %  "logback-classic" % "1.1.3"
   def logging = "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0"
-  // def config = "com.typesafe" % "config" % "1.3.1"
   def config = "com.github.pureconfig" %% "pureconfig" % "0.8.0"
   def scalatest(scope: String) = "org.scalatest" %% "scalatest" % "3.0.0" % scope
   def finchModules(m: String) = "com.github.finagle" %% s"finch-$m" % "0.13.1"
