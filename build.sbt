@@ -65,10 +65,15 @@ val commonSettings = Seq(
 
     // the strategy used for translating lambdas into JVM code.
     // The current standard is "inline" but they're moving towards "method."
-    "-Ydelambdafy:method"
+    "-Ydelambdafy:method",
+
+    // Improved type inference via the fix for SI-2712:
+    // https://github.com/scala/bug/issues/2712
+    "-Ypartial-unification"
   ),
   scalacOptions in (Compile, console) ~= (_.filterNot(_ == "-Xlint")),
-  scalacOptions in (Compile, console) ~= (_.filterNot(_ == "-Ywarn-unused-import"))
+  scalacOptions in (Compile, console) ~= (_.filterNot(_ == "-Ywarn-unused-import")),
+  scalacOptions in (Test) ~= (_.filter(_ == "-Ywarn-unused-import"))
 )
 
 addCommandAlias("migrate", ";flyway/flywayMigrate")
@@ -87,6 +92,8 @@ lazy val arrow = (project in file("arrow"))
 lazy val flyway = (project in file("flyway"))
   .settings(commonSettings)
   .enablePlugins(FlywayPlugin)
+  .dependsOn(
+    testkit % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.flyway)
 
 lazy val domain = Project("domain", file("domain"))
@@ -97,6 +104,7 @@ lazy val mysql = Project("mysql", file("mysql"))
   .settings(commonSettings)
   .dependsOn(
     domain % "test->test;test->compile;compile->compile",
+    flyway % "test->test;test->compile;compile->compile",
     testkit % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.mysql)
 
