@@ -2,6 +2,7 @@ package com.gilesc
 package mynab
 package repository
 
+
 import com.gilesc.mynab.testkit.TestCase
 import org.scalatest.{Assertions, FunSuite}
 import doobie.implicits._
@@ -15,7 +16,9 @@ import cats.data._
 import cats.effect.{Async, IO}
 import cats.implicits._
 
-class CategoryRepositorySpec extends InMemoryDatabase with IOChecker {
+import com.gilesc.mynab.repository.mysql._
+
+class MysqlCategoryRepositorySpec extends InMemoryDatabase with IOChecker {
   import DatabaseConfig._
 
   val config = DatabaseConfig()
@@ -26,7 +29,7 @@ class CategoryRepositorySpec extends InMemoryDatabase with IOChecker {
     config.username,
     config.password)
 
-  private val repo = new CategoryGroupRepositoryMysql[IO](transactor)
+  private val repo = new MysqlCategoryGroupRepository[IO](transactor)
 
   behavior of "Category Group Repository"
   it should "allow me to store a category group" in {
