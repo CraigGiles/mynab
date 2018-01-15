@@ -2,25 +2,15 @@ package com.gilesc
 package mynab
 package repository
 
-
-import com.gilesc.mynab.testkit.TestCase
-import org.scalatest.{Assertions, FunSuite}
-import doobie.implicits._
 import doobie.scalatest._
 import doobie.util.transactor.Transactor
-import doobie.util.transactor.Strategy
-import doobie.h2._
-import doobie.h2.implicits._
-import cats._
-import cats.data._
-import cats.effect.{Async, IO}
-import cats.implicits._
 
+import cats.effect.IO
+
+import com.gilesc.mynab.testkit.TestCase
 import com.gilesc.mynab.repository.mysql._
 
 class MysqlCategoryRepositorySpec extends InMemoryDatabase with IOChecker {
-  import DatabaseConfig._
-
   val config = DatabaseConfig()
 
   override def transactor = Transactor.fromDriverManager[IO](
