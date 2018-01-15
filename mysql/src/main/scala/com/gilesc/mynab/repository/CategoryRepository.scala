@@ -17,7 +17,7 @@ import cats.effect.Async
 import com.gilesc.mynab.repository.mysql._
 
 trait CategoryGroupRepository[F[_]] {
-  def create(ctx: CategoryGroupContext): F[Either[PersistenceError, CategoryGroup]]
+  def create(ctx: CategoryGroupContext): F[Either[RepositoryError, CategoryGroup]]
 }
 
 class CategoryGroupRepositoryMysql[F[_]: Async](
@@ -25,7 +25,7 @@ class CategoryGroupRepositoryMysql[F[_]: Async](
 ) extends CategoryGroupRepository[F] {
   override def create(
     ctx: CategoryGroupContext
-  ): F[Either[PersistenceError, CategoryGroup]] = {
+  ): F[Either[RepositoryError, CategoryGroup]] = {
     def insert(name: CategoryName): ConnectionIO[CategoryGroup] = for {
         id <- sql"insert into category_groups (name) values (${name.value})".update
           .withUniqueGeneratedKeys[Long]("ID")
@@ -34,7 +34,7 @@ class CategoryGroupRepositoryMysql[F[_]: Async](
 
     insert(ctx.value).transact(xa).attemptSomeSqlState {
        ErrorCode.convert andThen {
-           case ErrorCode.DuplicateKey => PersistenceError.DuplicateKey
+           case ErrorCode.DuplicateKey => RepositoryError.DuplicateKey
        }
     }
   }

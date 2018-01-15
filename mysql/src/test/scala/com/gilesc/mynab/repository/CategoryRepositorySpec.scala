@@ -18,7 +18,6 @@ import cats.implicits._
 class CategoryRepositorySpec extends InMemoryDatabase with IOChecker {
   import DatabaseConfig._
 
-  type UserDTO = (Int, String, String)
   val config = DatabaseConfig()
 
   override def transactor = Transactor.fromDriverManager[IO](
@@ -44,7 +43,7 @@ class CategoryRepositorySpec extends InMemoryDatabase with IOChecker {
     val Left(second) = repo.create(ctx).unsafeRunSync
 
     first.name should be(name)
-    second should be(PersistenceError.DuplicateKey)
+    second should be(RepositoryError.DuplicateKey)
   }
 
   it should "allow me to test something" in {

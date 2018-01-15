@@ -8,10 +8,10 @@ package object repository {
   case class CategoryGroup(id: CategoryGroupId, name: CategoryName)
   case class CategoryGroupContext(value: CategoryName)
 
-  sealed trait PersistenceError
+  sealed trait RepositoryError
 
-  object PersistenceError {
-    final case object DuplicateKey extends PersistenceError
+  object RepositoryError {
+    final case object DuplicateKey extends RepositoryError
   }
 
 }
