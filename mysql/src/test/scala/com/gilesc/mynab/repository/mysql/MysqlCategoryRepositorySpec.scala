@@ -1,6 +1,7 @@
 package com.gilesc
 package mynab
 package repository
+package mysql
 
 import doobie.scalatest._
 import doobie.util.transactor.Transactor
@@ -8,12 +9,11 @@ import doobie.util.transactor.Transactor
 import cats.effect.IO
 
 import com.gilesc.mynab.testkit.TestCase
-import com.gilesc.mynab.repository.mysql._
 
-class MysqlCategoryRepositorySpec extends InMemoryDatabase with IOChecker {
+class MysqlCategoryRepositorySpec extends InMemoryDatabase {
   val config = DatabaseConfig()
 
-  override def transactor = Transactor.fromDriverManager[IO](
+  def transactor = Transactor.fromDriverManager[IO](
     config.driver,
     config.url,
     config.username,
