@@ -12,6 +12,7 @@ package object repository {
 
   object RepositoryError {
     final case object DuplicateKey extends RepositoryError
+    final case object UnknownError extends RepositoryError
   }
 
 }
