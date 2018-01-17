@@ -39,11 +39,16 @@ class MysqlCategoryRepositorySpec extends InMemoryDatabase {
     second should be(RepositoryError.DuplicateKey)
   }
 
-  it should "allow me to test something" in {
-    val name = CategoryName("wow what a difference a day makes")
+  behavior of "Category Repository"
+  it should "allows me to store a category" in {
+    val catRepo = new MysqlCategoryRepository[IO](transactor)
+    val name = CategoryName("Food")
     val ctx = new CategoryGroupContext(name)
-    val result01 = repo.create(ctx).unsafeRunSync
-    val result02 = repo.create(ctx).unsafeRunSync
+    val Right(group) = repo.create(ctx).unsafeRunSync
+
+    val categoryName = CategoryName("Groceries")
+    val catContext = new CategoryContext(group, categoryName)
+    val category = catRepo.create(catContext).unsafeRunSync
   }
 
 }

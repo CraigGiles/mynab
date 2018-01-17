@@ -11,28 +11,34 @@ import doobie.free.connection.ConnectionIO
 
 import cats.effect.Async
 
-trait CategoryGroupQueries {
-  def insertQuery(name: CategoryName): Update0 =
-    sql"insert into category_groups (name) values (${name.value})".update
+trait CategoryQueries {
+  def insertQuery(
+    name: CategoryName,
+    groupId: CategoryGroupId
+  ): Update0 =
+    sql"insert into categories (category_group_id, name) values (${groupId.value}, ${name.value})".update
 }
 
-class MysqlCategoryGroupRepository[F[_]: Async](
+class MysqlCategoryRepository[F[_]: Async](
   xa: Transactor[F]
-) extends CategoryGroupRepository[F] with CategoryGroupQueries {
+) extends CategoryRepository[F] with CategoryQueries {
   override def create(
-    ctx: CategoryGroupContext
-  ): F[Either[RepositoryError, CategoryGroup]] = {
+    ctx: CategoryContext
+  ): F[Either[RepositoryError, Category]] = {
 
-    def insert(name: CategoryName): ConnectionIO[CategoryGroup] = {
-      insertQuery(name).withUniqueGeneratedKeys[Long]("ID") map { id =>
-        CategoryGroup(CategoryGroupId(id), name)
+    def insert(
+      name: CategoryName,
+      group: CategoryGroup
+    ): ConnectionIO[Category] = {
+      insertQuery(name, group.id).withUniqueGeneratedKeys[Long]("ID") map { id =>
+        Category(CategoryId(id), group, name)
       }
     }
 
-    insert(ctx.value).transact(xa).attemptSomeSqlState {
+    insert(ctx.name, ctx.group).transact(xa).attemptSomeSqlState {
        ErrorCode.convert andThen {
            case ErrorCode.DuplicateKey => RepositoryError.DuplicateKey
-           case _ => RepositoryError.UnknownError
+           case e => RepositoryError.UnknownError(e.toString)
        }
     }
   }
