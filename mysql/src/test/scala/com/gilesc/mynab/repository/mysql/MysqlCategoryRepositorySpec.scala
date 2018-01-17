@@ -10,7 +10,7 @@ import cats.effect.IO
 
 import com.gilesc.mynab.testkit.TestCase
 
-class MysqlCategoryRepositorySpec extends InMemoryDatabase {
+class MysqlCategoryRepositorySpec extends DatabaseTestCase {
   val config = DatabaseConfig()
 
   def transactor = Transactor.fromDriverManager[IO](

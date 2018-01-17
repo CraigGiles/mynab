@@ -3,7 +3,7 @@ package mynab
 
 import com.gilesc.mynab.testkit.TestCase
 
-abstract class InMemoryDatabase extends TestCase {
+abstract class DatabaseTestCase extends TestCase {
   private[this] def migrateDatabase(): Unit = {
     import org.flywaydb.core.Flyway
 
