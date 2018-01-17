@@ -21,9 +21,9 @@ class CategoryGroupQueriesSpec extends TestCase
     config.username,
     config.password)
 
-  behavior of "Category Group Repository Queries"
-  it should "have valid queries" in {
-    val name = CategoryName("hello world")
-    check(insertQuery(name))
-  }
+  // behavior of "Category Group Repository Queries"
+  // it should "have valid queries" in {
+  //   val name = CategoryName("hello world")
+  //   check(insertQuery(name))
+  // }
 }
