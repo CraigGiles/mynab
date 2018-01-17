@@ -19,6 +19,7 @@ abstract class InMemoryDatabase extends TestCase {
 
     flyway.setLocations("classpath:db/migration")
     flyway.setDataSource(config.url, config.username, config.password)
+    flyway.clean()
     flyway.migrate()
 
     ()
