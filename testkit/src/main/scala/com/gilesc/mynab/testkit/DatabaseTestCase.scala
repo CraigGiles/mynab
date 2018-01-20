@@ -1,7 +1,6 @@
 package com.gilesc
 package mynab
-
-import com.gilesc.mynab.testkit.TestCase
+package testkit
 
 abstract class DatabaseTestCase extends TestCase {
   private[this] def migrateDatabase(): Unit = {
