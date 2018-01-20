@@ -113,6 +113,7 @@ lazy val service = Project("service", file("service"))
   .dependsOn(
     testkit % "test->test;test->compile;compile->compile",
     domain % "test->test;test->compile;compile->compile",
+    flyway % "test->test;test->compile;compile->compile",
     arrow % "test->test;test->compile;compile->compile",
     mysql % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.service)
