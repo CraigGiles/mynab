@@ -92,8 +92,6 @@ lazy val arrow = (project in file("arrow"))
 lazy val flyway = (project in file("flyway"))
   .settings(commonSettings)
   .enablePlugins(FlywayPlugin)
-  .dependsOn(
-    testkit % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.flyway)
 
 lazy val domain = Project("domain", file("domain"))
@@ -104,7 +102,6 @@ lazy val mysql = Project("mysql", file("mysql"))
   .settings(commonSettings)
   .dependsOn(
     domain % "test->test;test->compile;compile->compile",
-    flyway % "test->test;test->compile;compile->compile",
     testkit % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.mysql)
 
@@ -113,7 +110,6 @@ lazy val service = Project("service", file("service"))
   .dependsOn(
     testkit % "test->test;test->compile;compile->compile",
     domain % "test->test;test->compile;compile->compile",
-    flyway % "test->test;test->compile;compile->compile",
     arrow % "test->test;test->compile;compile->compile",
     mysql % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.service)
@@ -143,4 +139,7 @@ lazy val scalajs = Project("scalajs", file("scalajs"))
 lazy val testkit = Project("testkit", file("testkit"))
   .settings(commonSettings)
   .settings(libraryDependencies ++= Dependencies.testkit)
-  .dependsOn(domain % "test->test;test->compile;compile->compile")
+  .dependsOn(
+      flyway % "test->test;test->compile;compile->compile",
+      domain % "test->test;test->compile;compile->compile"
+  )

@@ -9,6 +9,7 @@ import doobie.util.transactor.Transactor
 import cats.effect.IO
 
 import com.gilesc.mynab.testkit.TestCase
+import com.gilesc.mynab.testkit.DatabaseTestCase
 
 class MysqlCategoryRepositorySpec extends DatabaseTestCase {
   val config = DatabaseConfig()

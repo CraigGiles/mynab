@@ -10,6 +10,7 @@ import cats.effect.IO
 import com.gilesc.mynab.testkit.TestCase
 
 import com.gilesc.mynab.repository.mysql._
+import com.gilesc.mynab.testkit.DatabaseTestCase
 import com.gilesc.mynab.testkit.TestCase
 import com.gilesc.mynab.repository._
 import cats.effect.IO
