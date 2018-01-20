@@ -8,19 +8,6 @@ import cats.effect.IO
 import cats.data.EitherT
 import cats.syntax.either._
 
-object IOAssertion {
-  def apply[A](ioa: IO[A]): A = ioa.unsafeRunSync()
-}
-
-// object TestUserService {
-//   private val testUserRepo: UserRepository[IO] =
-//     (username: UserName) => IO {
-//       users.find(_.username.value == username.value)
-//     }
-
-//   val service: UserService[IO] = new UserService[IO](testUserRepo)
-// }
-
 class CategoryServiceSpec extends TestCase {
   val groups = new CategoryGroupRepository[IO] {
     override def create(
