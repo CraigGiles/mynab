@@ -14,7 +14,12 @@ object Dependencies {
 
   lazy val domain = core ++ Seq(
     bcrypt)
-  lazy val service = core ++ Seq()
+  lazy val service = Seq(
+    cats("core")
+    ,scalatest("it,test")
+    ,logging
+    ,config
+  )
 
   lazy val mysql = Seq(
     cats("core")

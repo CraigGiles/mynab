@@ -106,6 +106,8 @@ lazy val mysql = Project("mysql", file("mysql"))
   .settings(libraryDependencies ++= Dependencies.mysql)
 
 lazy val service = Project("service", file("service"))
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings)
   .settings(commonSettings)
   .dependsOn(
     testkit % "test->test;test->compile;compile->compile",
