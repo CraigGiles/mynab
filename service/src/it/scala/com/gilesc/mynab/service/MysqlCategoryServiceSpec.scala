@@ -47,6 +47,23 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
     result.name should be(minorName)
   }
 
+  it should "allow me to store a category with existing major name, new minor name" in {
+    val service = CreateCategoryService.apply[IO](groupRepo, categoryRepo)
+    val majorName = CategoryName(Gen.alphaStr.sample.get)
+    val firstMinor = CategoryName(Gen.alphaStr.sample.get)
+    val secondMinor = CategoryName(Gen.alphaStr.sample.get)
+
+    val firstCtx = CreateCategoryContext(majorName, firstMinor)
+    val secondCtx = CreateCategoryContext(majorName, secondMinor)
+    val Right(firstResult) = service(firstCtx).unsafeRunSync
+    firstResult.group.name should be(majorName)
+    firstResult.name should be(firstMinor)
+
+     val Right(secondResult) = service(secondCtx).unsafeRunSync
+     secondResult.group.name should be(majorName)
+     secondResult.name should be(secondMinor)
+  }
+
 }
 
 

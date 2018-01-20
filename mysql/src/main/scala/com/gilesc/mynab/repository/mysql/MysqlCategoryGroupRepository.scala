@@ -14,6 +14,9 @@ import cats.effect.Async
 trait CategoryGroupQueries {
   def insertQuery(name: CategoryName): Update0 =
     sql"insert into category_groups (name) values (${name.value})".update
+
+  def findQuery(name: CategoryName): Query0[CategoryGroup] =
+    sql"SELECT * FROM category_groups WHERE name=${name}".query[CategoryGroup]
 }
 
 class MysqlCategoryGroupRepository[F[_]: Async](
@@ -36,5 +39,9 @@ class MysqlCategoryGroupRepository[F[_]: Async](
        }
     }
   }
+
+  override def find(
+    ctx: CategoryName
+  ): F[Option[CategoryGroup]] = findQuery(ctx).unique.map(Option.apply).transact(xa)
 }
 
