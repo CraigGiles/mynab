@@ -2,6 +2,7 @@ package com.gilesc
 package mynab
 package service
 
+import org.scalacheck.Gen
 import doobie.scalatest._
 import doobie.util.transactor.Transactor
 
@@ -35,49 +36,16 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
   private val groupRepo = new MysqlCategoryGroupRepository[IO](transactor)
   private val categoryRepo = new MysqlCategoryRepository[IO](transactor)
 
-
   behavior of "Category Service With MySQL"
-  it should "use the mysql store correctly" in {
+  it should "allow me to store a category with new major / minor names" in {
     val service = CreateCategoryService.apply[IO](groupRepo, categoryRepo)
-    val food = CategoryName("Food")
-    val diningOut = CategoryName("Dining Out")
-    val ctx = CreateCategoryContext(food, diningOut)
-    val result = service(ctx).unsafeRunSync
-    println()
-    println()
-    println(result)
-    println()
-    println()
+    val majorName = CategoryName(Gen.alphaStr.sample.get)
+    val minorName = CategoryName(Gen.alphaStr.sample.get)
+    val ctx = CreateCategoryContext(majorName, minorName)
+    val Right(result) = service(ctx).unsafeRunSync
+    result.group.name should be(majorName)
+    result.name should be(minorName)
   }
-
-//   it should "allow me to store a category group" in {
-//     val name = CategoryName("hello world")
-//     val ctx = new CategoryGroupContext(name)
-//     val Right(result) = repo.create(ctx).unsafeRunSync
-//     result should be(CategoryGroup(CategoryGroupId(1), name))
-//   }
-
-//   it should "give me a duplicate key error when inserting the same group name" in {
-//     val name = CategoryName("mycategoryname")
-//     val ctx = new CategoryGroupContext(name)
-//     val Right(first) = repo.create(ctx).unsafeRunSync
-//     val Left(second) = repo.create(ctx).unsafeRunSync
-
-//     first.name should be(name)
-//     second should be(RepositoryError.DuplicateKey)
-//   }
-
-//   behavior of "Category Repository"
-//   it should "allows me to store a category" in {
-//     val catRepo = new MysqlCategoryRepository[IO](transactor)
-//     val name = CategoryName("Food")
-//     val ctx = new CategoryGroupContext(name)
-//     val Right(group) = repo.create(ctx).unsafeRunSync
-
-//     val categoryName = CategoryName("Groceries")
-//     val catContext = new CategoryContext(group, categoryName)
-//     val category = catRepo.create(catContext).unsafeRunSync
-//   }
 
 }
 

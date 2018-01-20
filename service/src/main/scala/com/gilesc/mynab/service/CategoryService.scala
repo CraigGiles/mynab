@@ -14,7 +14,6 @@ import com.gilesc.mynab.repository.CategoryRepository
 
 case class CreateCategoryContext(major: CategoryName, minor: CategoryName)
 
-
 final class CreateCategoryService[F[_]: Async](
     groups: CategoryGroupRepository[F],
     categories: CategoryRepository[F]
