@@ -13,12 +13,13 @@ import com.gilesc.arrow.Service
 
 import com.gilesc.mynab.testkit.TestCase
 
+import cats.implicits._
 
 class AccountServiceSpec extends TestCase {
 
   behavior of "Account Service"
   it should "allow me to create an account given a valid name and user id" in {
-     val repository = new Service[Account, Either[PersistError, Account]] {
+     val repository = new Service[Future, Account, Either[PersistError, Account]] {
        def apply(a: Account): Future[Either[PersistError, Account]] = {
          Future(PersistResponse.success(a))
        }
@@ -38,7 +39,7 @@ class AccountServiceSpec extends TestCase {
   it should "allow me to find all accounts for a user in the database" in {
     val userId = generateUserId.head
     val generated = generateAccount(userId).take(5).toVector
-    val repository = new Service[UserId, Either[PersistError, Option[Vector[Account]]]] {
+    val repository = new Service[Future, UserId, Either[PersistError, Option[Vector[Account]]]] {
        def apply(u: UserId): Future[Either[PersistError, Option[Vector[Account]]]] = {
          Future.successful(PersistResponse.success(Some(generated)))
        }
@@ -59,13 +60,13 @@ class AccountServiceSpec extends TestCase {
     val generatedId = generateAccountId.head
     val generated = generateAccount(userId).head.copy(id = generatedId)
 
-    val lookup = new Service[AccountId, Either[PersistError, Option[Account]]] {
+    val lookup = new Service[Future, AccountId, Either[PersistError, Option[Account]]] {
        def apply(id: AccountId): Future[Either[PersistError, Option[Account]]] = {
          Future.successful(PersistResponse.success(Some(generated)))
        }
      }
 
-    val persist = new Service[Account, Either[PersistError, Account]] {
+    val persist = new Service[Future, Account, Either[PersistError, Account]] {
        def apply(account: Account): Future[Either[PersistError, Account]] = {
          Future.successful(PersistResponse.success(account))
        }
@@ -96,13 +97,13 @@ class AccountServiceSpec extends TestCase {
       transactions = Vector.empty[Transaction]
     )
 
-    val lookup = new Service[AccountId, Either[PersistError, Option[Account]]] {
+    val lookup = new Service[Future, AccountId, Either[PersistError, Option[Account]]] {
        def apply(id: AccountId): Future[Either[PersistError, Option[Account]]] = {
          Future(PersistResponse.success(Some(generated)))
        }
      }
 
-    val persist = new Service[(Account, TransactionContext), Either[PersistError, Account]] {
+    val persist = new Service[Future, (Account, TransactionContext), Either[PersistError, Account]] {
        def apply(request: (Account, TransactionContext)): Future[Either[PersistError, Account]] = {
          val (a, t) = request
          Future(PersistResponse.success(

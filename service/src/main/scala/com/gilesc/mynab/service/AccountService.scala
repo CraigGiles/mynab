@@ -4,6 +4,8 @@ package service
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import cats._
+import cats.implicits._
 
 import com.gilesc.arrow.Service
 
@@ -27,8 +29,8 @@ object PersistError {
 case class CreateAccountContext(userId: UserId, name: AccountName)
 
 final class CreateAccountService(
-    persist: Service[Account, Either[PersistError, Account]]
-  ) extends Service[CreateAccountContext, Account] {
+    persist: Service[Future, Account, Either[PersistError, Account]]
+  ) extends Service[Future, CreateAccountContext, Account] {
   def apply(request: CreateAccountContext): Future[Account] = {
     val account = Account(
       AccountId(UUID.randomUUID()),
@@ -44,8 +46,8 @@ final class CreateAccountService(
 }
 
 final class ReadAccountService(
-    repository: Service[UserId, Either[PersistError, Option[Vector[Account]]]]
-  ) extends Service[UserId, Vector[Account]] {
+    repository: Service[Future, UserId, Either[PersistError, Option[Vector[Account]]]]
+  ) extends Service[Future, UserId, Vector[Account]] {
 
   def apply(id: UserId): Future[Vector[Account]] = {
     repository(id) flatMap {
@@ -61,9 +63,9 @@ case class NoAccountFound(id: AccountId) extends UpdateError(s"No account found 
 case class UnknownError(id: AccountId) extends UpdateError(s"Unknown error for updating $id")
 
 final class UpdateAccountNameService(
-  lookup: Service[AccountId, Either[PersistError, Option[Account]]],
-  persist: Service[Account, Either[PersistError, Account]]
-  ) extends Service[(AccountId, AccountName), Either[UpdateError, Account]] {
+  lookup: Service[Future, AccountId, Either[PersistError, Option[Account]]],
+  persist: Service[Future, Account, Either[PersistError, Account]]
+  ) extends Service[Future, (AccountId, AccountName), Either[UpdateError, Account]] {
   def apply(req: (AccountId, AccountName)): Future[Either[UpdateError, Account]] = {
     val (id, replacement) = req
 
@@ -77,7 +79,7 @@ final class UpdateAccountNameService(
   def update(
     account: Account,
     replacement: AccountName,
-    persist: Service[Account, Either[PersistError, Account]]
+    persist: Service[Future, Account, Either[PersistError, Account]]
   ): Future[Either[UpdateError, Account]] = {
     persist(account.copy(name = replacement)) flatMap {
       case Right(acc) => Future.successful(Right(acc))
@@ -116,9 +118,9 @@ final class UpdateAccountNameService(
 // }
 
 final class AddTransactionAccountService(
-  lookup: Service[AccountId, Either[PersistError, Option[Account]]],
-  persist: Service[(Account, TransactionContext), Either[PersistError, Account]]
-) extends Service[(AccountId, TransactionContext), Account] {
+  lookup: Service[Future, AccountId, Either[PersistError, Option[Account]]],
+  persist: Service[Future, (Account, TransactionContext), Either[PersistError, Account]]
+) extends Service[Future, (AccountId, TransactionContext), Account] {
 
   def apply(request: (AccountId, TransactionContext)): Future[Account] = {
     val (id, ctx) = request

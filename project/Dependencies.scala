@@ -10,7 +10,13 @@ object Dependencies {
     ,config
   )
 
-  lazy val arrow = core ++ Seq()
+  lazy val arrow = Seq(
+    cats("core")
+    ,"org.typelevel" %% "cats-effect" % "0.5"
+    ,scalatest("test")
+    ,logging
+    ,config
+  )
 
   lazy val domain = core ++ Seq(
     bcrypt)

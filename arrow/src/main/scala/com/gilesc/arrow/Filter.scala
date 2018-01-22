@@ -1,9 +1,14 @@
 package com.gilesc
 package arrow
 
-import scala.concurrent.Future
+import cats.Monad
 
-abstract class Filter[-ReqIn, +RepOut, +ReqOut, -RepIn]
-    extends ((ReqIn, Service[ReqOut, RepIn]) => Future[RepOut])
+abstract class Filter[F[_]: Monad, ReqIn, RepOut, ReqOut, RepIn]
+  extends ((ReqIn, Service[F, ReqOut, RepIn]) => F[RepOut])
 
-trait SimpleFilter[ReqIn, ReqOut] extends Filter[ReqIn, ReqOut, ReqIn, ReqOut]
+trait SimpleFilter[F[_], ReqIn, ReqOut] extends Filter[F, ReqIn, ReqOut, ReqIn, ReqOut]
+
+
+
+
+
