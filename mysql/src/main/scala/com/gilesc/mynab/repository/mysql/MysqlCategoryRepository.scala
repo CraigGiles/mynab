@@ -13,10 +13,11 @@ import cats.effect.Async
 
 trait CategoryQueries {
   def insertQuery(
-    name: CategoryName,
-    groupId: CategoryGroupId
+    groupId: CategoryGroupId,
+    userId: UserId,
+    name: CategoryName
   ): Update0 =
-    sql"insert into categories (category_group_id, name) values (${groupId.value}, ${name.value})".update
+    sql"insert into categories (category_group_id, user_id, name) values (${groupId.value}, ${userId.value}, ${name.value})".update
 }
 
 class MysqlCategoryRepository[F[_]: Async](
@@ -27,15 +28,16 @@ class MysqlCategoryRepository[F[_]: Async](
   ): F[Either[RepositoryError, Category]] = {
 
     def insert(
+      userId: UserId,
       name: CategoryName,
       group: CategoryGroup
     ): ConnectionIO[Category] = {
-      insertQuery(name, group.id).withUniqueGeneratedKeys[Long]("ID") map { id =>
-        Category(CategoryId(id), group, name)
+      insertQuery(group.id, userId, name).withUniqueGeneratedKeys[Long]("ID") map { id =>
+        Category(CategoryId(id), userId, group, name)
       }
     }
 
-    insert(ctx.name, ctx.group).transact(xa).attemptSomeSqlState {
+    insert(ctx.userId, ctx.name, ctx.group).transact(xa).attemptSomeSqlState {
        ErrorCode.convert andThen {
            case ErrorCode.DuplicateKey => RepositoryError.DuplicateKey
            case e => RepositoryError.UnknownError(e.toString)

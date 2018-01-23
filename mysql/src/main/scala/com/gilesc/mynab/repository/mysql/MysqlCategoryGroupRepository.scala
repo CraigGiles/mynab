@@ -14,8 +14,8 @@ import cats.effect.Async
 import com.gilesc.arrow._
 
 trait CategoryGroupQueries {
-  def insertQuery(name: CategoryName): Update0 =
-    sql"insert into category_groups (name) values (${name.value})".update
+  def insertQuery(user: UserId, name: CategoryName): Update0 =
+    sql"insert into category_groups (user_id, name) values (${user.value}, ${name.value})".update
 
   def findQuery(name: CategoryName): Query0[CategoryGroup] =
     sql"SELECT * FROM category_groups WHERE name=${name}".query[CategoryGroup]
@@ -42,13 +42,13 @@ class MysqlCreateCategoryGroup[F[_]: Async](
   override def run(
     ctx: CategoryGroupContext
   ): F[Either[RepositoryError, CategoryGroup]] = {
-    def insert(name: CategoryName): ConnectionIO[CategoryGroup] = {
-      insertQuery(name).withUniqueGeneratedKeys[Long]("ID") map { id =>
-        CategoryGroup(CategoryGroupId(id), name)
+    def insert(user: UserId, name: CategoryName): ConnectionIO[CategoryGroup] = {
+      insertQuery(user, name).withUniqueGeneratedKeys[Long]("ID") map { id =>
+        CategoryGroup(CategoryGroupId(id), user, name)
       }
     }
 
-    insert(ctx.value).transact(xa).attemptSomeSqlState {
+    insert(ctx.userId, ctx.value).transact(xa).attemptSomeSqlState {
       ErrorCode.convert andThen {
         case ErrorCode.DuplicateKey => RepositoryError.DuplicateKey
         case e => RepositoryError.UnknownError(e.toString)

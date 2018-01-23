@@ -7,25 +7,22 @@ import cats.effect.Async
 
 import com.gilesc.arrow.Service
 import com.gilesc.mynab.repository.RepositoryError
-import com.gilesc.mynab.repository.CategoryGroup
-import com.gilesc.mynab.repository.CategoryContext
-import com.gilesc.mynab.repository.CategoryGroupContext
-import com.gilesc.mynab.repository.CategoryName
 import com.gilesc.mynab.repository.CategoryGroupRepository
 import com.gilesc.mynab.repository.CategoryRepository
 
-case class CreateCategoryContext(major: CategoryName, minor: CategoryName)
+case class CreateCategoryContext(user: UserId, major: CategoryName, minor: CategoryName)
 
 final class CreateCategoryService[F[_]: Async](
     createGroup: Service[F, CategoryGroupContext, Either[RepositoryError, CategoryGroup]] ,
     findGroup: Service[F, CategoryName, Option[CategoryGroup]],
-    createCategory: Service[F, CategoryContext, Either[RepositoryError, repository.Category]]
-  ) extends Service[F, CreateCategoryContext, Either[String, repository.Category]] {
+    createCategory: Service[F, CategoryContext, Either[RepositoryError, Category]]
+  ) extends Service[F, CreateCategoryContext, Either[String, Category]] {
 
   private[this] def getGroupFor(
+    user: UserId,
     name: CategoryName
   ): EitherT[F, RepositoryError, CategoryGroup] = {
-    EitherT(createGroup(CategoryGroupContext(name))).leftFlatMap {
+    EitherT(createGroup(CategoryGroupContext(user, name))).leftFlatMap {
       case RepositoryError.DuplicateKey =>
         EitherT.fromOptionF(findGroup(name), RepositoryError.DuplicateKey)
       case error => EitherT(Async[F].delay(Left(error)))
@@ -35,10 +32,10 @@ final class CreateCategoryService[F[_]: Async](
   // TODO: change the String to a real ADT
   override def run(
     ctx: CreateCategoryContext
-  ): F[Either[String, repository.Category]] = {
+  ): F[Either[String, Category]] = {
     val result = for {
-      group <- getGroupFor(ctx.major)
-      category <- EitherT(createCategory(CategoryContext(group, ctx.minor)))
+      group <- getGroupFor(ctx.user, ctx.major)
+      category <- EitherT(createCategory(CategoryContext(ctx.user, group, ctx.minor)))
     } yield category
 
     result.leftMap(_.toString).value
