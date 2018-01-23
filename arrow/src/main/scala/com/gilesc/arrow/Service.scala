@@ -14,3 +14,11 @@ abstract class Service[F[_]: Monad, Req, Resp] {
 
 }
 
+object Service {
+  def apply[F[_]: Monad, Req, Resp](f: Req => F[Resp]): Service[F, Req, Resp] = {
+    new Service[F, Req, Resp] {
+      override def run(req: Req) = f(req)
+    }
+  }
+}
+
