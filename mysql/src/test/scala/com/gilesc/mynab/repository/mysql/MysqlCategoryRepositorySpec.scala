@@ -24,15 +24,17 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
 
   behavior of "Category Group Repository"
   it should "allow me to store a category group" in {
+    val userId = UserId(1L)
     val name = CategoryName("hello world")
-    val ctx = new CategoryGroupContext(name)
+    val ctx = new CategoryGroupContext(userId, name)
     val Right(result) = repo.create(ctx).unsafeRunSync
-    result should be(CategoryGroup(CategoryGroupId(1), name))
+    result should be(CategoryGroup(CategoryGroupId(1), userId, name))
   }
 
   it should "give me a duplicate key error when inserting the same group name" in {
+    val userId = UserId(1L)
     val name = CategoryName("mycategoryname")
-    val ctx = new CategoryGroupContext(name)
+    val ctx = new CategoryGroupContext(userId, name)
     val Right(first) = repo.create(ctx).unsafeRunSync
     val Left(second) = repo.create(ctx).unsafeRunSync
 
@@ -42,13 +44,14 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
 
   behavior of "Category Repository"
   it should "allows me to store a category" in {
+    val userId = UserId(1L)
     val catRepo = new MysqlCategoryRepository[IO](transactor)
     val name = CategoryName("Food")
-    val ctx = new CategoryGroupContext(name)
+    val ctx = new CategoryGroupContext(userId, name)
     val Right(group) = repo.create(ctx).unsafeRunSync
 
     val categoryName = CategoryName("Groceries")
-    val catContext = new CategoryContext(group, categoryName)
+    val catContext = new CategoryContext(userId, group, categoryName)
     val category = catRepo.create(catContext).unsafeRunSync
   }
 

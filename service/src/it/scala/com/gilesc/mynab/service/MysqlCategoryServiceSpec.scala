@@ -19,6 +19,7 @@ import cats.data.EitherT
 import cats.syntax.either._
 
 class MysqlCategoryRepositorySpec extends DatabaseTestCase {
+  val userId = UserId(1)
     case class DatabaseConfig(
       driver: String,
       url: String,
@@ -41,7 +42,7 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
     val service = CreateCategoryService.apply[IO](groupRepo, categoryRepo)
     val majorName = CategoryName(Gen.alphaStr.sample.get)
     val minorName = CategoryName(Gen.alphaStr.sample.get)
-    val ctx = CreateCategoryContext(majorName, minorName)
+    val ctx = CreateCategoryContext(userId, majorName, minorName)
     val Right(result) = service(ctx).unsafeRunSync
     result.group.name should be(majorName)
     result.name should be(minorName)
@@ -53,8 +54,8 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
     val firstMinor = CategoryName(Gen.alphaStr.sample.get)
     val secondMinor = CategoryName(Gen.alphaStr.sample.get)
 
-    val firstCtx = CreateCategoryContext(majorName, firstMinor)
-    val secondCtx = CreateCategoryContext(majorName, secondMinor)
+    val firstCtx = CreateCategoryContext(userId, majorName, firstMinor)
+    val secondCtx = CreateCategoryContext(userId, majorName, secondMinor)
     val Right(firstResult) = service(firstCtx).unsafeRunSync
     firstResult.group.name should be(majorName)
     firstResult.name should be(firstMinor)

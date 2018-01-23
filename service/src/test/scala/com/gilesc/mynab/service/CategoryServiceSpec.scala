@@ -15,6 +15,7 @@ class CategoryServiceSpec extends TestCase {
     ): IO[Category] = {
       val (major, minor) = request
       val ctx = CreateCategoryContext(
+        UserId(1),
         CategoryName(major),
         CategoryName(minor))
 
@@ -23,8 +24,8 @@ class CategoryServiceSpec extends TestCase {
   }
   val service = new Service[IO, CreateCategoryContext, Category] {
     override def run(req: CreateCategoryContext): IO[Category] = {
-      val group = CategoryGroup(CategoryGroupId(1), CategoryName(req.major.value))
-      val category = Category(CategoryId(1), group, CategoryName(req.minor.value))
+      val group = CategoryGroup(CategoryGroupId(1), UserId(1), CategoryName(req.major.value))
+      val category = Category(CategoryId(1), UserId(1), group, CategoryName(req.minor.value))
       IO.pure(category)
     }
   }
@@ -33,7 +34,7 @@ class CategoryServiceSpec extends TestCase {
    it should "allow me to create a new category" in {
      val food = CategoryName("Food")
      val diningOut = CategoryName("Dining Out")
-     val ctx = CreateCategoryContext(food, diningOut)
+     val ctx = CreateCategoryContext(UserId(1), food, diningOut)
      val result = service(ctx).unsafeRunSync()
      result.group.name.value should be(food.value)
      result.name.value should be(diningOut.value)

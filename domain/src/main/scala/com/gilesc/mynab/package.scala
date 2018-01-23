@@ -3,15 +3,17 @@ package com.gilesc
 import java.util.UUID
 
 package object mynab {
+  case class UserId(value: Long) extends AnyVal
+
   case class CategoryName(value: String) extends AnyVal
 
   case class CategoryGroupId(value: Long) extends AnyVal
-  case class CategoryGroup(id: CategoryGroupId, name: CategoryName)
-  case class CategoryGroupContext(value: CategoryName)
+  case class CategoryGroup(id: CategoryGroupId, userId: UserId, name: CategoryName)
+  case class CategoryGroupContext(userId: UserId, value: CategoryName)
 
   case class CategoryId(value: Long) extends AnyVal
-  case class Category(id: CategoryId, group: CategoryGroup, name: CategoryName)
-  case class CategoryContext(group: CategoryGroup, name: CategoryName)
+  case class Category(id: CategoryId, userId: UserId, group: CategoryGroup, name: CategoryName)
+  case class CategoryContext(userId: UserId, group: CategoryGroup, name: CategoryName)
 
 //  // user
 //  case class UserId(value: UUID) extends AnyVal
