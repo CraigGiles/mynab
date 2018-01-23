@@ -4,14 +4,13 @@ package service
 
 import java.util.UUID
 
+import com.gilesc.arrow.Service
+import com.gilesc.mynab.testkit.TestCase
+
 import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
-
-import com.gilesc.arrow.Service
-
-import com.gilesc.mynab.testkit.TestCase
 
 import cats.implicits._
 
@@ -20,9 +19,8 @@ class AccountServiceSpec extends TestCase {
   behavior of "Account Service"
   it should "allow me to create an account given a valid name and user id" in {
      val repository = new Service[Future, Account, Either[PersistError, Account]] {
-       def apply(a: Account): Future[Either[PersistError, Account]] = {
+       override def run(a: Account): Future[Either[PersistError, Account]] =
          Future(PersistResponse.success(a))
-       }
      }
 
     val userId = UserId(UUID.randomUUID)
@@ -40,9 +38,8 @@ class AccountServiceSpec extends TestCase {
     val userId = generateUserId.head
     val generated = generateAccount(userId).take(5).toVector
     val repository = new Service[Future, UserId, Either[PersistError, Option[Vector[Account]]]] {
-       def apply(u: UserId): Future[Either[PersistError, Option[Vector[Account]]]] = {
-         Future.successful(PersistResponse.success(Some(generated)))
-       }
+      override def run(req: UserId): Future[Either[PersistError, Option[Vector[Account]]]] =
+        Future.successful(PersistResponse.success(Some(generated)))
      }
 
     val service = new ReadAccountService(repository)
@@ -61,15 +58,13 @@ class AccountServiceSpec extends TestCase {
     val generated = generateAccount(userId).head.copy(id = generatedId)
 
     val lookup = new Service[Future, AccountId, Either[PersistError, Option[Account]]] {
-       def apply(id: AccountId): Future[Either[PersistError, Option[Account]]] = {
-         Future.successful(PersistResponse.success(Some(generated)))
-       }
+      override def run(req: AccountId): Future[Either[PersistError, Option[Account]]] =
+        Future.successful(PersistResponse.success(Some(generated)))
      }
 
     val persist = new Service[Future, Account, Either[PersistError, Account]] {
-       def apply(account: Account): Future[Either[PersistError, Account]] = {
-         Future.successful(PersistResponse.success(account))
-       }
+      override def run(account: Account): Future[Either[PersistError, Account]] =
+        Future.successful(PersistResponse.success(account))
      }
 
     val newname = generateAccountName.head
@@ -98,17 +93,16 @@ class AccountServiceSpec extends TestCase {
     )
 
     val lookup = new Service[Future, AccountId, Either[PersistError, Option[Account]]] {
-       def apply(id: AccountId): Future[Either[PersistError, Option[Account]]] = {
-         Future(PersistResponse.success(Some(generated)))
-       }
+      override def run(req: AccountId): Future[Either[PersistError, Option[Account]]] =
+        Future(PersistResponse.success(Some(generated)))
      }
 
     val persist = new Service[Future, (Account, TransactionContext), Either[PersistError, Account]] {
-       def apply(request: (Account, TransactionContext)): Future[Either[PersistError, Account]] = {
-         val (a, t) = request
-         Future(PersistResponse.success(
-           a.copy(transactions = a.transactions :+ Transaction.fromCtx(transactionId, t))))
-       }
+      override def run(request: (Account, TransactionContext)): Future[Either[PersistError, Account]] = {
+        val (a, t) = request
+        Future(PersistResponse.success(
+          a.copy(transactions = a.transactions :+ Transaction.fromCtx(transactionId, t))))
+      }
      }
 
     val args = (generatedId, transactionCtx)

@@ -3,28 +3,31 @@ package arrow
 
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
-
-import cats.effect.IO
 import cats.Monad
+import cats.data.Kleisli
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+import cats.implicits._
 
 class ServiceSpec extends FlatSpec with Matchers {
 
-  final class EchoService extends Service[IO, String, String] {
-    override def apply(value: String): IO[String] = IO.pure(value)
+  final class EchoService extends Service[Future, String, String] {
+    override def run(req: String): Future[String] = Future.successful(req)
   }
 
-  final class ToUpperService extends Service[IO, String, String] {
-    override def apply(msg: String): IO[String] = IO.pure(msg.toUpperCase)
+  final class ToUpperService extends Service[Future, String, String] {
+    override def run(req: String): Future[String] = Future.successful(req.toUpperCase)
   }
 
-  final class AddEmphasisService extends Service[IO, String, String] {
-    override def apply(msg: String): IO[String] = IO.pure(msg + "!")
+  final class AddEmphasisService extends Service[Future, String, String] {
+
+    override def run(req: String): Future[String] = Future.successful(req.concat("!"))
   }
 
   final class RequestLogger[F[_]: Monad, Req] extends Service[F, Req, Req] {
-    override def apply(request: Req): F[Req] = {
-      Monad[F].pure(request)
-    }
+    override def run(req: Req): F[Req] = Monad[F].pure(req)
   }
 
   behavior of "An Arrow Service"
@@ -34,23 +37,13 @@ class ServiceSpec extends FlatSpec with Matchers {
     val echo = new EchoService()
     val toUpper = new ToUpperService()
     val addEmphasis = new AddEmphasisService()
-    val logger: RequestLogger[IO, String] = new RequestLogger[IO, String]
+    val logger: RequestLogger[Future, String] = new RequestLogger[Future, String]
 
     val pipeline = logger andThen toUpper andThen echo andThen addEmphasis andThen logger
-    val result = pipeline(msg).unsafeRunSync()
-    result should be(expected)
-  }
+    val result = Await.result(pipeline(msg), Duration.Inf)
+    val echoResult = Await.result(echo(msg), Duration.Inf)
+    echoResult should be(msg)
 
-  it should "allow me to use pipeTo" in {
-    val msg = "Hello World"
-    val expected = msg.toUpperCase.concat("!")
-    val echo = new EchoService()
-    val toUpper = new ToUpperService()
-    val addEmphasis = new AddEmphasisService()
-    val logger: RequestLogger[IO, String] = new RequestLogger[IO, String]
-
-    val pipeline = logger pipeTo toUpper pipeTo echo pipeTo addEmphasis pipeTo logger
-    val result = pipeline(msg).unsafeRunSync()
     result should be(expected)
   }
 }
