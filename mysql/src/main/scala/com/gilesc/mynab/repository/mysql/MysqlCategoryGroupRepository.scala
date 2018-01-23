@@ -11,6 +11,8 @@ import doobie.free.connection.ConnectionIO
 
 import cats.effect.Async
 
+import com.gilesc.arrow._
+
 trait CategoryGroupQueries {
   def insertQuery(name: CategoryName): Update0 =
     sql"insert into category_groups (name) values (${name.value})".update
@@ -22,10 +24,24 @@ trait CategoryGroupQueries {
 class MysqlCategoryGroupRepository[F[_]: Async](
   xa: Transactor[F]
 ) extends CategoryGroupRepository[F] with CategoryGroupQueries {
-  override def create(
+  override def create(ctx: CategoryGroupContext) = new MysqlCreateCategoryGroup[F](xa).run(ctx)
+  override def find(ctx: CategoryName) = new MysqlFindCategoryGroup[F](xa).run(ctx)
+}
+
+class MysqlFindCategoryGroup[F[_]: Async](
+  xa: Transactor[F]
+) extends Service[F, CategoryName, Option[CategoryGroup]] with CategoryGroupQueries {
+  override def run(
+    ctx: CategoryName
+  ): F[Option[CategoryGroup]] = findQuery(ctx).unique.map(Option.apply).transact(xa)
+}
+
+class MysqlCreateCategoryGroup[F[_]: Async](
+  xa: Transactor[F]
+) extends Service[F, CategoryGroupContext, Either[RepositoryError, CategoryGroup]] with CategoryGroupQueries {
+  override def run(
     ctx: CategoryGroupContext
   ): F[Either[RepositoryError, CategoryGroup]] = {
-
     def insert(name: CategoryName): ConnectionIO[CategoryGroup] = {
       insertQuery(name).withUniqueGeneratedKeys[Long]("ID") map { id =>
         CategoryGroup(CategoryGroupId(id), name)
@@ -33,15 +49,10 @@ class MysqlCategoryGroupRepository[F[_]: Async](
     }
 
     insert(ctx.value).transact(xa).attemptSomeSqlState {
-       ErrorCode.convert andThen {
-           case ErrorCode.DuplicateKey => RepositoryError.DuplicateKey
-           case e => RepositoryError.UnknownError(e.toString)
-       }
+      ErrorCode.convert andThen {
+        case ErrorCode.DuplicateKey => RepositoryError.DuplicateKey
+        case e => RepositoryError.UnknownError(e.toString)
+      }
     }
   }
-
-  override def find(
-    ctx: CategoryName
-  ): F[Option[CategoryGroup]] = findQuery(ctx).unique.map(Option.apply).transact(xa)
 }
-

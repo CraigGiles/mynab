@@ -102,6 +102,7 @@ lazy val mysql = Project("mysql", file("mysql"))
   .settings(commonSettings)
   .dependsOn(
     domain % "test->test;test->compile;compile->compile",
+    arrow % "test->test;test->compile;compile->compile",
     testkit % "test->test;test->compile;compile->compile")
   .settings(libraryDependencies ++= Dependencies.mysql)
 
