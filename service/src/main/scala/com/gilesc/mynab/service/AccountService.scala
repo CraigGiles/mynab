@@ -4,12 +4,10 @@ package service
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import cats._
 import cats.implicits._
-
 import com.gilesc.arrow.Service
-
 import java.util.UUID
+
 
 sealed abstract class PersistError(
   msg: String,
@@ -31,7 +29,7 @@ case class CreateAccountContext(userId: UserId, name: AccountName)
 final class CreateAccountService(
     persist: Service[Future, Account, Either[PersistError, Account]]
   ) extends Service[Future, CreateAccountContext, Account] {
-  def apply(request: CreateAccountContext): Future[Account] = {
+  override def run(request: CreateAccountContext): Future[Account] = {
     val account = Account(
       AccountId(UUID.randomUUID()),
       request.userId,
@@ -49,7 +47,7 @@ final class ReadAccountService(
     repository: Service[Future, UserId, Either[PersistError, Option[Vector[Account]]]]
   ) extends Service[Future, UserId, Vector[Account]] {
 
-  def apply(id: UserId): Future[Vector[Account]] = {
+  override def run(id: UserId): Future[Vector[Account]] = {
     repository(id) flatMap {
       case Right(Some(accounts)) => Future.successful(accounts)
       case Right(None) => Future.successful(Vector.empty[Account])
@@ -66,7 +64,8 @@ final class UpdateAccountNameService(
   lookup: Service[Future, AccountId, Either[PersistError, Option[Account]]],
   persist: Service[Future, Account, Either[PersistError, Account]]
   ) extends Service[Future, (AccountId, AccountName), Either[UpdateError, Account]] {
-  def apply(req: (AccountId, AccountName)): Future[Either[UpdateError, Account]] = {
+
+  override def run(req: (AccountId, AccountName)): Future[Either[UpdateError, Account]] = {
     val (id, replacement) = req
 
     lookup(id) flatMap {
@@ -122,7 +121,7 @@ final class AddTransactionAccountService(
   persist: Service[Future, (Account, TransactionContext), Either[PersistError, Account]]
 ) extends Service[Future, (AccountId, TransactionContext), Account] {
 
-  def apply(request: (AccountId, TransactionContext)): Future[Account] = {
+  override def run(request: (AccountId, TransactionContext)): Future[Account] = {
     val (id, ctx) = request
 
     val futRespAcct = lookup(id) flatMap {
