@@ -65,7 +65,7 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
     val minorName = CategoryName(Gen.alphaStr.sample.get)
     val ctx = CreateCategoryContext(UserId(Long.MaxValue), majorName, minorName)
     val Left(result) = service(ctx).unsafeRunSync
-    result should be("ForeignKeyConstraint")
+    result should be(ServiceError.UnknownUser(UserId(Long.MaxValue)))
   }
 
 }
