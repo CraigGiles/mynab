@@ -65,6 +65,15 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
      secondResult.name should be(secondMinor)
   }
 
+  it should "give me a proper error when no user is found" in {
+    val service = CreateCategoryService.apply[IO](groupRepo, categoryRepo)
+    val majorName = CategoryName(Gen.alphaStr.sample.get)
+    val minorName = CategoryName(Gen.alphaStr.sample.get)
+    val ctx = CreateCategoryContext(UserId(Long.MaxValue), majorName, minorName)
+    val Left(result) = service(ctx).unsafeRunSync
+    result should be("ForeignKeyConstraint")
+  }
+
 }
 
 

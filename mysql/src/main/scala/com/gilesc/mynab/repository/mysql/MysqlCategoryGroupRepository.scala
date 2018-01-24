@@ -3,14 +3,13 @@ package mynab
 package repository
 package mysql
 
+import java.sql.SQLException
+
 import doobie._
 import doobie.implicits._
-
 import doobie.util.transactor.Transactor
 import doobie.free.connection.ConnectionIO
-
 import cats.effect.Async
-
 import com.gilesc.arrow._
 
 trait CategoryGroupQueries {
@@ -48,10 +47,20 @@ class MysqlCreateCategoryGroup[F[_]: Async](
       }
     }
 
-    insert(ctx.userId, ctx.value).transact(xa).attemptSomeSqlState {
-      ErrorCode.convert andThen {
-        case ErrorCode.DuplicateKey => RepositoryError.DuplicateKey
-        case e => RepositoryError.UnknownError(e.toString)
+
+    // TODO: Clean this up
+    import com.mysql.jdbc.exceptions.jdbc4._
+    val DuplicateEntryMsg = "Duplicate entry"
+    val ForeignKeyMsg = "foreign key constraint fails"
+    val result: F[Either[SQLException, CategoryGroup]] = insert(ctx.userId, ctx.value).transact(xa).attemptSql
+
+    Async[F].map(result) { either: Either[SQLException, CategoryGroup] =>
+      either.left.map {
+        case ex: MySQLIntegrityConstraintViolationException if ex.getLocalizedMessage.contains(DuplicateEntryMsg) =>
+          RepositoryError.DuplicateKey
+        case ex: MySQLIntegrityConstraintViolationException if ex.getLocalizedMessage.contains(ForeignKeyMsg) =>
+          RepositoryError.ForeignKeyConstraint
+        case _ => RepositoryError.UnknownError("Unknown Error")
       }
     }
   }
