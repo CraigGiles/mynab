@@ -37,12 +37,9 @@ class MysqlCategoryRepository[F[_]: Async](
       }
     }
 
-    insert(ctx.userId, ctx.name, ctx.group).transact(xa).attemptSomeSqlState {
-       ErrorCode.convert andThen {
-           case ErrorCode.DuplicateKey => RepositoryError.DuplicateKey
-           case e => RepositoryError.UnknownError(e.toString)
-       }
-    }
+    import java.sql.SQLException
+    val result: F[Either[SQLException, Category]] = insert(ctx.userId, ctx.name, ctx.group).transact(xa).attemptSql
+    Async[F].map(result)(_.left.map( err => MysqlError.convert(err).repositoryError))
   }
 }
 

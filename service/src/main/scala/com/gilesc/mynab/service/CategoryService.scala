@@ -10,14 +10,24 @@ import com.gilesc.mynab.repository.RepositoryError
 import com.gilesc.mynab.repository.CategoryGroupRepository
 import com.gilesc.mynab.repository.CategoryRepository
 
+sealed abstract class ServiceError(val message: String, val throwable: Throwable = null)
+object ServiceError {
+  final case class UnknownUser(userId: UserId) extends ServiceError(s"User id ${userId.value} doesn't exist.")
+  final case class UnknownError(override val message: String) extends ServiceError(message)
+}
+
 case class CreateCategoryContext(user: UserId, major: CategoryName, minor: CategoryName)
 
 final class CreateCategoryService[F[_]: Async](
     createGroup: Service[F, CategoryGroupContext, Either[RepositoryError, CategoryGroup]] ,
     findGroup: Service[F, CategoryName, Option[CategoryGroup]],
     createCategory: Service[F, CategoryContext, Either[RepositoryError, Category]]
-  ) extends Service[F, CreateCategoryContext, Either[String, Category]] {
+  ) extends Service[F, CreateCategoryContext, Either[ServiceError, Category]] {
 
+  /**
+    * Create and return the CategoryGroup. If the group already exists,
+    * attempt to find that group's id and use that instead.
+    */
   private[this] def getGroupFor(
     user: UserId,
     name: CategoryName
@@ -29,16 +39,22 @@ final class CreateCategoryService[F[_]: Async](
     }
   }
 
-  // TODO: change the String to a real ADT
+  // TODO: Add a `find` for the category
   override def run(
     ctx: CreateCategoryContext
-  ): F[Either[String, Category]] = {
+  ): F[Either[ServiceError, Category]] = {
     val result = for {
       group <- getGroupFor(ctx.user, ctx.major)
       category <- EitherT(createCategory(CategoryContext(ctx.user, group, ctx.minor)))
     } yield category
 
-    result.leftMap(_.toString).value
+    // Convert the RepositoryError to the appropriate ServiceError
+    val eitherT: EitherT[F, ServiceError, Category] = result.leftMap {
+      case RepositoryError.ForeignKeyConstraint => ServiceError.UnknownUser(ctx.user)
+      case a => ServiceError.UnknownError(a.toString)
+    }
+
+    eitherT.value
   }
 
 }

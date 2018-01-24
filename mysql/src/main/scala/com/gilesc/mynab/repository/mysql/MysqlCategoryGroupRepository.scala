@@ -3,14 +3,13 @@ package mynab
 package repository
 package mysql
 
+import java.sql.SQLException
+
 import doobie._
 import doobie.implicits._
-
 import doobie.util.transactor.Transactor
 import doobie.free.connection.ConnectionIO
-
 import cats.effect.Async
-
 import com.gilesc.arrow._
 
 trait CategoryGroupQueries {
@@ -48,11 +47,9 @@ class MysqlCreateCategoryGroup[F[_]: Async](
       }
     }
 
-    insert(ctx.userId, ctx.value).transact(xa).attemptSomeSqlState {
-      ErrorCode.convert andThen {
-        case ErrorCode.DuplicateKey => RepositoryError.DuplicateKey
-        case e => RepositoryError.UnknownError(e.toString)
-      }
-    }
+
+    import java.sql.SQLException
+    val result: F[Either[SQLException, CategoryGroup]] = insert(ctx.userId, ctx.value).transact(xa).attemptSql
+    Async[F].map(result)(_.left.map( err => MysqlError.convert(err).repositoryError))
   }
 }

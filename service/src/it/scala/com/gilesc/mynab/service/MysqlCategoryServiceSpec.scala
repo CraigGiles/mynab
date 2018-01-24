@@ -2,31 +2,25 @@ package com.gilesc
 package mynab
 package service
 
+import com.gilesc.mynab.repository.mysql._
+import com.gilesc.mynab.testkit.DatabaseTestCase
+
 import org.scalacheck.Gen
-import doobie.scalatest._
+
 import doobie.util.transactor.Transactor
 
 import cats.effect.IO
 
-import com.gilesc.mynab.testkit.TestCase
-
-import com.gilesc.mynab.repository.mysql._
-import com.gilesc.mynab.testkit.DatabaseTestCase
-import com.gilesc.mynab.testkit.TestCase
-import com.gilesc.mynab.repository._
-import cats.effect.IO
-import cats.data.EitherT
-import cats.syntax.either._
-
 class MysqlCategoryRepositorySpec extends DatabaseTestCase {
+  case class DatabaseConfig(
+    driver: String,
+    url: String,
+    username: String,
+    password: String
+  )
+
   val userId = UserId(1)
-    case class DatabaseConfig(
-      driver: String,
-      url: String,
-      username: String,
-      password: String
-    )
-    val config = pureconfig.loadConfigOrThrow[DatabaseConfig]("mynab.database")
+  val config = pureconfig.loadConfigOrThrow[DatabaseConfig]("mynab.database")
 
   def transactor = Transactor.fromDriverManager[IO](
     config.driver,
@@ -63,6 +57,15 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
      val Right(secondResult) = service(secondCtx).unsafeRunSync
      secondResult.group.name should be(majorName)
      secondResult.name should be(secondMinor)
+  }
+
+  it should "give me a proper error when no user is found" in {
+    val service = CreateCategoryService.apply[IO](groupRepo, categoryRepo)
+    val majorName = CategoryName(Gen.alphaStr.sample.get)
+    val minorName = CategoryName(Gen.alphaStr.sample.get)
+    val ctx = CreateCategoryContext(UserId(Long.MaxValue), majorName, minorName)
+    val Left(result) = service(ctx).unsafeRunSync
+    result should be(ServiceError.UnknownUser(UserId(Long.MaxValue)))
   }
 
 }

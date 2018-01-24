@@ -6,7 +6,8 @@ package object repository {
 
   object RepositoryError {
     final case object DuplicateKey extends RepositoryError
-    final case class UnknownError(error: String) extends RepositoryError
+    final case object ForeignKeyConstraint extends RepositoryError
+    final case class UnknownError(message: String, sqlState: String, throwable: Throwable) extends RepositoryError
   }
 
 }
