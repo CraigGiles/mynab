@@ -48,20 +48,8 @@ class MysqlCreateCategoryGroup[F[_]: Async](
     }
 
 
-    // TODO: Clean this up
-    import com.mysql.jdbc.exceptions.jdbc4._
-    val DuplicateEntryMsg = "Duplicate entry"
-    val ForeignKeyMsg = "foreign key constraint fails"
+    import java.sql.SQLException
     val result: F[Either[SQLException, CategoryGroup]] = insert(ctx.userId, ctx.value).transact(xa).attemptSql
-
-    Async[F].map(result) { either: Either[SQLException, CategoryGroup] =>
-      either.left.map {
-        case ex: MySQLIntegrityConstraintViolationException if ex.getLocalizedMessage.contains(DuplicateEntryMsg) =>
-          RepositoryError.DuplicateKey
-        case ex: MySQLIntegrityConstraintViolationException if ex.getLocalizedMessage.contains(ForeignKeyMsg) =>
-          RepositoryError.ForeignKeyConstraint
-        case _ => RepositoryError.UnknownError("Unknown Error")
-      }
-    }
+    Async[F].map(result)(_.left.map( err => MysqlError.convert(err).repositoryError))
   }
 }
