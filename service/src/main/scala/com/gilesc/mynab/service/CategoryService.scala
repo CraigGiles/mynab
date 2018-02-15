@@ -21,7 +21,8 @@ case class CreateCategoryContext(user: UserId, major: CategoryName, minor: Categ
 final class CreateCategoryService[F[_]: Async](
     createGroup: Service[F, CategoryGroupContext, Either[RepositoryError, CategoryGroup]] ,
     findGroup: Service[F, CategoryName, Option[CategoryGroup]],
-    createCategory: Service[F, CategoryContext, Either[RepositoryError, Category]]
+    createCategory: Service[F, CategoryContext, Either[RepositoryError, Category]],
+    findCategory: Service[F, CategoryContext, Option[Category]]
   ) extends Service[F, CreateCategoryContext, Either[ServiceError, Category]] {
 
   /**
@@ -39,13 +40,29 @@ final class CreateCategoryService[F[_]: Async](
     }
   }
 
+  private[this] def getCategoryFor(
+    user: UserId,
+    group: CategoryGroup,
+    name: CategoryName
+  ): EitherT[F, RepositoryError, Category] = {
+    val ctx = CategoryContext(user, group, name)
+    val result = createCategory(ctx)
+    EitherT(result).leftFlatMap {
+      case RepositoryError.DuplicateKey => EitherT.fromOptionF(
+          findCategory(CategoryContext(user, group, name)),
+          RepositoryError.DuplicateKey
+        )
+      case error => EitherT(Async[F].delay(Left(error)))
+    }
+  }
+
   // TODO: Add a `find` for the category
   override def run(
     ctx: CreateCategoryContext
   ): F[Either[ServiceError, Category]] = {
     val result = for {
       group <- getGroupFor(ctx.user, ctx.major)
-      category <- EitherT(createCategory(CategoryContext(ctx.user, group, ctx.minor)))
+      category <- getCategoryFor(ctx.user, group, ctx.minor)
     } yield category
 
     // Convert the RepositoryError to the appropriate ServiceError
@@ -67,7 +84,8 @@ object CreateCategoryService {
     new CreateCategoryService[F](
       Service(groups.create),
       Service(groups.find),
-      Service(categories.create)
+      Service(categories.create),
+      Service(categories.find)
     )
   }
 }

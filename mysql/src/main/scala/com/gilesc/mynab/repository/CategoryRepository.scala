@@ -9,4 +9,5 @@ trait CategoryGroupRepository[F[_]] {
 
 trait CategoryRepository[F[_]] {
   def create(ctx: CategoryContext): F[Either[RepositoryError, Category]]
+  def find(ctx: CategoryContext): F[Option[Category]]
 }

@@ -59,6 +59,20 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
      secondResult.name should be(secondMinor)
   }
 
+  it should "allow me to store a category with existing major / minor name" in {
+    val service = CreateCategoryService.apply[IO](groupRepo, categoryRepo)
+    val majorName = CategoryName(Gen.alphaStr.sample.get)
+    val minorName = CategoryName(Gen.alphaStr.sample.get)
+    val ctx = CreateCategoryContext(userId, majorName, minorName)
+    val Right(first) = service(ctx).unsafeRunSync
+    first.group.name should be(majorName)
+    first.name should be(minorName)
+
+    val Right(second) = service(ctx).unsafeRunSync
+    second.group.name should be(majorName)
+    second.name should be(minorName)
+  }
+
   it should "give me a proper error when no user is found" in {
     val service = CreateCategoryService.apply[IO](groupRepo, categoryRepo)
     val majorName = CategoryName(Gen.alphaStr.sample.get)
