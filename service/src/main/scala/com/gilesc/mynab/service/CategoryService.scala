@@ -56,7 +56,6 @@ final class CreateCategoryService[F[_]: Async](
     }
   }
 
-  // TODO: Add a `find` for the category
   override def run(
     ctx: CreateCategoryContext
   ): F[Either[ServiceError, Category]] = {
