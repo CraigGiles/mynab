@@ -11,7 +11,7 @@ import doobie.util.transactor.Transactor
 
 import cats.effect.IO
 
-class MysqlCategoryRepositorySpec extends DatabaseTestCase {
+class MysqlCreateCategoryRepositorySpec extends DatabaseTestCase {
   case class DatabaseConfig(
     driver: String,
     url: String,
@@ -73,7 +73,7 @@ class MysqlCategoryRepositorySpec extends DatabaseTestCase {
     second.name should be(minorName)
   }
 
-  it should "give me a proper error when no user is found" in {
+  it should "give me a proper error when creating and no user is found" in {
     val service = CreateCategoryService.apply[IO](groupRepo, categoryRepo)
     val majorName = CategoryName(Gen.alphaStr.sample.get)
     val minorName = CategoryName(Gen.alphaStr.sample.get)
