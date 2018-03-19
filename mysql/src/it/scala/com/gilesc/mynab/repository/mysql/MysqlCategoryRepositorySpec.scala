@@ -11,8 +11,15 @@ import cats.effect.IO
 import com.gilesc.mynab.testkit.TestCase
 import com.gilesc.mynab.testkit.DatabaseTestCase
 
-class MysqlCategoryRepositorySpec extends DatabaseTestCase {
+import com.spotify.docker.client.DefaultDockerClient
+import com.whisk.docker.{DockerFactory, DockerKit}
+import com.whisk.docker.impl.spotify._
+
+class MysqlCategoryRepositorySpec extends TestCase with DockerMysqlService {
   val config = DatabaseConfig()
+
+  override implicit val dockerFactory: DockerFactory = new SpotifyDockerFactory(
+    DefaultDockerClient.fromEnv().build())
 
   def transactor = Transactor.fromDriverManager[IO](
     config.driver,

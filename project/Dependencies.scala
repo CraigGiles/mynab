@@ -37,6 +37,8 @@ object Dependencies {
     ,doobie("h2")
     ,doobie("hikari")
     ,doobie("scalatest")
+    ,"com.whisk" %% "docker-testkit-scalatest" % "0.9.5" % "test"
+    ,"com.whisk" %% "docker-testkit-impl-spotify" % "0.9.5" % "test"
   )
 
   lazy val flyway = Seq(
